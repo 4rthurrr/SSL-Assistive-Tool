@@ -1,0 +1,322 @@
+# SSL-Assistive-Tool .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Machine Learning & AI
+# Model files
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.pt
+*.pth
+*.ckpt
+*.pb
+*.tflite
+*.onnx
+*.torchscript
+
+# Training outputs
+experiments/
+logs/
+runs/
+checkpoints/
+models/
+saved_models/
+tensorboard_logs/
+wandb/
+
+# Dataset files (large files should not be in git)
+data/
+datasets/
+*.csv
+*.json
+*.txt
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# SSL400 Dataset specific
+ssl400/
+ssl400_*.json
+class_mapping.json
+dataset_analysis.json
+split_summary.json
+
+# Video files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+*.m4v
+
+# Audio files
+*.wav
+*.mp3
+*.flac
+*.aac
+*.ogg
+*.wma
+
+# Image files (if large datasets)
+# Uncomment if you have large image datasets
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.bmp
+# *.tiff
+# *.svg
+
+# MediaPipe processed files
+*.mediapipe
+keypoints/
+processed_videos/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Windows
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Docker
+.dockerignore
+Dockerfile.prod
+docker-compose.override.yml
+.docker/
+
+# Kubernetes
+*.yaml.backup
+*.yml.backup
+
+# SSL Project specific
+# Configuration files with sensitive data
+config_local.py
+secrets.json
+.secrets
+credentials.json
+api_keys.txt
+
+# Large training files
+training_data/
+validation_data/
+test_data/
+raw_videos/
+processed_data/
+
+# Performance profiling
+*.prof
+*.cprof
+
+# Memory dumps
+*.dump
+*.dmp
+
+# SSL Video-to-Text Component specific
+component1_ssl_video_to_text/data/
+component1_ssl_video_to_text/experiments/
+component1_ssl_video_to_text/logs/
+component1_ssl_video_to_text/models/
+component1_ssl_video_to_text/checkpoints/
+
+# Generated documentation
+docs/build/
+docs/_build/
+*.pdf
+
+# Local development
+.local/
+dev/
+development/
+
+# Keep important files (use ! to negate ignore)
+!README.md
+!requirements.txt
+!setup.py
+!pyproject.toml
+!docker-compose.yml
+!Dockerfile
+!.github/
+!docs/
+!tests/
+!examples/
+!scripts/
+
+# Keep small example data
+!examples/data/
+!tests/fixtures/
+!sample_data/
+
+# Keep configuration templates
+!config_template.py
+!.env.example
+!docker-compose.example.yml
