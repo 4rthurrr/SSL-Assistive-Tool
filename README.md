@@ -48,3 +48,4 @@
 <!-- [2025-11-21 09:25:58] Progress: Fixed minor bugs -->
 <!-- [2025-11-23 19:21:20] Progress: Added test coverage -->
 <!-- [2025-11-26 00:29:41] Progress: Improved error handling -->
+<!-- [2025-11-28 03:47:03] Progress: Updated documentation -->
