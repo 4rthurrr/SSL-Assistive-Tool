@@ -1,0 +1,155 @@
+// route/question_routes.js - Simple test version
+const express = require('express');
+const router = express.Router();
+
+// Simple test endpoint
+router.get('/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Question routes are working!'
+  });
+});
+
+// Test quiz endpoint
+router.get('/quiz/:grade', async (req, res) => {
+  try {
+    const grade = req.params.grade;
+    console.log(`📚 Quiz request for Grade ${grade}`);
+    
+    // Try to connect to MongoDB
+    const mongoose = require('mongoose');
+    
+    // Check if connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({
+        success: false,
+        error: 'Database not connected'
+      });
+    }
+    
+    // List all collections
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    const collectionNames = collections.map(c => c.name);
+    
+    console.log('📦 Available collections:', collectionNames);
+    
+    // Try to find the quiz collection
+    const quizCollectionName = collectionNames.find(name => 
+      name.toLowerCase().includes('quiz')
+    );
+    
+    if (!quizCollectionName) {
+      return res.status(404).json({
+        success: false,
+        error: 'Quiz collection not found',
+        available_collections: collectionNames,
+        hint: 'Make sure your quiz data is in MongoDB'
+      });
+    }
+    
+    console.log(`✓ Found quiz collection: ${quizCollectionName}`);
+    
+    // Get the collection
+    const quizCollection = mongoose.connection.db.collection(quizCollectionName);
+    const quizDoc = await quizCollection.findOne();
+    
+    if (!quizDoc) {
+      return res.status(404).json({
+        success: false,
+        error: 'Quiz document is empty'
+      });
+    }
+    
+    console.log('✓ Quiz document found');
+    console.log('✓ Available grades:', Object.keys(quizDoc.grades || {}));
+    
+    // Get grade data
+    const gradeKey = `grade${grade}`;
+    const gradeData = quizDoc.grades?.[gradeKey];
+    
+    if (!gradeData) {
+      return res.status(404).json({
+        success: false,
+        error: `Grade ${grade} not found`,
+        available_grades: Object.keys(quizDoc.grades || {})
+      });
+    }
+    
+    const questions = gradeData.questions || [];
+    
+    if (questions.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: `No questions for Grade ${grade}`
+      });
+    }
+    
+    // Select 3 random questions
+    const shuffled = questions.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 3);
+    
+    console.log(`✅ Returning ${selected.length} questions for Grade ${grade}`);
+    
+    res.json({
+      success: true,
+      grade: grade,
+      questionCount: selected.length,
+      totalAvailable: questions.length,
+      questions: selected,
+      answerKey: selected.map(q => ({
+        id: q.id,
+        correctAnswer: q.correctAnswer
+      }))
+    });
+    
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
+// Validate answers
+router.post('/validate', async (req, res) => {
+  try {
+    const { answers } = req.body;
+    
+    if (!answers || !Array.isArray(answers)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid answers format'
+      });
+    }
+    
+    // For now, just return dummy validation
+    // You'll need to implement proper validation later
+    const results = answers.map(a => ({
+      id: a.id,
+      correct: true, // Change this to actual validation
+      selectedAnswer: a.selectedAnswer
+    }));
+    
+    res.json({
+      success: true,
+      results: results,
+      summary: {
+        correct: results.filter(r => r.correct).length,
+        total: results.length,
+        percentage: '100.00'
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+console.log('✅ Question routes loaded');
+
+module.exports = router;
