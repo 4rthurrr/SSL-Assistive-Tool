@@ -107,20 +107,7 @@ npm test         # Run tests (if configured)
 
 ---
 
-## ⚙️ Configuration
 
-### Environment Variables
-
-Create `.env` file in `Backend/` directory:
-
-```env
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/game_app
-NODE_ENV=development
-FLASK_API_URL=http://localhost:5000
-```
-
----
 
 ## 📦 Dependencies
 
