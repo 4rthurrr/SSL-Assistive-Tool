@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Javascript / Node
+node_modules/
+dist/
+build/
+.DS_Store
+
+# Project Specific
+static/outputs/*.mp4
+static/outputs/driver_*.mp4
+static/outputs/sk_*.mp4
+static/outputs/ai_*.mp4
+server.log
+*.log
+
+# VS Code
+.vscode/
+
+# Large/Binary Files
+*.glb
+*.pdf
+*.ipynb
+*.mp4
+
+# Dataset
+backend/Dataset - Original/
