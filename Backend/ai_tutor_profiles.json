@@ -1,0 +1,180 @@
+{
+  "user_1766515080353": {
+    "stats": {
+      "total_sessions": 2,
+      "total_attempts": 4,
+      "total_correct": 1,
+      "total_time": 166.322,
+      "words_learned": "set()",
+      "levels_unlocked": [
+        "basic"
+      ]
+    },
+    "word_mastery": {
+      "පැය": {
+        "attempts": 1,
+        "correct": 1,
+        "total_time": 19.654,
+        "first_seen": "2025-12-24T00:09:19.832330",
+        "last_seen": "2025-12-24T00:09:19.832330",
+        "accuracy": 1.0,
+        "avg_time": 19.654
+      },
+      "අයි": {
+        "attempts": 3,
+        "correct": 0,
+        "total_time": 146.668,
+        "first_seen": "2025-12-24T00:09:37.477005",
+        "last_seen": "2025-12-24T00:10:35.511566",
+        "accuracy": 0.0,
+        "avg_time": 48.88933333333333
+      }
+    },
+    "level_progress": {
+      "basic": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": true
+      },
+      "easy": {
+        "score": 10,
+        "attempts": 4,
+        "unlocked": false
+      },
+      "medium": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      },
+      "hard": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      }
+    },
+    "learning_history": "deque([{'timestamp': '2025-12-24T00:09:19.832330', 'word': 'පැය', 'level': 'easy', 'correct': True, 'time_taken': 19.654, 'accuracy': 1.0}, {'timestamp': '2025-12-24T00:09:37.477005', 'word': 'අයි', 'level': 'easy', 'correct': False, 'time_taken': 15.231, 'accuracy': 0.0}, {'timestamp': '2025-12-24T00:10:20.147944', 'word': 'අයි', 'level': 'easy', 'correct': False, 'time_taken': 57.905, 'accuracy': 0.0}, {'timestamp': '2025-12-24T00:10:35.511566', 'word': 'අයි', 'level': 'easy', 'correct': False, 'time_taken': 73.532, 'accuracy': 0.0}], maxlen=100)",
+    "skill_graph": {
+      "පැය": {
+        "අයි": 1
+      },
+      "අයි": {
+        "පැය": 1
+      }
+    },
+    "struggle_patterns": {
+      "අයි": [
+        {
+          "timestamp": "2025-12-24T00:10:35.511566",
+          "attempt": 3,
+          "time_taken": 73.532
+        }
+      ]
+    },
+    "predictions": {
+      "next_easy": {
+        "predicted_score": 20,
+        "confidence": 70,
+        "factors": {
+          "current_accuracy": 25,
+          "learning_speed": 36,
+          "consistency": 70,
+          "level_difficulty": 0
+        },
+        "timestamp": "2025-12-24T00:10:35.877884"
+      }
+    },
+    "last_activity": "2025-12-24T00:10:35.511566"
+  },
+  "user_1766516186420": {
+    "stats": {
+      "total_sessions": 0,
+      "total_attempts": 0,
+      "total_correct": 0,
+      "total_time": 0,
+      "words_learned": "set()",
+      "levels_unlocked": [
+        "basic"
+      ]
+    },
+    "word_mastery": {},
+    "level_progress": {
+      "basic": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": true
+      },
+      "easy": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      },
+      "medium": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      },
+      "hard": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      }
+    },
+    "learning_history": "deque([], maxlen=100)",
+    "skill_graph": {},
+    "struggle_patterns": {},
+    "predictions": {
+      "next_easy": {
+        "predicted_score": 35,
+        "confidence": 70,
+        "factors": {
+          "current_accuracy": 50,
+          "learning_speed": 100,
+          "consistency": 70,
+          "level_difficulty": 0
+        },
+        "timestamp": "2025-12-24T00:26:30.562596"
+      }
+    },
+    "last_activity": "2025-12-24T00:26:30.562596"
+  },
+  "user_1766516472587": {
+    "stats": {
+      "total_sessions": 1,
+      "total_attempts": 0,
+      "total_correct": 0,
+      "total_time": 0,
+      "words_learned": "set()",
+      "levels_unlocked": [
+        "basic"
+      ]
+    },
+    "word_mastery": {},
+    "level_progress": {
+      "basic": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": true
+      },
+      "easy": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      },
+      "medium": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      },
+      "hard": {
+        "score": 0,
+        "attempts": 0,
+        "unlocked": false
+      }
+    },
+    "learning_history": "deque([], maxlen=100)",
+    "skill_graph": {},
+    "struggle_patterns": {},
+    "predictions": {},
+    "last_activity": "2025-12-24T00:31:15.024874"
+  }
+}

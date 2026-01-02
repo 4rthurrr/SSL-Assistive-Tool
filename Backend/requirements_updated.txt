@@ -1,0 +1,27 @@
+"""
+Backend Requirements - Updated for MongoDB Integration
+
+INSTALL WITH:
+pip install -r requirements.txt
+
+OR install individually:
+pip install pymongo flask flask-cors torch numpy
+"""
+
+# Existing requirements (keep these)
+flask==2.3.0
+flask-cors==4.0.0
+torch==2.0.0
+numpy==1.24.0
+scikit-learn==1.2.0
+regex==2022.10.31
+
+# NEW: MongoDB support for persistent game data storage
+pymongo>=4.5.0
+
+# Optional: For better MongoDB connection management
+dnspython>=2.3.0  # Required for MongoDB Atlas connection strings
+
+# If you're using additional libraries, add them here
+# requests==2.31.0
+# python-dotenv==1.0.0

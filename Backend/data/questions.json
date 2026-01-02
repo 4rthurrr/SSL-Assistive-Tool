@@ -1,0 +1,489 @@
+{
+  "quizDatabase": {
+    "metadata": {
+      "title": "Sinhala Visual Learning Quiz for Deaf Students",
+      "country": "Sri Lanka",
+      "educationSystem": "Mainstream adapted for deaf schools",
+      "learningMethod": "Visual (Picture/Sign Language to Sinhala word)",
+      "questionsPerSession": 3,
+      "allowProgressionAboveGrade": true
+    },
+    "grades": {
+      "grade2": {
+        "level": 2,
+        "description": "Basic nouns and everyday objects",
+        "questions": [
+          {
+            "id": "g2_q1",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://static.independent.co.uk/2023/06/20/10/apple%20logo%20trademark.png",
+            "imageDescription": "A red apple",
+            "question": "මෙය කුමක්ද?",
+            "options": ["ඇපල්", "කෙසෙල්", "අඹ", "පොල්"],
+            "correctAnswer": "ඇපල්",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q2",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/960px-Cat_November_2010-1a.jpg",
+            "imageDescription": "A cat sitting",
+            "question": "මෙය කුමක්ද?",
+            "options": ["බල්ලා", "බළලා", "කුරුල්ලා", "මීයා"],
+            "correctAnswer": "බළලා",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q3",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Places/House/House_001.mp4",
+            "signDescription": "Sign language for 'house'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["ගෙදර", "පාසල", "මල්", "පුටුව"],
+            "correctAnswer": "ගෙදර",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q4",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://panther.lk/wp-content/uploads/2025/07/ST2424-A4-Hard-Cover-Note-Book-CONNECTED-04-scaled-1.jpg",
+            "imageDescription": "A book",
+            "question": "මෙය කුමක්ද?",
+            "options": ["පොත", "පතුරු", "පැන්සල", "බෑගය"],
+            "correctAnswer": "පොත",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q5",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://www.eatingwell.com/thmb/xUBYtqc9KZpVCiY0K4RM8g4jYEQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/mineral-water-8cc11cec12c7471bac9378fa9757c83f.jpg",
+            "imageDescription": "A glass of water",
+            "question": "මෙය කුමක්ද?",
+            "options": ["වතුර", "කිරි", "තේ", "කෝපි"],
+            "correctAnswer": "වතුර",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q6",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/People/Mother/Mother_001.mp4",
+            "signDescription": "Sign language for 'mother'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["අම්මා", "තාත්තා", "අක්කා", "මල්ලි"],
+            "correctAnswer": "අම්මා",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q7",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://media.istockphoto.com/id/1124567572/vector/cute-flat-sun-icon.jpg?s=2048x2048&w=is&k=20&c=U9Rfh6Bac9iJUBIpmfGAiC6uUPb1YCN8vaYXl2WwA7s=",
+            "imageDescription": "The sun shining",
+            "question": "මෙය කුමක්ද?",
+            "options": ["සඳ", "ඉර", "තරු", "වලාකුළු"],
+            "correctAnswer": "ඉර",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q8",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://c02.purpledshub.com/uploads/sites/40/2023/08/JI230816Cosmos220-6d9254f-edited-scaled.jpg?w=1200&webp=1",
+            "imageDescription": "A red flower",
+            "question": "මෙය කුමක්ද?",
+            "options": ["පැළය", "මල", "ගස", "කොළ"],
+            "correctAnswer": "මල",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q9",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Places/Church/Church_001.mov",
+            "signDescription": "Sign language for 'church'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["පල්ලිය", "ගෙදර", "ගොඩනැගිල්ල", "පොත"],
+            "correctAnswer": "පල්ලිය",
+            "difficulty": "easy"
+          },
+          {
+            "id": "g2_q10",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://healthynibblesandbits.com/wp-content/uploads/2018/10/Jasmine-Rice-7.jpg",
+            "imageDescription": "A plate of rice",
+            "question": "මෙය කුමක්ද?",
+            "options": ["බත්", "රොටි", "පිටි", "කරත්ත"],
+            "correctAnswer": "බත්",
+            "difficulty": "easy"
+          }
+        ]
+      },
+      "grade3": {
+        "level": 3,
+        "description": "Colors, numbers, and common actions",
+        "questions": [
+          {
+            "id": "g3_q1",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Solid_red.svg/500px-Solid_red.svg.png",
+            "imageDescription": "Red color swatch",
+            "question": "මෙම වර්ණය කුමක්ද?",
+            "options": ["රතු", "නිල්", "කහ", "කොළ"],
+            "correctAnswer": "රතු",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q2",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Verbs/Run/Run_001.mp4",
+            "signDescription": "Sign language for 'running'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["දුවනවා", "ඇවිදිනවා", "පනිනවා", "නිදාගන්නවා"],
+            "correctAnswer": "දුවනවා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q3",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://thumbs.dreamstime.com/z/kid-s-hand-showing-number-five-sign-fingers-icon-counting-education-childrens-vector-illustration-digit-163181916.jpg?ct=jpeg",
+            "imageDescription": "Number 5",
+            "question": "මෙය කුමන අංකයද?",
+            "options": ["තුන", "හතර", "පහ", "හය"],
+            "correctAnswer": "පහ",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q4",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://as1.ftcdn.net/v2/jpg/02/20/35/26/1000_F_220352677_CptGCw3dbmdixQjaa5A4hx1q9sQxNgLP.jpg",
+            "imageDescription": "Child eating food",
+            "question": "මෙම ළමයා කරන්නේ කුමක්ද?",
+            "options": ["කනවා", "බොනවා", "ඇවිදිනවා", "නිදාගන්නවා"],
+            "correctAnswer": "කනවා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q5",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Greetings/Thank you/Thank you_001.mp4",
+            "signDescription": "Sign language for 'thank you'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["ස්තූතියි", "සුභ උදෑසනක්", "සමාවෙන්න", "අයුබෝවන්"],
+            "correctAnswer": "ස්තූතියි",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q6",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://s3.amazonaws.com/shecodesio-production/uploads/files/000/135/868/original/elephants.jpg?1722107325",
+            "imageDescription": "A large elephant",
+            "question": "අලියා කෙසේද?",
+            "options": ["විශාල", "කුඩා", "කෙටි", "දිග"],
+            "correctAnswer": "විශාල",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q7",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://images.theconversation.com/files/18108/original/rffw88nr-1354076846.jpg?ixlib=rb-4.1.0&q=75&auto=format&w=768&h=512&fit=crop&dpr=1",
+            "imageDescription": "Blue sky",
+            "question": "අහස කුමන වර්ණයෙන් යුක්තද?",
+            "options": ["කහ", "නිල්", "රතු", "කොළ"],
+            "correctAnswer": "නිල්",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q8",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Adjectives/Happy/Happy_001.mp4",
+            "signDescription": "Sign language for 'happy'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["සතුටු", "දුකයි", "කෝපයි", "බයයි"],
+            "correctAnswer": "සතුටු",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q9",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Ten-ball_rack.jpg",
+            "imageDescription": "Ten balls in a row",
+            "question": "මෙහි බෝල කීයද?",
+            "options": ["අට", "නවය", "දහය", "එකොළහ"],
+            "correctAnswer": "දහය",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g3_q10",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://www.teachhub.com/wp-content/uploads/2020/05/Classroom-Management-for-an-Effective-Learning-Environment-1024x683.jpg",
+            "imageDescription": "A classroom with desks",
+            "question": "මෙය කුමක්ද?",
+            "options": ["පන්ති කාමරය", "නිවස", "වෙළඳසැල", "උයන"],
+            "correctAnswer": "පන්ති කාමරය",
+            "difficulty": "medium"
+          }
+        ]
+      },
+      "grade4": {
+        "level": 4,
+        "description": "Animals, family members, and simple sentences",
+        "questions": [
+          {
+            "id": "g4_q1",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://s3.amazonaws.com/shecodesio-production/uploads/files/000/135/868/original/elephants.jpg?1722107325",
+            "imageDescription": "An elephant in nature",
+            "question": "මෙය කුමන සතෙක්ද?",
+            "options": ["අලියා", "ගවයා", "මීයා", "වඳුරා"],
+            "correctAnswer": "අලියා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q2",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/People/Younger bro/Younger bro_001.mp4",
+            "signDescription": "Sign language for 'younger brother'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["මල්ලි", "අක්කා", "අම්මා", "තාත්තා"],
+            "correctAnswer": "මල්ලි",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q3",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://www.learningpotential.gov.au/sites/default/files/styles/large/public/2019-07/PS094-Learning-to-read-4-fluency.jpg?itok=RJ1mBh_j",
+            "imageDescription": "A boy reading a book",
+            "question": "පිරිමි ළමයා කරන්නේ කුමක්ද?",
+            "options": ["කියවනවා", "ලියනවා", "දුවනවා", "කනවා"],
+            "correctAnswer": "කියවනවා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q4",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://images.pexels.com/photos/240526/pexels-photo-240526.jpeg",
+            "imageDescription": "A tall coconut tree",
+            "question": "මෙය කුමන ගසද?",
+            "options": ["පොල් ගස", "කෙසෙල් ගස", "අඹ ගස", "නා ගස"],
+            "correctAnswer": "පොල් ගස",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q5",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/People/Grand mother/Grand mother_001.mov",
+            "signDescription": "Sign language for 'grandmother'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["යාළුවා", "ගුරුවරයා", "අම්මා", "ආච්චි"],
+            "correctAnswer": "ආච්චි",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q6",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://cdn.britannica.com/65/123865-004-7C2224FD/Rain.jpg?c=crop&h=60&w=90",
+            "imageDescription": "Rain falling from sky",
+            "question": "මෙම පින්තූරයේ දක්වන්නේ කුමක්ද?",
+            "options": ["වැස්ස", "හිම", "හිරු", "සුළඟ"],
+            "correctAnswer": "වැස්ස",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q7",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://www.niabizoo.com/wp-content/uploads/2018/09/ClownFish.jpg",
+            "imageDescription": "A fish swimming",
+            "question": "මෙය කුමක්ද?",
+            "options": ["මාළුවා", "කුරුල්ලා", "මීයා", "සර්පයා"],
+            "correctAnswer": "මාළුවා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q8",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/People/Doctor/Doctor_001.mp4",
+            "signDescription": "Sign language for 'doctor'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["ගුරුවරයා", "සිසුවා", "රියදුරු", "වෛද්‍යවරයා"],
+            "correctAnswer": "වෛද්‍යවරයා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q9",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://steedcycles.in/cdn/shop/files/buy-bicycle-online-tcs-glossy-stery-blue-with-white-mid-view.webp?v=1725361828",
+            "imageDescription": "A blue bicycle",
+            "question": "මෙය කුමක්ද?",
+            "options": ["බයිසිකලය", "මෝටර් රථය", "බස් රථය", "දුම්රිය"],
+            "correctAnswer": "බයිසිකලය",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g4_q10",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Verbs/Watch/Watch_001.mp4",
+            "signDescription": "Sign language for 'watch'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["ඔරලෝසුව", "නගරය", "වෙළඳපොළ", "පාසල"],
+            "correctAnswer": "ඔරලෝසුව",
+            "difficulty": "medium"
+          }
+        ]
+      },
+      "grade5": {
+        "level": 5,
+        "description": "Complex nouns, adjectives, and daily activities",
+        "questions": [
+          {
+            "id": "g5_q1",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://thumbs.dreamstime.com/z/hospital-room-9257302.jpg?ct=jpeg",
+            "imageDescription": "A hospital building",
+            "question": "මෙය කුමන ගොඩනැගිල්ලද?",
+            "options": ["රෝහල", "පාසල", "දේවස්ථානය", "බැංකුව"],
+            "correctAnswer": "රෝහල",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q2",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Adjectives/Beautiful/Beautiful_001.mp4",
+            "signDescription": "Sign language for 'beautiful'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["ලස්සන", "කැත", "විශාල", "කුඩා"],
+            "correctAnswer": "ලස්සන",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q3",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://thumbs.dreamstime.com/z/farmer-cultivating-16142345.jpg?ct=jpeg",
+            "imageDescription": "A farmer working in paddy field",
+            "question": "මෙම පුද්ගලයාගේ රැකියාව කුමක්ද?",
+            "options": ["ගොවියා", "ගුරුවරයා", "වෛද්‍යවරයා", "ඉංජිනේරු"],
+            "correctAnswer": "ගොවියා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q4",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Places/Temple/Temple_001.mov",
+            "signDescription": "Sign language for 'temple'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["පන්සල", "කෝවිල", "පල්ලිය", "දේවාලය"],
+            "correctAnswer": "පන්සල",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q5",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Days/Yesterday/Yesterday_001.MOV",
+            "signDescription": "Sign language for 'yesterday'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["ඊයේ", "අද", "හෙට", "පෙරේදා"],
+            "correctAnswer": "ඊයේ",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q6",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://plus.unsplash.com/premium_photo-1677567996070-68fa4181775a?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "imageDescription": "A library with many books",
+            "question": "මෙය කුමක්ද?",
+            "options": ["පුස්තකාලය", "පන්ති කාමරය", "විශ්‍රාම කාමරය", "කාර්යාලය"],
+            "correctAnswer": "පුස්තකාලය",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q7",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://www.njlifestylemag.com/content/images/size/w1304/2023/12/AdobeStock_267334945.jpeg",
+            "imageDescription": "Woman cooking in kitchen",
+            "question": "මෙම කාන්තාව කරන්නේ කුමක්ද?",
+            "options": ["උයනවා", "සෝදනවා", "කියවනවා", "ලියනවා"],
+            "correctAnswer": "උයනවා",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q8",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Verbs/Help/Help_001.mp4",
+            "signDescription": "Sign language for 'help'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["උදව්", "ස්තූතියි", "සමාවෙන්න", "කරුණාකර"],
+            "correctAnswer": "උදව්",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q9",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://www.investopedia.com/thmb/-nRotIixqbFaPj0c4vuKGN3KJTc=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-2216915449-dff741fff8ea43f1af6ff82996ccda6c.jpg",
+            "imageDescription": "A busy market scene",
+            "question": "මෙය කුමක්ද?",
+            "options": ["වෙළඳපොළ", "පාර්කය", "රේල් ස්ථානය", "බස් නැවතුම"],
+            "correctAnswer": "වෙළඳපොළ",
+            "difficulty": "medium"
+          },
+          {
+            "id": "g5_q10",
+            "type": "image_to_word",
+            "visualType": "image",
+            "imageUrl": "https://images.pexels.com/photos/12650103/pexels-photo-12650103.jpeg",
+            "imageDescription": "Sri Lankan national flag",
+            "question": "මෙය කුමක්ද?",
+            "options": ["ජාතික කොඩිය", "පාසල් කොඩිය", "රජයේ සංකේතය", "පළාත් කොඩිය"],
+            "correctAnswer": "ජාතික කොඩිය",
+            "difficulty": "hard"
+          },
+          {
+            "id": "g5_q11",
+            "type": "sign_to_word",
+            "visualType": "video",
+            "videoUrl": "/Dataset - Original-20251215T123918Z-3-001/Dataset - Original/Nouns/Computer/Computer_001.MOV",
+            "signDescription": "Sign language for 'computer'",
+            "question": "මෙම සංඥාව අදහස් කරන්නේ?",
+            "options": ["පරිගණකය", "දුරකථනය", "රූපවාහිනිය", "ගුවන් විදුලිය"],
+            "correctAnswer": "පරිගණකය",
+            "difficulty": "hard"
+          }
+        ]
+      }
+    }
+  }
+}

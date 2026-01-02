@@ -1,0 +1,36 @@
+{
+  "name": "game-app",
+  "version": "1.0.0",
+  "description": "AI Tutor for Sign Language Learning - Full Stack Application",
+  "main": "Backend/app.js",
+  "type": "module",
+  "scripts": {
+    "dev:all": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run python\"",
+    "dev:windows": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run python:windows\"",
+    "backend": "cd Backend && npm start",
+    "frontend": "cd frontend && npm run dev",
+    "python": "cd Backend && \"../venv/Scripts/python.exe\" app.py",
+    "python:windows": "cd Backend && \"../venv/Scripts/python.exe\" app.py",
+    "install:all": "npm install && cd Backend && npm install && cd ../frontend && npm install",
+    "install:deps": "npm install concurrently",
+    "start": "npm run dev:all"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "Backend",
+    "frontend"
+  ],
+  "keywords": [
+    "sign-language",
+    "ai-tutor",
+    "learning-game",
+    "react",
+    "express",
+    "python",
+    "flask"
+  ],
+  "author": "Game Dev Team",
+  "license": "ISC"
+}
