@@ -64,3 +64,4 @@
 <!-- [2025-12-27 15:22:42] Progress: Updated README examples -->
 <!-- [2025-12-30 02:12:04] Progress: Enhanced preprocessing pipeline -->
 <!-- [2026-01-01 15:05:25] Progress: Added dataset utilities -->
+<!-- [2026-01-03 20:45:47] Progress: Improved landmark detection -->
