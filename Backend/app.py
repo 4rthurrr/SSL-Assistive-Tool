@@ -45,8 +45,8 @@ CORS(app, resources={
 # ========================
 # PATHS
 # ========================
-MODEL_DIR = r"D:\Game_V2\Game_V2\\Backend\SSL_model"
-VIDEO_DIR = r"D:\Game_V2\Game_V2\Backend\public\Dataset - Original-20251215T123918Z-3-001"
+MODEL_DIR = r"D:\Downloads-D\Game_V2\Game_V2\\Backend\SSL_model"
+VIDEO_DIR = r"D:\Downloads-D\Game_V2\Game_V2\Backend\public\Dataset - Original-20251215T123918Z-3-001"
 
 # ========================
 # GLOBAL STORAGE
@@ -531,4 +531,4 @@ if __name__ == "__main__":
     if mongodb_manager and hasattr(mongodb_manager, 'disconnect'):
         atexit.register(mongodb_manager.disconnect)
     
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=False)
