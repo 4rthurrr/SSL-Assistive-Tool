@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   Brain, TrendingUp, Target, Award, Clock, Zap, Star, 
   BarChart, PieChart, LineChart, Calendar, Users,
-  ChevronRight, RefreshCw, Download, Share2, Settings
+  ChevronRight, RefreshCw, Download, Share2, Settings,
+  Lock, Unlock, CheckCircle, AlertCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +16,77 @@ const AIAnalyticsDashboard = () => {
   const [timeRange, setTimeRange] = useState('weekly');
   const [selectedView, setSelectedView] = useState('overview');
   const [debugInfo, setDebugInfo] = useState(null);
+  
+  // Level configuration - defines the progression order and requirements
+  const levelConfig = {
+    basic: {
+      next: 'easy',
+      unlockThreshold: 80, // 80% accuracy to unlock next level
+      displayName: 'Basic',
+      color: 'from-emerald-500 to-green-600',
+      description: 'Learn basic signs and greetings'
+    },
+    easy: {
+      next: 'medium',
+      unlockThreshold: 80,
+      displayName: 'Easy',
+      color: 'from-blue-500 to-indigo-600',
+      description: 'Simple phrases and questions'
+    },
+    medium: {
+      next: 'hard',
+      unlockThreshold: 80,
+      displayName: 'Medium',
+      color: 'from-purple-500 to-pink-600',
+      description: 'Conversational sentences'
+    },
+    hard: {
+      next: null, // Last level
+      unlockThreshold: 80,
+      displayName: 'Hard',
+      color: 'from-red-500 to-orange-600',
+      description: 'Complex conversations'
+    }
+  };
+
+  const levelOrder = ['basic', 'easy', 'medium', 'hard'];
+
+  // Calculate unlocked levels and current level
+  const calculateLevelStatus = (levelProgress) => {
+    if (!levelProgress) return { unlockedLevels: ['basic'], currentLevel: 'basic' };
+    
+    const unlockedLevels = [];
+    let currentLevel = 'basic';
+    
+    // Always start with basic level unlocked
+    unlockedLevels.push('basic');
+    
+    // Check each level in order
+    for (let i = 0; i < levelOrder.length - 1; i++) {
+      const currentLevelKey = levelOrder[i];
+      const nextLevelKey = levelOrder[i + 1];
+      
+      const currentLevelProgress = levelProgress[currentLevelKey];
+      
+      // If we have progress data for this level
+      if (currentLevelProgress) {
+        // Check if user has unlocked this level (it should be in unlockedLevels already)
+        if (unlockedLevels.includes(currentLevelKey)) {
+          // Update current level to this one
+          currentLevel = currentLevelKey;
+          
+          // Check if they qualify for next level
+          if (currentLevelProgress.accuracy >= levelConfig[currentLevelKey].unlockThreshold) {
+            unlockedLevels.push(nextLevelKey);
+            // Also update current level to the unlocked one
+            currentLevel = nextLevelKey;
+          }
+        }
+      }
+    }
+    
+    return { unlockedLevels, currentLevel };
+  };
 
   useEffect(() => {
     fetchAnalytics();
@@ -24,37 +96,30 @@ const AIAnalyticsDashboard = () => {
     try {
       setLoading(true);
       
-      // Get user ID from localStorage - check multiple possible sources
+      // Get user ID from localStorage
       let userId = null;
       
-      // Method 1: Direct user ID stored during gameplay
+      // Check various storage locations for user ID
       const directUserId = localStorage.getItem('gameUserId');
       if (directUserId) {
         userId = directUserId;
-        console.log('Using direct user ID from localStorage:', userId);
-      } 
-      // Method 2: Check for game session user ID
-      else if (localStorage.getItem('gameUser')) {
+      } else if (localStorage.getItem('gameUser')) {
         try {
           const gameUser = JSON.parse(localStorage.getItem('gameUser'));
-          // Try different possible ID fields
           userId = gameUser.userId || gameUser.id || gameUser._id;
-          console.log('Using user ID from gameUser object:', userId);
         } catch (e) {
           console.error('Error parsing gameUser:', e);
         }
       }
       
-      // Method 3: Try to extract from recent game sessions
+      // Try to get user from recent game sessions
       if (!userId) {
-        // Check if we have any recent game data with user ID
         const recentGames = localStorage.getItem('recentGameSessions');
         if (recentGames) {
           try {
             const sessions = JSON.parse(recentGames);
             if (sessions.length > 0) {
               userId = sessions[sessions.length - 1].userId;
-              console.log('Using user ID from recent game sessions:', userId);
             }
           } catch (e) {
             console.error('Error parsing recent game sessions:', e);
@@ -62,37 +127,15 @@ const AIAnalyticsDashboard = () => {
         }
       }
       
-      // Method 4: Try default user ID pattern (from your logs)
+      // Try debug endpoint for available users
       if (!userId) {
-        // Check if any localStorage keys match the user_ pattern
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key.startsWith('user_') || key.includes('userId')) {
-            const value = localStorage.getItem(key);
-            if (value && value.startsWith('user_')) {
-              userId = value;
-              console.log('Found user ID pattern in localStorage:', key, userId);
-              break;
-            }
-          }
-        }
-      }
-      
-      // If still no user ID, show debug info
-      if (!userId) {
-        console.log('No user ID found, checking available users from backend...');
-        
-        // Try to get list of users with data from backend
         try {
           const debugResponse = await fetch(`${API_URL}/ai/debug-users`);
           if (debugResponse.ok) {
             const debugData = await debugResponse.json();
             setDebugInfo(debugData);
-            
-            // Use the first available user for demo
             if (debugData.users_with_data && debugData.users_with_data.length > 0) {
               userId = debugData.users_with_data[0];
-              console.log('Using first available user from backend:', userId);
             }
           }
         } catch (debugError) {
@@ -100,22 +143,22 @@ const AIAnalyticsDashboard = () => {
         }
       }
       
-      // If we still don't have a user ID, use a fallback
+      // Fallback to default
       if (!userId) {
         userId = 'default';
-        console.log('Using fallback user ID:', userId);
       }
       
-      console.log('Final user ID for analytics:', userId);
-      
-      // Fetch analytics with the determined user ID
+      // Fetch analytics
       const response = await fetch(`${API_URL}/ai/progress-report`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ user_id: userId })
+        body: JSON.stringify({ 
+          user_id: userId,
+          time_range: timeRange
+        })
       });
 
       if (!response.ok) {
@@ -126,11 +169,23 @@ const AIAnalyticsDashboard = () => {
       console.log('Analytics API response:', data);
       
       if (data.success) {
-        setAnalytics(data.report);
+        // Calculate unlocked levels and current level
+        const { unlockedLevels, currentLevel } = calculateLevelStatus(data.report.level_progress);
+        
+        // Enhance the report with level status
+        const enhancedReport = {
+          ...data.report,
+          level_status: {
+            unlockedLevels,
+            currentLevel,
+            nextUnlockableLevel: levelConfig[currentLevel]?.next || null,
+            isNextLevelUnlockable: data.report.level_progress?.[currentLevel]?.accuracy >= 80
+          }
+        };
+        
+        setAnalytics(enhancedReport);
       } else {
-        // Store the error message to help debugging
         setAnalytics(null);
-        console.log('API returned success: false', data.message || data.error);
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -140,7 +195,41 @@ const AIAnalyticsDashboard = () => {
     }
   };
 
-  // Debug component to show available users
+  // Handle level selection for practice
+  const handlePracticeLevel = (level) => {
+    // Store selected level in localStorage for game to use
+    localStorage.setItem('selectedLevel', level);
+    localStorage.setItem('selectedLevelName', levelConfig[level]?.displayName || level);
+    navigate('/game/puzzle');
+  };
+
+  // Unlock next level function
+  const unlockNextLevel = async () => {
+    if (!analytics?.level_status?.nextUnlockableLevel) return;
+    
+    try {
+      const userId = localStorage.getItem('gameUserId') || 'default';
+      const nextLevel = analytics.level_status.nextUnlockableLevel;
+      
+      const response = await fetch(`${API_URL}/ai/unlock-level`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          user_id: userId,
+          level: nextLevel
+        })
+      });
+      
+      if (response.ok) {
+        // Refresh analytics to show updated status
+        fetchAnalytics();
+      }
+    } catch (error) {
+      console.error('Error unlocking level:', error);
+    }
+  };
+
+  // Debug component
   const DebugPanel = () => {
     if (!debugInfo) return null;
     
@@ -158,11 +247,6 @@ const AIAnalyticsDashboard = () => {
                 <li key={idx}>{userId}</li>
               ))}
             </ul>
-            {debugInfo.users_with_data.length > 5 && (
-              <p className="text-xs text-gray-400 mt-1">
-                ... and {debugInfo.users_with_data.length - 5} more
-              </p>
-            )}
           </div>
         )}
         <button
@@ -194,9 +278,7 @@ const AIAnalyticsDashboard = () => {
           <Brain className="w-20 h-20 text-gray-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">No Analytics Data</h2>
           <p className="text-gray-400 mb-4">
-            {debugInfo && debugInfo.total_users > 0 
-              ? `Found ${debugInfo.total_users} user(s) with data, but couldn't match your session.`
-              : "Play some games to generate AI insights!"}
+            Play some games to generate AI insights!
           </p>
           
           {debugInfo && <DebugPanel />}
@@ -214,31 +296,14 @@ const AIAnalyticsDashboard = () => {
             >
               Retry Loading Analytics
             </button>
-            <button
-              onClick={() => {
-                // Clear localStorage and try again
-                localStorage.removeItem('gameUserId');
-                localStorage.removeItem('gameUser');
-                fetchAnalytics();
-              }}
-              className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-3 rounded-lg text-sm"
-            >
-              Clear User Cache & Retry
-            </button>
-          </div>
-          
-          <div className="mt-8 p-4 bg-gray-800/50 rounded-lg text-left">
-            <p className="text-sm text-gray-400 mb-2">Troubleshooting:</p>
-            <ul className="text-xs text-gray-500 list-disc pl-5">
-              <li>Make sure you've played at least 1 game</li>
-              <li>Check if backend is running on port 5001</li>
-              <li>Try playing a game first, then check analytics</li>
-            </ul>
           </div>
         </div>
       </div>
     );
   }
+
+  const { unlockedLevels, currentLevel, nextUnlockableLevel, isNextLevelUnlockable } = analytics.level_status || {};
+  const currentLevelData = analytics.level_progress?.[currentLevel] || {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
@@ -273,23 +338,29 @@ const AIAnalyticsDashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Debug info banner */}
-        {debugInfo && (
-          <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-700/50 rounded-xl">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-yellow-300 font-medium">
-                  Using demo data from user: <code className="bg-black/30 px-2 py-1 rounded">{debugInfo.users_with_data?.[0] || 'unknown'}</code>
-                </p>
-                <p className="text-yellow-200/70 text-sm mt-1">
-                  To see your own data, make sure to use the same user ID in both game and analytics.
-                </p>
+        {/* Level Unlock Banner */}
+        {isNextLevelUnlockable && nextUnlockableLevel && (
+          <div className="mb-6 p-6 bg-gradient-to-r from-green-900/40 to-emerald-900/40 rounded-2xl border-2 border-green-500/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <Unlock className="w-8 h-8 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">New Level Unlocked! 🎉</h3>
+                  <p className="text-green-300">
+                    You've achieved {currentLevelData.accuracy?.toFixed(1)}% in {levelConfig[currentLevel]?.displayName || currentLevel}!
+                  </p>
+                  <p className="text-gray-300 text-sm mt-1">
+                    You can now access the <span className="font-bold">{levelConfig[nextUnlockableLevel]?.displayName || nextUnlockableLevel}</span> level.
+                  </p>
+                </div>
               </div>
               <button
-                onClick={() => setDebugInfo(null)}
-                className="text-yellow-300 hover:text-yellow-200"
+                onClick={unlockNextLevel}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg font-bold transition"
               >
-                ×
+                Unlock Now
               </button>
             </div>
           </div>
@@ -318,7 +389,9 @@ const AIAnalyticsDashboard = () => {
                 <Target className="w-6 h-6 text-green-400" />
               </div>
               <div>
-                <div className="text-3xl font-bold">{analytics.summary?.overall_accuracy || 0}%</div>
+                <div className="text-3xl font-bold">
+                  {analytics.summary?.overall_accuracy ? analytics.summary.overall_accuracy.toFixed(1) : 0}%
+                </div>
                 <div className="text-gray-400">Accuracy Rate</div>
               </div>
             </div>
@@ -333,7 +406,9 @@ const AIAnalyticsDashboard = () => {
                 <Clock className="w-6 h-6 text-purple-400" />
               </div>
               <div>
-                <div className="text-3xl font-bold">{analytics.summary?.total_playtime_minutes || 0}</div>
+                <div className="text-3xl font-bold">
+                  {analytics.summary?.total_playtime_minutes || 0}
+                </div>
                 <div className="text-gray-400">Minutes Played</div>
               </div>
             </div>
@@ -346,7 +421,9 @@ const AIAnalyticsDashboard = () => {
                 <Zap className="w-6 h-6 text-yellow-400" />
               </div>
               <div>
-                <div className="text-3xl font-bold">{analytics.summary?.current_streak || 0}</div>
+                <div className="text-3xl font-bold">
+                  {analytics.summary?.current_streak || 0}
+                </div>
                 <div className="text-gray-400">Day Streak</div>
               </div>
             </div>
@@ -359,34 +436,146 @@ const AIAnalyticsDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Level Progress */}
+            {/* Level Progress with Unlock Status */}
             <div className="bg-gray-800/50 rounded-2xl p-6">
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" /> Level Progress
-              </h2>
-              <div className="space-y-4">
-                {Object.entries(analytics.level_progress || {}).map(([level, data]) => (
-                  <div key={level} className="flex items-center gap-4">
-                    <div className="w-24 capitalize font-medium">{level}</div>
-                    <div className="flex-1">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>{(data.accuracy || 0).toFixed(1)}% Complete</span>
-                        <span className={data.unlocked ? 'text-green-400' : 'text-red-400'}>
-                          {data.unlocked ? 'Unlocked' : 'Locked'}
-                        </span>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" /> Level Progress
+                </h2>
+                <div className="text-sm text-gray-400">
+                  Unlock next level at 80% accuracy
+                </div>
+              </div>
+              
+              <div className="space-y-6">
+                {levelOrder.map((level) => {
+                  const levelData = analytics.level_progress?.[level] || {};
+                  const isUnlocked = unlockedLevels?.includes(level);
+                  const isCurrent = currentLevel === level;
+                  const config = levelConfig[level];
+                  
+                  return (
+                    <div 
+                      key={level}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        isCurrent 
+                          ? 'border-blue-500 bg-blue-500/10' 
+                          : isUnlocked 
+                            ? 'border-green-500/30 bg-green-500/5' 
+                            : 'border-gray-700 bg-gray-800/30 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            isCurrent 
+                              ? 'bg-blue-500/20' 
+                              : isUnlocked 
+                                ? 'bg-green-500/20' 
+                                : 'bg-gray-700'
+                          }`}>
+                            {isCurrent ? (
+                              <Zap className="w-5 h-5 text-blue-400" />
+                            ) : isUnlocked ? (
+                              <CheckCircle className="w-5 h-5 text-green-400" />
+                            ) : (
+                              <Lock className="w-5 h-5 text-gray-500" />
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="font-bold capitalize">{config?.displayName || level}</h3>
+                            <p className="text-sm text-gray-400">{config?.description}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className={`text-xl font-bold ${
+                            isCurrent 
+                              ? 'text-blue-400' 
+                              : isUnlocked 
+                                ? 'text-green-400' 
+                                : 'text-gray-500'
+                          }`}>
+                            {levelData.accuracy ? `${levelData.accuracy.toFixed(1)}%` : '0%'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {levelData.correct_attempts || 0}/{levelData.total_attempts || 0} correct
+                          </div>
+                        </div>
                       </div>
-                      <div className="w-full bg-gray-700 rounded-full h-3">
-                        <div 
-                          className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                          style={{ width: `${data.accuracy || 0}%` }}
-                        />
+                      
+                      <div className="mb-2">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Progress to next level</span>
+                          <span>
+                            {isUnlocked && levelData.accuracy >= 80 
+                              ? 'Ready to unlock next!' 
+                              : `${levelData.accuracy || 0}/80%`}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-500 ${
+                              levelData.accuracy >= 80 
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+                                : 'bg-gradient-to-r from-blue-500 to-purple-500'
+                            }`}
+                            style={{ width: `${Math.min(levelData.accuracy || 0, 100)}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {data.correct_attempts || 0}/{data.total_attempts || 0} correct attempts
+                      
+                      <div className="flex justify-between items-center mt-4">
+                        <div className="text-sm text-gray-400">
+                          {isCurrent 
+                            ? '🎯 Currently Active Level' 
+                            : isUnlocked 
+                              ? '✅ Level Unlocked' 
+                              : '🔒 Locked - Complete previous level'}
+                        </div>
+                        
+                        {isUnlocked && (
+                          <button
+                            onClick={() => handlePracticeLevel(level)}
+                            className={`px-4 py-2 rounded-lg font-medium text-sm ${
+                              isCurrent 
+                                ? 'bg-blue-600 hover:bg-blue-700' 
+                                : 'bg-gray-700 hover:bg-gray-600'
+                            }`}
+                          >
+                            {isCurrent ? 'Continue Practice' : 'Practice Level'}
+                          </button>
+                        )}
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+              
+              {/* Progress Summary */}
+              <div className="mt-6 p-4 bg-gray-900/50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Current Active Level</p>
+                    <p className="text-lg font-bold capitalize">
+                      {levelConfig[currentLevel]?.displayName || currentLevel}
+                    </p>
                   </div>
-                ))}
+                  <div>
+                    <p className="text-sm text-gray-400">Next Level</p>
+                    <p className="text-lg font-bold capitalize">
+                      {nextUnlockableLevel 
+                        ? (levelConfig[nextUnlockableLevel]?.displayName || nextUnlockableLevel)
+                        : 'Maximum Level Reached'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Progress</p>
+                    <p className="text-lg font-bold">
+                      {currentLevelData.accuracy ? `${currentLevelData.accuracy.toFixed(1)}%` : '0%'}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -398,25 +587,27 @@ const AIAnalyticsDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <div className="text-sm text-gray-400 mb-1">Next Level Performance</div>
+                    <div className="text-sm text-gray-400 mb-1">Time to Unlock Next Level</div>
                     <div className="text-3xl font-bold text-green-400">
-                      {analytics.predictions?.next_level_score || 0}%
+                      {isNextLevelUnlockable 
+                        ? 'Ready Now!'
+                        : analytics.predictions?.time_to_unlock || '2-3 sessions'}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400 mb-1">Confidence</div>
+                    <div className="text-sm text-gray-400 mb-1">Confidence Score</div>
                     <div className="text-2xl font-bold text-blue-400">
-                      {analytics.predictions?.confidence || 0}%
+                      {analytics.predictions?.confidence || 85}%
                     </div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400 mb-2">Time to Master Current Level</div>
+                  <div className="text-sm text-gray-400 mb-2">Recommended Focus</div>
                   <div className="text-lg font-bold text-yellow-400">
-                    {analytics.predictions?.time_to_master || "Keep practicing!"}
+                    {analytics.recommendations?.[0]?.word || 'Practice consistently'}
                   </div>
                   <div className="text-sm text-gray-400 mt-4">
-                    Based on your current learning pace and consistency
+                    Based on your learning patterns and accuracy trends
                   </div>
                 </div>
               </div>
@@ -425,54 +616,135 @@ const AIAnalyticsDashboard = () => {
 
           {/* Right Column */}
           <div className="space-y-8">
-            {/* Current Level */}
-            <div className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 rounded-2xl p-6">
-              <h2 className="text-xl font-bold mb-4">Current Level</h2>
-              <div className="text-center">
-                <div className="text-5xl font-bold mb-2">
-                  {analytics.summary?.current_level?.toUpperCase() || 'BASIC'}
+            {/* Current Level Card */}
+            <div className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 rounded-2xl p-6 border-2 border-blue-500/50">
+              <h2 className="text-xl font-bold mb-4">Current Active Level</h2>
+              <div className="text-center mb-4">
+                <div className="inline-block p-6 bg-blue-500/20 rounded-full mb-3">
+                  <Zap className="w-16 h-16 text-blue-400" />
                 </div>
-                <div className="text-gray-300">Optimal difficulty for learning</div>
-                {analytics.next_level_unlocked && (
-                  <div className="mt-4 p-3 bg-green-500/20 rounded-lg border border-green-500/30">
-                    <div className="text-green-400 font-bold">🎉 New Level Unlocked!</div>
-                    <div className="text-sm">You can now try {analytics.next_level_unlocked} level</div>
+                <div className="text-5xl font-bold mb-2 uppercase">
+                  {levelConfig[currentLevel]?.displayName || currentLevel}
+                </div>
+                <div className="text-gray-300 mb-4">{levelConfig[currentLevel]?.description}</div>
+                
+                {/* Progress Circle */}
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="#374151"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="#3B82F6"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${(currentLevelData.accuracy || 0) * 3.51} 352`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold">
+                        {currentLevelData.accuracy ? `${currentLevelData.accuracy.toFixed(0)}%` : '0%'}
+                      </div>
+                      <div className="text-xs text-gray-400">Progress</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Next Level Info */}
+                {nextUnlockableLevel && (
+                  <div className={`p-4 rounded-lg border mt-4 ${
+                    isNextLevelUnlockable 
+                      ? 'border-green-500/50 bg-green-500/10' 
+                      : 'border-gray-700 bg-gray-800/30'
+                  }`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-gray-400">Next Level:</span>
+                      <span className="font-bold capitalize">
+                        {levelConfig[nextUnlockableLevel]?.displayName || nextUnlockableLevel}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Status:</span>
+                      <span className={`font-bold ${isNextLevelUnlockable ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {isNextLevelUnlockable ? 'Ready to Unlock' : 'In Progress'}
+                      </span>
+                    </div>
+                    {!isNextLevelUnlockable && currentLevelData.accuracy && (
+                      <div className="mt-2 text-sm text-gray-400">
+                        Need {80 - Math.floor(currentLevelData.accuracy)}% more to unlock
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Achievements */}
-            <div className="bg-gradient-to-br from-yellow-900/20 to-amber-900/20 rounded-2xl p-6">
+            {/* Level Access Panel */}
+            <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-2xl p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Star className="w-5 h-5" /> Achievements
+                <Unlock className="w-5 h-5" /> Level Access
               </h2>
               <div className="space-y-3">
-                {analytics.achievements?.length > 0 ? (
-                  analytics.achievements.map((achievement, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-3 bg-black/30 rounded-lg">
-                      <div className="text-2xl">{achievement.icon}</div>
-                      <div>
-                        <div className="font-bold">{achievement.name}</div>
-                        <div className="text-xs text-gray-400">Earned recently</div>
+                {levelOrder.map((level) => {
+                  const isUnlocked = unlockedLevels?.includes(level);
+                  const config = levelConfig[level];
+                  
+                  return (
+                    <div 
+                      key={level}
+                      className={`p-3 rounded-lg flex items-center justify-between ${
+                        isUnlocked ? 'bg-green-500/10 border border-green-500/30' : 'bg-gray-800/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          isUnlocked ? 'bg-green-500/20' : 'bg-gray-700'
+                        }`}>
+                          {isUnlocked ? (
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                          ) : (
+                            <Lock className="w-4 h-4 text-gray-500" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-bold capitalize">{config?.displayName || level}</div>
+                          <div className="text-xs text-gray-400">
+                            {isUnlocked ? 'Available to play' : 'Locked'}
+                          </div>
+                        </div>
                       </div>
+                      
+                      {isUnlocked && (
+                        <button
+                          onClick={() => handlePracticeLevel(level)}
+                          className="px-3 py-1 text-sm bg-purple-600 hover:bg-purple-700 rounded"
+                        >
+                          Play
+                        </button>
+                      )}
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center p-4 text-gray-500">
-                    Play more games to earn achievements!
-                  </div>
-                )}
+                  );
+                })}
               </div>
             </div>
 
             {/* Quick Insights */}
-            <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-yellow-900/20 to-amber-900/20 rounded-2xl p-6">
               <h2 className="text-xl font-bold mb-4">Quick Insights</h2>
               <div className="space-y-3">
                 {analytics.insights?.slice(0, 3).map((insight, idx) => (
                   <div key={idx} className="flex items-start gap-2 p-3 bg-black/30 rounded-lg">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
                     <div className="text-sm">{insight}</div>
                   </div>
                 ))}
@@ -486,102 +758,41 @@ const AIAnalyticsDashboard = () => {
           </div>
         </div>
 
-        {/* Skill Gaps & Recommendations */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          {/* Skill Gaps */}
-          <div className="bg-gradient-to-br from-red-900/20 to-orange-900/20 rounded-2xl p-6 border border-red-800/30">
-            <h2 className="text-xl font-bold mb-4">Areas to Improve</h2>
-            <div className="space-y-3">
-              {analytics.skill_gaps?.length > 0 ? (
-                analytics.skill_gaps.slice(0, 3).map((gap, idx) => (
-                  <div key={idx} className="p-3 bg-black/30 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="font-bold text-white">{gap.word}</div>
-                      <div className="text-red-400 font-bold">{gap.accuracy}%</div>
-                    </div>
-                    <div className="text-sm text-gray-400 mb-2">{gap.english}</div>
-                    <div className="text-xs text-gray-300">{gap.suggestions?.[0] || 'Practice more'}</div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center p-4 text-gray-500">
-                  No skill gaps detected - great job!
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Recommendations */}
-          <div className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 rounded-2xl p-6 border border-green-800/30">
-            <h2 className="text-xl font-bold mb-4">Recommended Next Steps</h2>
-            <div className="space-y-3">
-              {analytics.recommendations?.length > 0 ? (
-                analytics.recommendations.slice(0, 3).map((rec, idx) => (
-                  <div key={idx} className="p-3 bg-black/30 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="font-bold text-white">{rec.word}</div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-green-400 font-bold">{rec.accuracy}%</div>
-                        <div className="text-xs bg-blue-500/30 px-2 py-1 rounded">P{rec.priority}</div>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-400 mb-2">{rec.reason}</div>
-                    <button 
-                      onClick={() => navigate('/game/puzzle')}
-                      className="text-xs text-blue-300 hover:text-blue-200 flex items-center gap-1"
-                    >
-                      Practice this word <ChevronRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center p-4 text-gray-500">
-                  Complete more games for personalized recommendations
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Personalized Learning Plan */}
+        {/* Level Achievement Summary */}
         <div className="mt-8 bg-gradient-to-br from-blue-900/20 to-purple-900/20 rounded-2xl p-6 border border-blue-800/30">
-          <h2 className="text-xl font-bold mb-6">Personalized Learning Plan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-blue-400" />
-                </div>
-                <div>
-                  <div className="font-bold">Daily Goal</div>
-                  <div className="text-sm text-gray-400">Practice 3 new words</div>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-green-400" />
-                </div>
-                <div>
-                  <div className="font-bold">Weekly Target</div>
-                  <div className="text-sm text-gray-400">Master 5 new signs</div>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-purple-400" />
-                </div>
-                <div>
-                  <div className="font-bold">Focus Area</div>
-                  <div className="text-sm text-gray-400 capitalize">
-                    {analytics.summary?.current_level || 'basic'} level mastery
+          <h2 className="text-xl font-bold mb-6">Level Achievement Summary</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {levelOrder.map((level) => {
+              const levelData = analytics.level_progress?.[level] || {};
+              const isUnlocked = unlockedLevels?.includes(level);
+              
+              return (
+                <div key={level} className="text-center p-4 bg-black/20 rounded-xl">
+                  <div className="text-2xl font-bold mb-2 capitalize">
+                    {levelConfig[level]?.displayName || level}
+                  </div>
+                  <div className={`text-3xl font-bold mb-1 ${
+                    levelData.accuracy >= 80 ? 'text-green-400' : 'text-blue-400'
+                  }`}>
+                    {levelData.accuracy ? `${levelData.accuracy.toFixed(1)}%` : '0%'}
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">
+                    {levelData.correct_attempts || 0} correct attempts
+                  </div>
+                  <div className={`text-sm font-medium px-3 py-1 rounded-full inline-block ${
+                    isUnlocked
+                      ? levelData.accuracy >= 80
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-blue-500/20 text-blue-400'
+                      : 'bg-gray-700 text-gray-400'
+                  }`}>
+                    {isUnlocked
+                      ? (levelData.accuracy >= 80 ? '✅ Level Mastered' : '🔓 Level Unlocked')
+                      : '🔒 Locked'}
                   </div>
                 </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import {
   Play, Trophy, Heart, Lightbulb, RefreshCw, Home, 
   Sparkles, Target, Award, ChevronRight, TrendingUp,
   Volume2, VolumeX, Eye, HelpCircle, Star, Music,
-  Check, X, SkipForward
+  Check, X, SkipForward, Globe, Languages
 } from 'lucide-react';
 
 const API_URL = 'http://localhost:5001/api';
@@ -22,6 +22,7 @@ const SinhalaWordPuzzleGame = () => {
   const [totalRounds] = useState(10);
   const [soundOn, setSoundOn] = useState(true);
   const [vibrationOn, setVibrationOn] = useState(true);
+  const [language, setLanguage] = useState('english'); // 'sinhala' or 'english'
   
   // Puzzle State
   const [puzzle, setPuzzle] = useState(null);
@@ -55,10 +56,129 @@ const SinhalaWordPuzzleGame = () => {
   const [celebration, setCelebration] = useState(false);
   const [shake, setShake] = useState(false);
 
+  // Language dictionary
+  const gameText = {
+    sinhala: {
+      // Menu
+      title: 'සංඥා විදු ප්‍රහේලිකා',
+      subtitle: 'සෑම කෙනෙකුටම සංඥා භාෂාව ඉගෙන ගත හැකිය',
+      instructionTitle: '🎮 ක්‍රීඩා උපදෙස්',
+      instructionStart: 'අරඹන්න! Start!',
+      videoInstructions: [
+        { icon: '🎥', title: 'වීඩියෝව නරඹන්න', desc: 'අත්සන් දක්වන ආකාරය ඉගෙන ගන්න' },
+        { icon: '🔍', title: 'වචනය සොයන්න', desc: 'අකුරු පෙළෙහි වචනය සොයා ගන්න' },
+        { icon: '👆', title: 'අකුරු තෝරන්න', desc: 'සමීප කොටුවල අකුරු තෝරන්න' },
+        { icon: '✅', title: 'පිළිතුර පරීක්ෂා කරන්න', desc: 'ඔබේ පිළිතුර පරීක්ෂා කර ලකුණු ලබා ගන්න' }
+      ],
+      moreGames: 'වැඩිදුර ක්‍රීඩා',
+      myProfile: 'මගේ විස්තර',
+      achievements: 'සම්භාවනා',
+      
+      // Game
+      signVideo: 'සංඥා වීඩියෝව',
+      secretWord: 'ගුප්ත වචනය',
+      wordHas: 'මෙම වචනයේ අකුරු',
+      selectConnected: 'සම්බන්ධ අකුරු තෝරන්න',
+      attempts: 'උත්සාහ',
+      wordWas: 'වචනය වූයේ',
+      hint: 'උපදෙස්',
+      hintText: 'උපදෙස්',
+      clear: 'මකන්න',
+      checkAnswer: 'පිළිතුර පරීක්ෂා කරන්න',
+      nextWord: 'ඊළඟ වචනයට',
+      findSecretWord: 'ගුප්ත වචනය සොයන්න',
+      instructions: '🎯 උපදෙස්: වීඩියෝව නරඹා, පෙළෙහි සඟවා ඇති වචනය සොයන්න. අසල්වැසි කොටුවල අකුරු තෝරන්න (තිරස්, සිරස් හෝ විකර්ණ).',
+      secretWordText: 'ගුප්ත වචනය',
+      selectedLetters: 'තෝරාගත් අකුරු',
+      note: '💡 සටහන: අකුරු අනුපිළිවෙලට තෝරන්න (1, 2, 3...)',
+      aiHint: 'AI සහායක උපදෙස්',
+      mainMenu: 'මුල් පිටුව',
+      level: 'මට්ටම',
+      points: 'ලකුණු',
+      lives: 'ජීවිත',
+      round: 'රවුම',
+      
+      // Loading
+      preparing: 'ප්‍රහේලිකා සූදානම් වෙමින්...',
+      finding: '✨ Finding the perfect sign language word for you...',
+      
+      // Game Over
+      gameOver: 'ක්‍රීඩාව අවසන්!',
+      gameComplete: 'Game Complete!',
+      restartGame: 'නැවත ක්‍රීඩා කරන්න',
+      otherGames: 'වෙනත් ක්‍රීඩා',
+      gameOverMessages: {
+        3: { text: 'පුදුමයි! නියම කාර්යයක්!', subtitle: 'You are a Sign Language Master!' },
+        2: { text: 'හොඳටම ක්‍රීඩා කළා!', subtitle: 'Excellent performance!' },
+        1: { text: 'හරිම හොඳයි!', subtitle: 'Great effort!' },
+        0: { text: 'අඛණ්ඩව උත්සාහ කරන්න!', subtitle: 'Keep practicing!' }
+      }
+    },
+    english: {
+      // Menu
+      title: 'Sinhala Sign Language Puzzle',
+      subtitle: 'Everyone can learn sign language',
+      instructionTitle: '🎮 Game Instructions',
+      instructionStart: 'Start Game!',
+      videoInstructions: [
+        { icon: '🎥', title: 'Watch the Video', desc: 'Learn how the sign is performed' },
+        { icon: '🔍', title: 'Find the Word', desc: 'Find the hidden word in the letter grid' },
+        { icon: '👆', title: 'Select Letters', desc: 'Select adjacent letters in the grid' },
+        { icon: '✅', title: 'Check Answer', desc: 'Check your answer and earn points' }
+      ],
+      moreGames: 'More Games',
+      myProfile: 'My Profile',
+      achievements: 'Achievements',
+      
+      // Game
+      signVideo: 'Sign Language Video',
+      secretWord: 'Secret Word',
+      wordHas: 'This word has',
+      selectConnected: 'connected letters',
+      attempts: 'Attempts',
+      wordWas: 'The word was',
+      hint: 'Hint',
+      hintText: 'Hints',
+      clear: 'Clear',
+      checkAnswer: 'Check Answer',
+      nextWord: 'Next Word',
+      findSecretWord: 'Find the Secret Word',
+      instructions: '🎯 Instructions: Watch the video, then find the hidden word in the grid. Select adjacent letters (horizontal, vertical, or diagonal).',
+      secretWordText: 'Secret Word',
+      selectedLetters: 'Selected Letters',
+      note: '💡 Note: Select letters in order (1, 2, 3...)',
+      aiHint: 'AI Assistant Hints',
+      mainMenu: 'Main Menu',
+      level: 'Level',
+      points: 'Points',
+      lives: 'Lives',
+      round: 'Round',
+      
+      // Loading
+      preparing: 'Preparing Your Puzzle Adventure!',
+      finding: '✨ Finding the perfect sign language word for you...',
+      
+      // Game Over
+      gameOver: 'Game Complete!',
+      gameComplete: 'Game Complete!',
+      restartGame: 'Play Again',
+      otherGames: 'Other Games',
+      gameOverMessages: {
+        3: { text: 'Amazing! Perfect Score!', subtitle: 'You are a Sign Language Master!' },
+        2: { text: 'Great Job!', subtitle: 'Excellent performance!' },
+        1: { text: 'Well Done!', subtitle: 'Great effort!' },
+        0: { text: 'Keep Practicing!', subtitle: 'Try again to improve!' }
+      }
+    }
+  };
+
+  // Current language text
+  const t = gameText[language];
+
   // Level configurations - Enhanced with better colors and details
   const levelConfig = {
     basic: {
-      name: 'BEGINNER',
+      name: language === 'sinhala' ? 'මූලික' : 'BEGINNER',
       nameS: 'මූලික',
       description: 'පිල්ලම් නැති සරල වචන',
       descriptionE: 'Simple words without vowel signs',
@@ -71,7 +191,7 @@ const SinhalaWordPuzzleGame = () => {
       color: 'bg-gradient-to-r from-emerald-400 to-green-500'
     },
     easy: {
-      name: 'EXPLORER',
+      name: language === 'sinhala' ? 'පහසු' : 'EXPLORER',
       nameS: 'පහසු',
       description: 'සරල වචන (2-3 අකුරු)',
       descriptionE: 'Simple words (2-3 letters)',
@@ -84,7 +204,7 @@ const SinhalaWordPuzzleGame = () => {
       color: 'bg-gradient-to-r from-blue-400 to-cyan-500'
     },
     medium: {
-      name: 'ADVENTURER',
+      name: language === 'sinhala' ? 'මධ්‍යම' : 'ADVENTURER',
       nameS: 'මධ්‍යම',
       description: 'මධ්‍යම වචන (4-6 අකුරු)',
       descriptionE: 'Medium words (4-6 letters)',
@@ -97,7 +217,7 @@ const SinhalaWordPuzzleGame = () => {
       color: 'bg-gradient-to-r from-orange-400 to-amber-500'
     },
     hard: {
-      name: 'MASTER',
+      name: language === 'sinhala' ? 'දුෂ්කර' : 'MASTER',
       nameS: 'දුෂ්කර',
       description: 'දුෂ්කර වචන (7+ අකුරු)',
       descriptionE: 'Hard words (7+ letters)',
@@ -126,6 +246,12 @@ const SinhalaWordPuzzleGame = () => {
     if (vibrationOn && navigator.vibrate) {
       navigator.vibrate(50);
     }
+  };
+
+  // Toggle language
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'sinhala' ? 'english' : 'sinhala');
+    vibrate();
   };
 
   // ============= GAME FUNCTIONS (KEEP SAME) =============
@@ -179,41 +305,42 @@ const SinhalaWordPuzzleGame = () => {
   };
 
   // Load puzzle from API
-const loadPuzzle = async () => {
-  try {
-    setLoading(true);
-    const response = await fetch(`${API_URL}/puzzle/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ level, user_id: userId })
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      const syllables = data.target_word.match(/[\u0D80-\u0DFF][\u0DCA-\u0DDF]*/g) || [data.target_word];
-      
-      setPuzzle({
-        word: data.target_word,
-        english: data.target_english,
-        video_url: data.video_url,
-        syllables: syllables
+  const loadPuzzle = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/puzzle/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level, user_id: userId })
       });
       
-      setGrid(createGrid(levelConfig[level].gridSize, syllables));
-      setSelectedCells([]);
-      setFeedback(null);
-      setShowHintPanel(false);
-      setAttemptStartTime(Date.now());
-      setAttempts(0); // Reset attempts
-      setShowWordAfterFail(false); // Reset word display
+      const data = await response.json();
+      
+      if (data.success) {
+        const syllables = data.target_word.match(/[\u0D80-\u0DFF][\u0DCA-\u0DDF]*/g) || [data.target_word];
+        
+        setPuzzle({
+          word: data.target_word,
+          english: data.target_english,
+          video_url: data.video_url,
+          syllables: syllables
+        });
+        
+        setGrid(createGrid(levelConfig[level].gridSize, syllables));
+        setSelectedCells([]);
+        setFeedback(null);
+        setShowHintPanel(false);
+        setAttemptStartTime(Date.now());
+        setAttempts(0); // Reset attempts
+        setShowWordAfterFail(false); // Reset word display
+      }
+    } catch (error) {
+      console.error('Error loading puzzle:', error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('Error loading puzzle:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   // Load puzzle when game starts
   useEffect(() => {
     if (gameState === 'playing' && puzzle === null) {
@@ -283,66 +410,37 @@ const loadPuzzle = async () => {
   };
 
   // Check answer
-// Check answer - FIXED VERSION
-const checkAnswer = async () => {
-  vibrate();
-  
-  if (!isValidPath()) {
-    setFeedback({ type: 'error', message: '❌ Letters must be connected!' });
-    setTimeout(() => setFeedback(null), 1500);
-    return;
-  }
-
-  const selectedLetters = selectedCells.map(key => {
-    const [r, c] = key.split('-').map(Number);
-    return grid[r][c].letter;
-  });
-
-  const isCorrect = 
-    selectedLetters.length === puzzle.syllables.length &&
-    selectedLetters.every((letter, i) => letter === puzzle.syllables[i]);
-
-  await recordAttempt(isCorrect);
-
-  if (isCorrect) {
-    setFeedback({ type: 'success', message: '✅ හරි! Correct!' });
-    triggerCelebration();
-    setScore(score + 100);
-    setShowHintPanel(false);
+  const checkAnswer = async () => {
+    vibrate();
     
-    setTimeout(() => {
-      const nextRound = round + 1;
-      if (nextRound >= totalRounds) {
-        setGameState('gameover');
-      } else {
-        setRound(nextRound);
-        setPuzzle(null);
-      }
-    }, 1500);
-  } else {
-    // WRONG ANSWER - Increment attempts FIRST
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-    
-    setFeedback({ type: 'error', message: '❌ වැරදියි! Wrong!' });
-    triggerShake();
-    
-    // Show hint after 3 attempts
-    if (newAttempts >= 3) {
-      setAiHints([
-        `💡 First syllable: "${puzzle.syllables[0]}"`,
-        `🎯 Word has ${puzzle.syllables.length} letters`
-      ]);
-      setShowHintPanel(true);
-    }
-    
-    // Show word and move to next after 5 attempts
-    if (newAttempts >= 5) {
-      setShowWordAfterFail(true);
+    if (!isValidPath()) {
       setFeedback({ 
-        type: 'info', 
-        message: `The word was: ${puzzle.word} (${puzzle.english})` 
+        type: 'error', 
+        message: language === 'sinhala' ? '❌ අකුරු සම්බන්ධ විය යුතුය!' : '❌ Letters must be connected!' 
       });
+      setTimeout(() => setFeedback(null), 1500);
+      return;
+    }
+
+    const selectedLetters = selectedCells.map(key => {
+      const [r, c] = key.split('-').map(Number);
+      return grid[r][c].letter;
+    });
+
+    const isCorrect = 
+      selectedLetters.length === puzzle.syllables.length &&
+      selectedLetters.every((letter, i) => letter === puzzle.syllables[i]);
+
+    await recordAttempt(isCorrect);
+
+    if (isCorrect) {
+      setFeedback({ 
+        type: 'success', 
+        message: language === 'sinhala' ? '✅ හරි! Correct!' : '✅ Correct!' 
+      });
+      triggerCelebration();
+      setScore(score + 100);
+      setShowHintPanel(false);
       
       setTimeout(() => {
         const nextRound = round + 1;
@@ -351,38 +449,90 @@ const checkAnswer = async () => {
         } else {
           setRound(nextRound);
           setPuzzle(null);
-          setShowWordAfterFail(false); // Reset for next word
         }
-      }, 3000);
-      return; // Exit early, don't process lives
-    }
-    
-    // Deduct life only if not showing word
-    const newLives = lives - 1;
-    setLives(newLives);
-    
-    if (newLives <= 0) {
-      setShowWordAfterFail(true);
-      setFeedback({ 
-        type: 'info', 
-        message: `Game Over! Word was: ${puzzle.word}` 
-      });
-      setTimeout(() => setGameState('gameover'), 2000);
-    } else {
-      setTimeout(() => {
-        setSelectedCells([]);
-        setFeedback(null);
       }, 1500);
+    } else {
+      // WRONG ANSWER - Increment attempts FIRST
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      
+      setFeedback({ 
+        type: 'error', 
+        message: language === 'sinhala' ? '❌ වැරදියි! Wrong!' : '❌ Wrong! Try again!' 
+      });
+      triggerShake();
+      
+      // Show hint after 3 attempts
+      if (newAttempts >= 3) {
+        setAiHints([
+          language === 'sinhala' 
+            ? `💡 පළමු අකුර: "${puzzle.syllables[0]}"`
+            : `💡 First letter: "${puzzle.syllables[0]}"`,
+          language === 'sinhala'
+            ? `🎯 වචනයේ අකුරු ${puzzle.syllables.length}ක් ඇත`
+            : `🎯 Word has ${puzzle.syllables.length} letters`
+        ]);
+        setShowHintPanel(true);
+      }
+      
+      // Show word and move to next after 5 attempts
+      if (newAttempts >= 5) {
+        setShowWordAfterFail(true);
+        setFeedback({ 
+          type: 'info', 
+          message: language === 'sinhala'
+            ? `වචනය: ${puzzle.word} (${puzzle.english})`
+            : `The word was: ${puzzle.word} (${puzzle.english})`
+        });
+        
+        setTimeout(() => {
+          const nextRound = round + 1;
+          if (nextRound >= totalRounds) {
+            setGameState('gameover');
+          } else {
+            setRound(nextRound);
+            setPuzzle(null);
+            setShowWordAfterFail(false);
+          }
+        }, 3000);
+        return;
+      }
+      
+      // Deduct life only if not showing word
+      const newLives = lives - 1;
+      setLives(newLives);
+      
+      if (newLives <= 0) {
+        setShowWordAfterFail(true);
+        setFeedback({ 
+          type: 'info', 
+          message: language === 'sinhala'
+            ? `ක්‍රීඩාව අවසන්! වචනය: ${puzzle.word}`
+            : `Game Over! The word was: ${puzzle.word}`
+        });
+        setTimeout(() => setGameState('gameover'), 2000);
+      } else {
+        setTimeout(() => {
+          setSelectedCells([]);
+          setFeedback(null);
+        }, 1500);
+      }
     }
-  }
-};
+  };
 
   // Use hint
   const useHint = () => {
     vibrate();
     if (hintsRemaining > 0 && puzzle) {
       setHintsRemaining(hintsRemaining - 1);
-      setAiHints([`💡 First syllable: "${puzzle.syllables[0]}"`, `🎯 Word has ${puzzle.syllables.length} letters`]);
+      setAiHints([
+        language === 'sinhala' 
+          ? `💡 පළමු අකුර: "${puzzle.syllables[0]}"`
+          : `💡 First letter: "${puzzle.syllables[0]}"`,
+        language === 'sinhala'
+          ? `🎯 වචනයේ අකුරු ${puzzle.syllables.length}ක් ඇත`
+          : `🎯 Word has ${puzzle.syllables.length} letters`
+      ]);
       setShowHintPanel(true);
     }
   };
@@ -391,7 +541,12 @@ const checkAnswer = async () => {
   const skipWord = () => {
     vibrate();
     setShowWordAfterFail(true);
-    setFeedback({ type: 'info', message: `Skipped! The word was: ${puzzle.word}` });
+    setFeedback({ 
+      type: 'info', 
+      message: language === 'sinhala'
+        ? `අත්හැරියා! වචනය: ${puzzle.word}`
+        : `Skipped! The word was: ${puzzle.word}`
+    });
     
     setTimeout(() => {
       const nextRound = round + 1;
@@ -425,7 +580,7 @@ const checkAnswer = async () => {
   // Menu Screen - Enhanced Child-Friendly Design
   if (gameState === 'menu') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-400 overflow-hidden relative">
+      <div className="min-h-screen bg-gradient-to-br from-white-500 via-blue-500 to-white-400 overflow-hidden relative">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-48 h-48 bg-yellow-300 rounded-full blur-3xl opacity-30 animate-pulse"></div>
@@ -445,17 +600,24 @@ const checkAnswer = async () => {
               <div className="text-6xl animate-bounce">🤟</div>
               <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-lg">
                 <span className="bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">
-                  සංඥා විදු ප්‍රහේලිකා
+                  {t.title}
                 </span>
               </h1>
               <div className="text-6xl animate-bounce" style={{animationDelay: '0.5s'}}>✊</div>
             </div>
             <p className="text-xl text-white font-bold mb-1">Sinhala Sign Language Puzzle</p>
-            <p className="text-white/80 text-sm">සෑම කෙනෙකුටම සංඥා භාෂාව ඉගෙන ගත හැකිය</p>
+            <p className="text-white/80 text-sm">{t.subtitle}</p>
           </div>
 
           {/* Controls */}
           <div className="flex justify-end gap-2 mb-4">
+            <button 
+              onClick={toggleLanguage}
+              className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 text-white flex items-center gap-2"
+            >
+              <Globe size={20} />
+              <span className="font-bold">{language === 'sinhala' ? 'සිං' : 'EN'}</span>
+            </button>
             <button 
               onClick={() => setSoundOn(!soundOn)}
               className={`p-2 rounded-full ${soundOn ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'}`}
@@ -474,42 +636,23 @@ const checkAnswer = async () => {
           {showInstructions && (
             <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
               <div className="bg-gradient-to-br from-white to-blue-50 rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-yellow-300">
-                <h2 className="text-2xl font-black text-blue-800 mb-4 text-center">🎮 ක්‍රීඩා උපදෙස්</h2>
+                <h2 className="text-2xl font-black text-blue-800 mb-4 text-center">{t.instructionTitle}</h2>
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">🎥</div>
-                    <div>
-                      <p className="font-bold text-blue-700">වීඩියෝව නරඹන්න</p>
-                      <p className="text-sm text-gray-600">අත්සන් දක්වන ආකාරය ඉගෙන ගන්න</p>
+                  {t.videoInstructions.map((instruction, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="bg-blue-100 p-2 rounded-lg">{instruction.icon}</div>
+                      <div>
+                        <p className="font-bold text-blue-700">{instruction.title}</p>
+                        <p className="text-sm text-gray-600">{instruction.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-green-100 p-2 rounded-lg">🔍</div>
-                    <div>
-                      <p className="font-bold text-green-700">වචනය සොයන්න</p>
-                      <p className="text-sm text-gray-600">අකුරු පෙළෙහි වචනය සොයා ගන්න</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-purple-100 p-2 rounded-lg">👆</div>
-                    <div>
-                      <p className="font-bold text-purple-700">අකුරු තෝරන්න</p>
-                      <p className="text-sm text-gray-600">සමීප කොටුවල අකුරු තෝරන්න</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-yellow-100 p-2 rounded-lg">✅</div>
-                    <div>
-                      <p className="font-bold text-yellow-700">පිළිතුර පරීක්ෂා කරන්න</p>
-                      <p className="text-sm text-gray-600">ඔබේ පිළිතුර පරීක්ෂා කර ලකුණු ලබා ගන්න</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 <button 
                   onClick={() => setShowInstructions(false)}
                   className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl"
                 >
-                  අරඹන්න! Start!
+                  {t.instructionStart}
                 </button>
               </div>
             </div>
@@ -528,10 +671,16 @@ const checkAnswer = async () => {
                   <div className="text-left flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="text-2xl font-black text-white">{config.name}</div>
-                      <div className="text-white/80 font-bold">({config.nameS})</div>
+                      {language === 'english' && (
+                        <div className="text-white/80 font-bold">({config.nameS})</div>
+                      )}
                     </div>
-                    <p className={`${config.textColor} font-medium mb-2`}>{config.description}</p>
-                    <p className="text-white/70 text-sm">{config.descriptionE}</p>
+                    <p className={`${config.textColor} font-medium mb-2`}>
+                      {language === 'sinhala' ? config.description : config.descriptionE}
+                    </p>
+                    <p className="text-white/70 text-sm">
+                      {language === 'sinhala' ? config.descriptionE : config.description}
+                    </p>
                     <div className="mt-3 flex items-center gap-2">
                       {[...Array(config.difficulty)].map((_, i) => (
                         <Star key={i} size={16} className="text-yellow-300 fill-yellow-300" />
@@ -554,7 +703,7 @@ const checkAnswer = async () => {
                 >
                   <div className="text-xl">🎯</div>
                   <div className="text-left">
-                    <div className="text-sm font-bold">වැඩිදුර ක්‍රීඩා</div>
+                    <div className="text-sm font-bold">{t.moreGames}</div>
                     <div className="text-xs">More Games</div>
                   </div>
                 </button>
@@ -565,7 +714,7 @@ const checkAnswer = async () => {
                 >
                   <div className="text-xl">👤</div>
                   <div className="text-left">
-                    <div className="text-sm font-bold">මගේ විස්තර</div>
+                    <div className="text-sm font-bold">{t.myProfile}</div>
                     <div className="text-xs">My Profile</div>
                   </div>
                 </button>
@@ -576,7 +725,7 @@ const checkAnswer = async () => {
                 >
                   <div className="text-xl">🏆</div>
                   <div className="text-left">
-                    <div className="text-sm font-bold">සම්භාවනා</div>
+                    <div className="text-sm font-bold">{t.achievements}</div>
                     <div className="text-xs">Achievements</div>
                   </div>
                 </button>
@@ -622,10 +771,10 @@ const checkAnswer = async () => {
           <div>
             <h2 className="text-3xl md:text-4xl font-black text-white mb-2 drop-shadow-lg">
               <span className="bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">
-                ප්‍රහේලිකා සූදානම් වෙමින්...
+                {language === 'sinhala' ? 'ප්‍රහේලිකා සූදානම් වෙමින්...' : 'Preparing Puzzle...'}
               </span>
             </h2>
-            <p className="text-white text-lg font-medium mb-6">Preparing Your Puzzle Adventure!</p>
+            <p className="text-white text-lg font-medium mb-6">{t.preparing}</p>
           </div>
 
           {/* Animated Progress */}
@@ -636,7 +785,7 @@ const checkAnswer = async () => {
           {/* Fun Message */}
           <div className="bg-gradient-to-r from-blue-400/20 to-cyan-400/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30 max-w-md mx-auto">
             <p className="text-white font-medium text-sm">
-              <span className="text-yellow-300">✨</span> Finding the perfect sign language word for you...
+              <span className="text-yellow-300">✨</span> {t.finding}
             </p>
           </div>
         </div>
@@ -647,31 +796,30 @@ const checkAnswer = async () => {
   // Game Over Screen - Enhanced Celebration
   if (gameState === 'gameover') {
     const stars = score >= 800 ? 3 : score >= 500 ? 2 : score >= 200 ? 1 : 0;
-    
     const messages = {
       3: { 
-        text: 'පුදුමයි! නියම කාර්යයක්!', 
+        text: t.gameOverMessages[3].text, 
         emoji: '🏆', 
         color: 'from-yellow-400 to-orange-500',
-        subtitle: 'You are a Sign Language Master!'
+        subtitle: t.gameOverMessages[3].subtitle
       },
       2: { 
-        text: 'හොඳටම ක්‍රීඩා කළා!', 
+        text: t.gameOverMessages[2].text, 
         emoji: '🎉', 
         color: 'from-green-400 to-emerald-500',
-        subtitle: 'Excellent performance!'
+        subtitle: t.gameOverMessages[2].subtitle
       },
       1: { 
-        text: 'හරිම හොඳයි!', 
+        text: t.gameOverMessages[1].text, 
         emoji: '👏', 
         color: 'from-blue-400 to-cyan-500',
-        subtitle: 'Great effort!'
+        subtitle: t.gameOverMessages[1].subtitle
       },
       0: { 
-        text: 'අඛණ්ඩව උත්සාහ කරන්න!', 
+        text: t.gameOverMessages[0].text, 
         emoji: '💪', 
         color: 'from-purple-400 to-pink-500',
-        subtitle: 'Keep practicing!'
+        subtitle: t.gameOverMessages[0].subtitle
       }
     };
 
@@ -707,8 +855,8 @@ const checkAnswer = async () => {
           </div>
 
           {/* Header */}
-          <h2 className="text-4xl font-black text-white mb-2 drop-shadow-lg">ක්‍රීඩාව අවසන්!</h2>
-          <p className="text-white/90 text-lg mb-2">Game Complete!</p>
+          <h2 className="text-4xl font-black text-white mb-2 drop-shadow-lg">{t.gameOver}</h2>
+          <p className="text-white/90 text-lg mb-2">{t.gameComplete}</p>
 
           {/* Score Display */}
           <div className={`bg-gradient-to-r ${message.color} backdrop-blur-sm rounded-2xl p-6 mb-6 border-4 border-white/50 shadow-inner`}>
@@ -724,17 +872,17 @@ const checkAnswer = async () => {
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-gradient-to-br from-green-500/50 to-emerald-600/50 rounded-xl p-3 border-2 border-white/30 shadow-lg">
               <div className="text-2xl mb-1">🎯</div>
-              <div className="text-white text-xs font-bold uppercase">Level</div>
+              <div className="text-white text-xs font-bold uppercase">{t.level}</div>
               <div className="text-yellow-300 text-lg font-bold capitalize">{level}</div>
             </div>
             <div className="bg-gradient-to-br from-blue-500/50 to-cyan-600/50 rounded-xl p-3 border-2 border-white/30 shadow-lg">
               <div className="text-2xl mb-1">🔄</div>
-              <div className="text-white text-xs font-bold uppercase">Rounds</div>
+              <div className="text-white text-xs font-bold uppercase">{t.round}</div>
               <div className="text-yellow-300 text-lg font-bold">{round}/{totalRounds}</div>
             </div>
             <div className="bg-gradient-to-br from-purple-500/50 to-pink-600/50 rounded-xl p-3 border-2 border-white/30 shadow-lg">
               <div className="text-2xl mb-1">❤️</div>
-              <div className="text-white text-xs font-bold uppercase">Lives</div>
+              <div className="text-white text-xs font-bold uppercase">{t.lives}</div>
               <div className="text-yellow-300 text-lg font-bold">{lives}</div>
             </div>
           </div>
@@ -746,7 +894,7 @@ const checkAnswer = async () => {
               className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black px-6 py-4 rounded-2xl shadow-xl transform hover:scale-105 transition-all flex items-center justify-center gap-3 text-lg border-4 border-green-300/50"
             >
               <RefreshCw className="w-6 h-6" />
-              <span>නැවත ක්‍රීඩා කරන්න</span>
+              <span>{t.restartGame}</span>
             </button>
 
             <button
@@ -754,7 +902,7 @@ const checkAnswer = async () => {
               className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2 border-2 border-cyan-300/50"
             >
               <span className="text-xl">🎮</span>
-              <span>වෙනත් ක්‍රීඩා</span>
+              <span>{t.otherGames}</span>
             </button>
           </div>
         </div>
@@ -762,9 +910,12 @@ const checkAnswer = async () => {
     );
   }
 
-// Playing State - Enhanced Game UI (Updated for single scrolling)
+// Playing State - Enhanced Game UI
+// Playing State - Enhanced Game UI with 60-30-10 Color Rule
 return (
-  <div className="min-h-screen bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-300 overflow-auto">
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-auto">
+    {/* 60% - Dominant Background: Light gradient (blue-50 to pink-50) */}
+
     {/* Celebration Animation */}
     {celebration && (
       <div className="fixed inset-0 pointer-events-none z-50">
@@ -785,70 +936,90 @@ return (
       </div>
     )}
 
-    <div className="p-3 flex flex-col min-h-screen">
-      {/* Top Game Header - Fixed */}
-      <div className="bg-gradient-to-r from-white/30 to-white/10 backdrop-blur-xl rounded-2xl shadow-xl p-3 mb-3 flex justify-between items-center border-4 border-white/40 flex-shrink-0">
-      
-        {/* Back to Menu */}
-        <button
-          onClick={restartGame}
-          className="bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border-2 border-purple-300/50"
-        >
-          <Home className="w-5 h-5" />
-          <span className="hidden sm:inline">මුල් පිටුව</span>
-        </button>
-
-        {/* Current Level Badge */}
-        <div className="hidden md:flex items-center gap-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded-xl px-4 py-2 border-2 border-white/30">
-          <Target className="w-5 h-5 text-white" />
-          <span className="text-white font-bold">මට්ටම:</span>
-          <span className="px-3 py-1 bg-white/30 rounded-lg font-black text-white">
-            {levelConfig[level].name}
-          </span>
+    <div className="p-4 flex flex-col min-h-screen">
+      {/* Top Game Header - Fixed - 30% Secondary Color */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg p-4 mb-4 flex justify-between items-center border border-gray-200 flex-shrink-0">
+        
+        {/* Left Section: Back to Menu */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={restartGame}
+            className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border border-blue-400 shadow-md"
+          >
+            <Home className="w-5 h-5" />
+            <span className="hidden sm:inline">{t.mainMenu}</span>
+          </button>
+          
+          {/* Game Level Badge - 10% Accent Color */}
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl px-4 py-2 border border-blue-400 shadow-md">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-white" />
+              <div className="text-white">
+                <div className="text-sm font-bold">{t.level}:</div>
+                <div className="font-black text-lg">
+                  {language === 'sinhala' 
+                    ? levelConfig[level].nameS 
+                    : levelConfig[level].name}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Game Stats */}
-        <div className="flex gap-3">
-          <div className="text-center bg-gradient-to-br from-yellow-400/30 to-orange-500/30 backdrop-blur-sm rounded-xl p-2 min-w-[70px] border-2 border-yellow-300/30">
-            <Trophy className="w-5 h-5 text-yellow-300 mx-auto mb-1" />
-            <div className="text-xl font-black text-white">{score}</div>
-            <div className="text-xs text-white/70 font-bold">ලකුණු</div>
+        {/* Right Section: Stats and Language Toggle */}
+        <div className="flex items-center gap-3">
+          {/* Game Stats */}
+          <div className="flex gap-3">
+            <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
+              <Trophy className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
+              <div className="text-xl font-black text-gray-800">{score}</div>
+              <div className="text-xs text-gray-600 font-bold">{t.points}</div>
+            </div>
+            
+            <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
+              <Heart className="w-5 h-5 text-red-500 mx-auto mb-1" />
+              <div className="text-xl font-black text-gray-800">{lives}</div>
+              <div className="text-xs text-gray-600 font-bold">{t.lives}</div>
+            </div>
+            
+            <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
+              <Lightbulb className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+              <div className="text-xl font-black text-gray-800">{hintsRemaining}</div>
+              <div className="text-xs text-gray-600 font-bold">{t.hintText}</div>
+            </div>
+            
+            <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
+              <Target className="w-5 h-5 text-green-500 mx-auto mb-1" />
+              <div className="text-xl font-black text-gray-800">{round + 1}/{totalRounds}</div>
+              <div className="text-xs text-gray-600 font-bold">{t.round}</div>
+            </div>
           </div>
-          
-          <div className="text-center bg-gradient-to-br from-red-400/30 to-pink-500/30 backdrop-blur-sm rounded-xl p-2 min-w-[70px] border-2 border-red-300/30">
-            <Heart className="w-5 h-5 text-red-300 mx-auto mb-1" />
-            <div className="text-xl font-black text-white">{lives}</div>
-            <div className="text-xs text-white/70 font-bold">ජීවිත</div>
-          </div>
-          
-          <div className="text-center bg-gradient-to-br from-cyan-400/30 to-blue-500/30 backdrop-blur-sm rounded-xl p-2 min-w-[70px] border-2 border-cyan-300/30">
-            <Lightbulb className="w-5 h-5 text-cyan-300 mx-auto mb-1" />
-            <div className="text-xl font-black text-white">{hintsRemaining}</div>
-            <div className="text-xs text-white/70 font-bold">උපදෙස්</div>
-          </div>
-          
-          <div className="text-center bg-gradient-to-br from-green-400/30 to-emerald-500/30 backdrop-blur-sm rounded-xl p-2 min-w-[70px] border-2 border-green-300/30">
-            <Target className="w-5 h-5 text-green-300 mx-auto mb-1" />
-            <div className="text-xl font-black text-white">{round + 1}/{totalRounds}</div>
-            <div className="text-xs text-white/70 font-bold">රවුම</div>
-          </div>
+
+          {/* Language Toggle Button - 10% Accent Color */}
+          <button
+            onClick={toggleLanguage}
+            className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border border-blue-400 shadow-md"
+          >
+            <Languages className="w-5 h-5" />
+            <span className="font-bold">{language === 'english' ? 'EN' : 'සිං'}</span>
+          </button>
         </div>
       </div>
 
       {/* Main Game Area - Now scrollable */}
       <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
-          {/* Left Panel - Video & Controls */}
-          <div className="space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          {/* Left Panel - Video & Controls - 30% Secondary Color */}
+          <div className="space-y-4">
             {/* Video Container */}
-            <div className="bg-gradient-to-br from-blue-500/30 to-purple-600/30 backdrop-blur-2xl rounded-2xl p-4 border-4 border-white/40 shadow-xl">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <div className="text-2xl">🤟</div>
-                <h3 className="text-white font-bold text-lg">සංඥා වීඩියෝව</h3>
-                <div className="text-2xl">👀</div>
+            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-lg">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="text-2xl text-blue-500">🤟</div>
+                <h3 className="text-gray-800 font-bold text-lg">{t.signVideo}</h3>
+                <div className="text-2xl text-blue-500">👀</div>
               </div>
               
-              <div className="relative rounded-xl overflow-hidden border-4 border-white/50 shadow-2xl">
+              <div className="relative rounded-xl overflow-hidden border-2 border-gray-300 shadow-inner">
                 {puzzle && puzzle.video_url ? (
                   <video
                     key={puzzle.word}
@@ -861,11 +1032,11 @@ return (
                     onError={(e) => console.error('Video error:', e)}
                   />
                 ) : (
-                  <div className="w-full h-56 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                    <div className="text-6xl animate-bounce">🤟</div>
+                  <div className="w-full h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                    <div className="text-6xl text-blue-400 animate-bounce">🤟</div>
                   </div>
                 )}
-                <div className="absolute bottom-3 right-3 bg-black/50 rounded-full p-2">
+                <div className="absolute bottom-3 right-3 bg-black/70 rounded-full p-2 shadow-lg">
                   <Play className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -873,48 +1044,61 @@ return (
 
             {/* Word Info - Hidden until correct */}
             {puzzle && !showWordAfterFail && (
-              <div className="bg-gradient-to-br from-green-500/30 to-emerald-600/30 backdrop-blur-2xl rounded-2xl p-4 border-4 border-white/40 shadow-xl">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <div className="text-2xl">❓</div>
-                  <h3 className="text-white font-bold text-lg">ගුප්ත වචනය</h3>
-                  <div className="text-2xl">🔍</div>
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-lg">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="text-2xl text-blue-500">❓</div>
+                  <h3 className="text-gray-800 font-bold text-lg">{t.secretWord}</h3>
+                  <div className="text-2xl text-blue-500">🔍</div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white/20 to-transparent rounded-xl p-4 mb-3 border-2 border-white/30">
-                  <p className="text-white text-center font-bold mb-2">මෙම වචනයේ අකුරු {puzzle.syllables.length}ක් ඇත</p>
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-4 border border-gray-200">
+                  <p className="text-gray-700 text-center font-medium mb-3">{t.wordHas} {puzzle.syllables.length}ක් ඇත</p>
                   
                   {/* Word Placeholder */}
-                  <div className="flex justify-center gap-2 mb-4">
+                  <div className="flex justify-center gap-3 mb-4">
                     {puzzle.syllables.map((_, index) => (
-                      <div key={index} className="w-10 h-12 bg-white/30 rounded-lg flex items-center justify-center border-2 border-white/50 relative">
+                      <div key={index} className="w-12 h-14 bg-white rounded-lg flex items-center justify-center border-2 border-blue-200 shadow-sm relative group">
                         {selectedCells.length > index ? (
-                          <span className="text-2xl font-bold text-white">
+                          <span className="text-2xl font-bold text-blue-600">
                             {(() => {
                               const [r, c] = selectedCells[index].split('-').map(Number);
                               return grid[r]?.[c]?.letter || '?';
                             })()}
                           </span>
                         ) : (
-                          <span className="text-white/50 text-xl">?</span>
+                          <>
+                            <span className="text-gray-300 text-xl">?</span>
+                            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          </>
                         )}
-                        <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full text-xs flex items-center justify-center text-white">
+                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-xs flex items-center justify-center text-white font-bold">
                           {index + 1}
                         </div>
                       </div>
                     ))}
                   </div>
                   
-                  <p className="text-white/80 text-sm text-center">
-                    {puzzle.syllables.length} සම්බන්ධ අකුරු තෝරන්න
+                  <p className="text-gray-600 text-sm text-center">
+                    {puzzle.syllables.length} {t.selectConnected}
                   </p>
                 </div>
                 
                 {/* Attempts Counter */}
-                <div className="bg-gradient-to-br from-yellow-500/30 to-amber-600/30 rounded-xl p-3 border-2 border-yellow-300/30">
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
                   <div className="flex items-center justify-center gap-2">
-                    <span className="text-white font-bold">උත්සාහ:</span>
-                    <span className="text-yellow-300 text-xl font-black">{attempts}</span>
-                    <span className="text-white/70 text-sm">/ 5</span>
+                    <span className="text-gray-700 font-medium">{t.attempts}:</span>
+                    <span className={`text-xl font-bold ${
+                      attempts >= 4 ? 'text-red-500' : 
+                      attempts >= 2 ? 'text-amber-500' : 
+                      'text-green-500'
+                    }`}>{attempts}</span>
+                    <span className="text-gray-400 text-sm">/ 5</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                    <div 
+                      className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(attempts / 5) * 100}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -922,44 +1106,44 @@ return (
 
             {/* Show Word After Fail */}
             {puzzle && showWordAfterFail && (
-              <div className="bg-gradient-to-br from-red-500/30 to-pink-600/30 backdrop-blur-2xl rounded-2xl p-4 border-4 border-white/40 shadow-xl">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <div className="text-2xl">💡</div>
-                  <h3 className="text-white font-bold text-lg">වචනය වූයේ:</h3>
-                  <div className="text-2xl">📝</div>
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200 shadow-lg">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="text-2xl text-amber-600">💡</div>
+                  <h3 className="text-gray-800 font-bold text-lg">{t.wordWas}:</h3>
+                  <div className="text-2xl text-amber-600">📝</div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white/20 to-transparent rounded-xl p-4 mb-3 border-2 border-white/30">
-                  <p className="text-4xl font-black text-white text-center mb-2">{puzzle.word}</p>
+                <div className="bg-white rounded-xl p-4 mb-4 border border-amber-100">
+                  <p className="text-3xl font-black text-gray-800 text-center mb-3">{puzzle.word}</p>
                   <div className="flex justify-center gap-2 flex-wrap">
                     {puzzle.syllables.map((syllable, index) => (
-                      <span key={index} className="bg-white/30 px-3 py-1 rounded-lg text-white font-bold">
+                      <span key={index} className="bg-gradient-to-r from-blue-100 to-cyan-100 px-3 py-1 rounded-lg text-blue-700 font-bold border border-blue-200">
                         {syllable}
                       </span>
                     ))}
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-blue-500/30 to-cyan-600/30 rounded-xl p-3 border-2 border-blue-300/30">
-                  <p className="text-white text-center font-bold">📝 {puzzle.english}</p>
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200">
+                  <p className="text-gray-700 text-center font-bold">📝 {puzzle.english}</p>
                 </div>
               </div>
             )}
 
-            {/* Action Buttons */}
+            {/* Action Buttons - 10% Accent Colors */}
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={useHint}
                   disabled={hintsRemaining === 0}
                   className={`py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                     hintsRemaining > 0
-                      ? 'bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white border-4 border-yellow-300 shadow-lg hover:scale-105'
-                      : 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-300 border-4 border-gray-300 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border border-amber-400 shadow-md hover:scale-105'
+                      : 'bg-gray-300 text-gray-500 border border-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <Lightbulb className="w-5 h-5" />
-                  <span>උපදෙස් ({hintsRemaining})</span>
+                  <span>{t.hint} ({hintsRemaining})</span>
                 </button>
                 
                 <button
@@ -967,12 +1151,12 @@ return (
                   disabled={selectedCells.length === 0}
                   className={`py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                     selectedCells.length > 0
-                      ? 'bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 text-white border-4 border-red-300 shadow-lg hover:scale-105'
-                      : 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-300 border-4 border-gray-300 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border border-red-400 shadow-md hover:scale-105'
+                      : 'bg-gray-300 text-gray-500 border border-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <X className="w-5 h-5" />
-                  <span>මකන්න</span>
+                  <span>{t.clear}</span>
                 </button>
               </div>
 
@@ -981,73 +1165,72 @@ return (
                 disabled={selectedCells.length === 0}
                 className={`w-full py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 transition-all ${
                   selectedCells.length > 0
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-4 border-green-300 shadow-lg hover:shadow-xl hover:scale-105 animate-pulse'
-                    : 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-400 border-4 border-gray-400 cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border border-green-400 shadow-lg hover:shadow-xl hover:scale-105 animate-pulse'
+                    : 'bg-gray-400 text-gray-300 border border-gray-400 cursor-not-allowed'
                 }`}
               >
                 <Check className="w-7 h-7" />
-                <span>පිළිතුර පරීක්ෂා කරන්න</span>
+                <span>{t.checkAnswer}</span>
               </button>
 
               <button
                 onClick={skipWord}
-                className="w-full py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white border-2 border-gray-400 hover:scale-105 transition-all"
+                className="w-full py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white border border-gray-400 shadow-md hover:scale-105 transition-all"
               >
                 <SkipForward className="w-5 h-5" />
-                <span>ඊළඟ වචනයට</span>
+                <span>{t.nextWord}</span>
               </button>
             </div>
           </div>
 
-          {/* Center Panel - Game Grid */}
-          <div className={`lg:col-span-2 bg-gradient-to-br from-purple-500/20 to-pink-600/20 backdrop-blur-2xl rounded-2xl p-4 border-4 border-white/40 shadow-xl flex flex-col ${shake ? 'animate-shake' : ''}`}>
-          {/* 🔔 Sticky AI Hint Panel */}
-{showHintPanel && aiHints.length > 0 && (
-  <div className="sticky top-2 z-[999] space-y-3 mb-3">
-    <div className="bg-gradient-to-r from-yellow-400/95 to-orange-500/95 backdrop-blur-sm rounded-2xl p-4 border-4 border-yellow-300 shadow-2xl">
-      <div className="flex items-center gap-2 mb-3 justify-center">
-        <span className="text-2xl">💡</span>
-        <h4 className="text-lg font-black text-yellow-900">
-          AI සහායක උපදෙස්
-        </h4>
-        <span className="text-2xl">🤖</span>
-      </div>
+          {/* Center Panel - Game Grid - 30% Secondary Color */}
+          <div className={`lg:col-span-2 bg-white rounded-2xl p-5 border border-gray-200 shadow-lg flex flex-col ${shake ? 'animate-shake' : ''}`}>
+            {/* 🔔 Sticky AI Hint Panel - 10% Accent Color */}
+            {showHintPanel && aiHints.length > 0 && (
+              <div className="sticky top-2 z-[999] space-y-3 mb-4">
+                <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-2xl p-4 border-2 border-amber-300 shadow-lg">
+                  <div className="flex items-center gap-2 mb-3 justify-center">
+                    <span className="text-2xl">💡</span>
+                    <h4 className="text-lg font-black text-amber-900">
+                      {t.aiHint}
+                    </h4>
+                    <span className="text-2xl">🤖</span>
+                  </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {aiHints.map((hint, idx) => (
-          <div
-            key={idx}
-            className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-3 border-2 border-yellow-200"
-          >
-            <p className="text-yellow-900 font-medium text-sm">
-              {hint}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {aiHints.map((hint, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200"
+                      >
+                        <p className="text-amber-800 font-medium text-sm">
+                          {hint}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Grid Header */}
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="text-3xl animate-spin" style={{animationDuration: '3s'}}>✨</div>
-              <h3 className="text-2xl font-black text-white text-center">ගුප්ත වචනය සොයන්න</h3>
-              <div className="text-3xl animate-spin" style={{animationDuration: '3s', animationDirection: 'reverse'}}>✨</div>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="text-3xl text-blue-400 animate-spin" style={{animationDuration: '3s'}}>✨</div>
+              <h3 className="text-2xl font-black text-gray-800 text-center">{t.findSecretWord}</h3>
+              <div className="text-3xl text-blue-400 animate-spin" style={{animationDuration: '3s', animationDirection: 'reverse'}}>✨</div>
             </div>
 
             {/* Instructions */}
-            <div className="mb-4 bg-gradient-to-r from-blue-500/20 to-cyan-600/20 backdrop-blur-sm rounded-xl p-3 border-2 border-white/30">
-              <p className="text-white text-center text-sm font-medium">
-                <span className="font-bold">🎯 උපදෙස්:</span> වීඩියෝව නරඹා, පෙළෙහි සඟවා ඇති වචනය සොයන්න. 
-                අසල්වැසි කොටුවල අකුරු තෝරන්න (තිරස්, සිරස් හෝ විකර්ණ).
+            <div className="mb-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
+              <p className="text-gray-700 text-center text-sm font-medium">
+                {t.instructions}
               </p>
             </div>
 
             {/* Game Grid */}
-            <div className="flex-1 flex items-center justify-center p-2 min-h-[400px]">
+            <div className="flex-1 flex items-center justify-center p-3 min-h-[400px]">
               <div 
-                className="grid gap-2 p-4 bg-gradient-to-br from-white/10 to-transparent rounded-2xl border-4 border-white/30 shadow-inner"
+                className="grid gap-2 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-gray-300 shadow-inner"
                 style={{
                   gridTemplateColumns: `repeat(${levelConfig[level].gridSize}, minmax(0, 1fr))`,
                   maxWidth: 'min(600px, 90vw)',
@@ -1064,12 +1247,10 @@ return (
                       <button
                         key={cellKey}
                         onClick={() => toggleCell(rowIdx, colIdx)}
-                        className={`aspect-square flex items-center justify-center text-3xl font-black rounded-xl transition-all duration-200 border-4 relative ${
+                        className={`aspect-square flex items-center justify-center text-3xl font-black rounded-xl transition-all duration-200 border-2 relative ${
                           isSelected
-                            ? 'bg-gradient-to-br from-purple-500 to-pink-600 text-white scale-110 border-yellow-300 shadow-2xl z-10'
-                            : cell.isTarget
-                            ? 'bg-gradient-to-br from-green-400/50 to-emerald-500/50 text-white hover:bg-gradient-to-br hover:from-green-500 hover:to-emerald-600 border-green-300 shadow-lg'
-                            : 'bg-gradient-to-br from-white/90 to-gray-100 text-gray-800 hover:bg-white hover:scale-105 border-white/50 shadow-md'
+                            ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white scale-105 border-yellow-400 shadow-lg z-10'
+                            : 'bg-white text-gray-800 hover:bg-blue-50 hover:scale-102 border-gray-300 shadow-sm hover:shadow-md'
                         }`}
                         style={{
                           animation: isSelected ? 'pulse 0.5s ease-in-out' : 'none'
@@ -1077,12 +1258,9 @@ return (
                       >
                         {cell.letter}
                         {isSelected && (
-                          <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-base font-black text-white border-2 border-white shadow-lg">
+                          <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-base font-black text-white border-2 border-white shadow-lg">
                             {selectionIndex + 1}
                           </div>
-                        )}
-                        {cell.isTarget && !isSelected && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-ping"></div>
                         )}
                       </button>
                     );
@@ -1092,76 +1270,55 @@ return (
             </div>
 
             {/* Selection Info */}
-            <div className="mt-4 p-3 bg-gradient-to-r from-blue-500/30 to-cyan-600/30 backdrop-blur-sm rounded-xl border-2 border-white/30 shadow-lg">
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                <div className="text-center bg-gradient-to-br from-purple-500/40 to-pink-600/40 rounded-xl p-2 border border-white/20">
-                  <div className="text-sm text-white/80 font-bold">ගුප්ත වචනය</div>
-                  <div className="text-2xl font-black text-white">{puzzle ? puzzle.syllables.length : 0}</div>
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 shadow-sm">
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
+                  <div className="text-sm text-gray-600 font-bold mb-1">{t.secretWordText}</div>
+                  <div className="text-2xl font-black text-blue-600">{puzzle ? puzzle.syllables.length : 0}</div>
                 </div>
-                <div className="text-center bg-gradient-to-br from-yellow-500/40 to-orange-600/40 rounded-xl p-2 border border-white/20">
-                  <div className="text-sm text-white/80 font-bold">තෝරාගත් අකුරු</div>
+                <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
+                  <div className="text-sm text-gray-600 font-bold mb-1">{t.selectedLetters}</div>
                   <div className={`text-2xl font-black ${
-                    selectedCells.length === puzzle?.syllables.length ? 'text-green-300' : 'text-yellow-300'
+                    selectedCells.length === puzzle?.syllables.length ? 'text-green-500' : 'text-amber-500'
                   }`}>
                     {selectedCells.length}
                   </div>
                 </div>
-                <div className="text-center bg-gradient-to-br from-cyan-500/40 to-blue-600/40 rounded-xl p-2 border border-white/20">
-                  <div className="text-sm text-white/80 font-bold">උත්සාහ</div>
-                  <div className="text-2xl font-black text-white">{attempts}</div>
+                <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
+                  <div className="text-sm text-gray-600 font-bold mb-1">{t.attempts}</div>
+                  <div className="text-2xl font-black text-gray-800">{attempts}</div>
                 </div>
               </div>
               
-              <div className="bg-black/30 rounded-lg p-2">
-                <p className="text-center text-white text-sm font-medium">
-                  💡 <span className="font-bold">සටහන:</span> අකුරු අනුපිළිවෙලට තෝරන්න (1, 2, 3...)
+              <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg p-3 border border-blue-200">
+                <p className="text-center text-blue-800 text-sm font-medium">
+                  {t.note}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Panel - Hints & Feedback */}
-        {/* <div className="sticky top-0 z-50 space-y-3 mb-3">
-          AI Hints
-          {showHintPanel && aiHints.length > 0 && (
-            <div className="bg-gradient-to-r from-yellow-400/90 to-orange-500/90 backdrop-blur-sm rounded-2xl p-4 border-4 border-yellow-300 shadow-lg animate-bounce">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="text-2xl">💡</div>
-                <h4 className="text-lg font-black text-yellow-900">AI සහායක උපදෙස්</h4>
-                <div className="text-2xl">🤖</div>
+        {/* Feedback Messages */}
+        {feedback && (
+          <div className={`p-4 rounded-2xl text-center font-bold text-lg border shadow-lg animate-bounce ${
+            feedback.type === 'success'
+              ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-300'
+              : feedback.type === 'error'
+              ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-red-300'
+              : 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border-blue-300'
+          }`}>
+            <div className="flex items-center justify-center gap-3">
+              <div className="text-2xl">
+                {feedback.type === 'success' ? '🎉' : feedback.type === 'error' ? '🤔' : '💡'}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {aiHints.map((hint, idx) => (
-                  <div key={idx} className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-3 border-2 border-yellow-200">
-                    <p className="text-yellow-900 font-medium text-sm">{hint}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )} */}
-
-          {/* Feedback Messages */}
-          {feedback && (
-            <div className={`p-4 rounded-2xl text-center font-bold text-lg border-4 shadow-lg animate-bounce ${
-              feedback.type === 'success'
-                ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white border-green-300'
-                : feedback.type === 'error'
-                ? 'bg-gradient-to-r from-red-400 to-pink-500 text-white border-red-300'
-                : 'bg-gradient-to-r from-blue-400 to-cyan-500 text-white border-blue-300'
-            }`}>
-              <div className="flex items-center justify-center gap-3">
-                <div className="text-2xl">
-                  {feedback.type === 'success' ? '🎉' : feedback.type === 'error' ? '🤔' : '💡'}
-                </div>
-                <span>{feedback.message}</span>
-                <div className="text-2xl">
-                  {feedback.type === 'success' ? '✨' : feedback.type === 'error' ? '💪' : '👂'}
-                </div>
+              <span>{feedback.message}</span>
+              <div className="text-2xl">
+                {feedback.type === 'success' ? '✨' : feedback.type === 'error' ? '💪' : '👂'}
               </div>
             </div>
-          )}
-        {/* </div> */}
+          </div>
+        )}
       </div>
     </div>
 

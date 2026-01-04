@@ -8,6 +8,9 @@ require('dotenv').config();
 const userRoutes = require('./route/userroutes');
 const gameProfileRoutes = require('./route/gameProfileRoutes');
 
+const GameAttempt = require('./model/GameAttempt');
+const UserLevel = require('./model/UserLevel');
+
 const app = express();
 
 // ========================
@@ -511,6 +514,242 @@ app.get('/api/test-questions', verifyToken, async (req, res) => {
       success: false,
       error: error.message
     });
+  }
+});
+
+// Helper functions
+function getPreviousLevel(level) {
+  const levelOrder = ['basic', 'easy', 'medium', 'hard'];
+  const index = levelOrder.indexOf(level);
+  return index > 0 ? levelOrder[index - 1] : null;
+}
+
+function getNextLevel(level) {
+  const levelOrder = ['basic', 'easy', 'medium', 'hard'];
+  const index = levelOrder.indexOf(level);
+  return index < levelOrder.length - 1 ? levelOrder[index + 1] : null;
+}
+
+// Get user's level status
+app.get('/api/user/level-status', verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+    
+    const levelStatus = await UserLevel.getUserLevelStatus(userId);
+    
+    res.json({
+      success: true,
+      levelStatus: levelStatus
+    });
+  } catch (error) {
+    console.error('❌ Level status error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Update game progress and check for level unlocks
+app.post('/api/game/progress', verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { level, correct, word, timeTaken, sessionId } = req.body;
+    
+    // Save game attempt
+    const gameAttempt = new GameAttempt({
+      userId: userId,
+      level: level,
+      word: word,
+      correct: correct,
+      timeTaken: timeTaken,
+      sessionId: sessionId,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+    
+    await gameAttempt.save();
+    
+    // Update user level progress
+    const userLevel = await UserLevel.updateUserProgress(userId, {
+      level,
+      correct,
+      word,
+      timeTaken
+    });
+    
+    // Check if any new level was unlocked
+    const newUnlock = userLevel.unlockedLevels.find(level => 
+      !req.body.previouslyUnlockedLevels?.includes(level)
+    );
+    
+    res.json({
+      success: true,
+      levelStatus: {
+        currentLevel: userLevel.currentLevel,
+        unlockedLevels: userLevel.unlockedLevels,
+        levelProgress: userLevel.levelProgress
+      },
+      newUnlock: newUnlock ? {
+        level: newUnlock,
+        message: `Congratulations! You've unlocked the ${newUnlock} level!`
+      } : null
+    });
+    
+  } catch (error) {
+    console.error('❌ Game progress error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Manual level unlock (for admin/testing)
+app.post('/api/ai/unlock-level', verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { level } = req.body;
+    
+    // Get user level document
+    let userLevel = await UserLevel.findOne({ userId });
+    
+    if (!userLevel) {
+      userLevel = new UserLevel({
+        userId,
+        currentLevel: "basic",
+        unlockedLevels: ["basic"],
+        levelProgress: {
+          basic: { unlocked: true, unlockedAt: new Date() }
+        }
+      });
+    }
+    
+    // Check if level is valid
+    const validLevels = ['basic', 'easy', 'medium', 'hard'];
+    if (!validLevels.includes(level)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid level'
+      });
+    }
+    
+    // Check prerequisites
+    const previousLevel = getPreviousLevel(level);
+    if (previousLevel) {
+      // Check if previous level is unlocked and has sufficient progress
+      if (!userLevel.unlockedLevels.includes(previousLevel)) {
+        return res.status(400).json({
+          success: false,
+          error: `You must complete ${previousLevel} level first`
+        });
+      }
+      
+      const previousLevelData = userLevel.levelProgress[previousLevel];
+      if (previousLevelData.accuracy < 80 && previousLevelData.attempts < 10) {
+        return res.status(400).json({
+          success: false,
+          error: `You need 80% accuracy in ${previousLevel} level to unlock ${level}`
+        });
+      }
+    }
+    
+    // Unlock the level
+    if (!userLevel.unlockedLevels.includes(level)) {
+      userLevel.unlockedLevels.push(level);
+      userLevel.levelProgress[level].unlocked = true;
+      userLevel.levelProgress[level].unlockedAt = new Date();
+      
+      // Update current level to the highest unlocked level
+      const levelOrder = ['basic', 'easy', 'medium', 'hard'];
+      for (let i = levelOrder.length - 1; i >= 0; i--) {
+        if (userLevel.unlockedLevels.includes(levelOrder[i])) {
+          userLevel.currentLevel = levelOrder[i];
+          break;
+        }
+      }
+      
+      await userLevel.save();
+    }
+    
+    res.json({
+      success: true,
+      message: `Level ${level} unlocked successfully!`,
+      unlocked_level: level,
+      next_level: getNextLevel(level),
+      levelStatus: {
+        currentLevel: userLevel.currentLevel,
+        unlockedLevels: userLevel.unlockedLevels,
+        levelProgress: userLevel.levelProgress
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error unlocking level:', error);
+    res.status(500).json({ success: false, error: 'Failed to unlock level' });
+  }
+});
+
+// Get detailed level analytics
+app.get('/api/ai/level-analytics', verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+    
+    // Get level progress from GameAttempt collection
+    const levelStats = {};
+    const levels = ['basic', 'easy', 'medium', 'hard'];
+    
+    for (const level of levels) {
+      const stats = await GameAttempt.getLevelStats(userId, level);
+      levelStats[level] = stats;
+    }
+    
+    // Get user level status
+    const userLevel = await UserLevel.findOne({ userId });
+    
+    // Calculate which levels are unlocked
+    const unlockedLevels = userLevel ? userLevel.unlockedLevels : ['basic'];
+    
+    // Determine current level (highest unlocked level)
+    const levelOrder = ['basic', 'easy', 'medium', 'hard'];
+    let currentLevel = 'basic';
+    for (let i = levelOrder.length - 1; i >= 0; i--) {
+      if (unlockedLevels.includes(levelOrder[i])) {
+        currentLevel = levelOrder[i];
+        break;
+      }
+    }
+    
+    // Check if next level can be unlocked
+    let nextUnlockableLevel = null;
+    let isNextLevelUnlockable = false;
+    
+    if (currentLevel !== 'hard') {
+      const nextLevel = getNextLevel(currentLevel);
+      const currentLevelStats = levelStats[currentLevel];
+      
+      if (currentLevelStats.accuracy >= 80 && currentLevelStats.total >= 10) {
+        nextUnlockableLevel = nextLevel;
+        isNextLevelUnlockable = true;
+      }
+    }
+    
+    res.json({
+      success: true,
+      analytics: {
+        levelProgress: levelStats,
+        unlockedLevels: unlockedLevels,
+        currentLevel: currentLevel,
+        nextUnlockableLevel: nextUnlockableLevel,
+        isNextLevelUnlockable: isNextLevelUnlockable,
+        progressToNextLevel: levelStats[currentLevel]?.accuracy || 0,
+        requiredForNextLevel: 80
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error getting level analytics:', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
