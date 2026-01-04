@@ -1,0 +1,25 @@
+{
+  "model_path": "d:/shanuka git/SSL-Assistive-Tool/sign_language_app/latest model/best_sign_model_full_features.keras",
+  "input_shape": {
+    "frames": 50,
+    "features": 132,
+    "landmarks": 33
+  },
+  "output_shape": {
+    "classes": 383
+  },
+  "total_parameters": 5178495,
+  "total_layers": 27,
+  "layer_breakdown": {
+    "InputLayer": 1,
+    "Dense": 5,
+    "LayerNormalization": 2,
+    "Conv1D": 3,
+    "BatchNormalization": 4,
+    "Dropout": 9,
+    "MultiHeadAttention": 1,
+    "Bidirectional": 2
+  },
+  "improvement_factor": 33.0,
+  "expected_accuracy": "80-85%"
+}
