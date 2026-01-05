@@ -98,7 +98,7 @@ To empower children from the Deaf community in Sri Lanka by providing accessible
 
 ### Component 2: SSL Avatar Generation
 - **Location**: `Chathuka---Text-to-SSL-avatar` branch
-- **Technology**: Gemini API, React.js, Flask
+- **Technology**: Word2vec, Hybrid AI Context Engine, React.js, Flask
 - **Features**:
   - Text-to-gesture translation
   - Animated avatar generation
