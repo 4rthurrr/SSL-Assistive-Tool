@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL Image Generator - Educational Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .clear-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .examples {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .examples p {
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .example-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-tag {
+            padding: 8px 15px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .example-tag:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .image-container {
+            display: none;
+            text-align: center;
+        }
+
+        .generated-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .image-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .image-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .image-info p {
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .error {
+            display: none;
+            padding: 20px;
+            background: #fee;
+            border-left: 4px solid #e74c3c;
+            border-radius: 10px;
+            color: #c0392b;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 SSL Image Generator</h1>
+        <p class="subtitle">Educational tool for deaf children - Generate images for sign language learning</p>
+
+        <div class="examples">
+            <p>Quick Examples (Click to try):</p>
+            <div class="example-tags">
+                <span class="example-tag" onclick="fillExample('Mother')">Mother</span>
+                <span class="example-tag" onclick="fillExample('Father')">Father</span>
+                <span class="example-tag" onclick="fillExample('Teacher')">Teacher</span>
+                <span class="example-tag" onclick="fillExample('Book')">Book</span>
+                <span class="example-tag" onclick="fillExample('Hello')">Hello</span>
+                <span class="example-tag" onclick="fillExample('Thank you')">Thank you</span>
+                <span class="example-tag" onclick="fillExample('Happy')">Happy</span>
+                <span class="example-tag" onclick="fillExample('Elephant')">Elephant</span>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="wordInput">Enter a word to visualize:</label>
+            <input 
+                type="text" 
+                id="wordInput" 
+                placeholder="e.g., Mother, Book, Hello..." 
+                onkeypress="handleKeyPress(event)"
+            />
+        </div>
+
+        <div class="button-group">
+            <button class="generate-btn" onclick="generateImage()">
+                🎨 Generate Image
+            </button>
+            <button class="clear-btn" onclick="clearResults()">
+                🗑️ Clear
+            </button>
+        </div>
+
+        <div class="result-section">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating your image...</p>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <div class="image-container" id="imageContainer">
+                <img id="generatedImage" class="generated-image" alt="Generated image" />
+                <div class="image-info">
+                    <h3 id="imageWord"></h3>
+                    <p>This image helps children associate the sign with the word!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/fresh">← Back to Sign Recognition</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        function fillExample(word) {
+            document.getElementById('wordInput').value = word;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                generateImage();
+            }
+        }
+
+        async function generateImage() {
+            const wordInput = document.getElementById('wordInput');
+            const word = wordInput.value.trim();
+
+            if (!word) {
+                showError('Please enter a word first!');
+                return;
+            }
+
+            // Hide previous results
+            clearResults();
+
+            // Show loading
+            const loading = document.getElementById('loading');
+            const generateBtn = document.querySelector('.generate-btn');
+            loading.style.display = 'block';
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            try {
+                // Call backend API
+                const response = await fetch(`${API_URL}/generate-image`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: word,
+                        style: 'educational, child-friendly, simple illustration, colorful'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.image_url) {
+                    displayImage(data.image_url, data.text);
+                } else {
+                    showError(data.error || 'Failed to generate image');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please make sure the backend is running.');
+            } finally {
+                loading.style.display = 'none';
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🎨 Generate Image';
+            }
+        }
+
+        function displayImage(imageUrl, word) {
+            const imageContainer = document.getElementById('imageContainer');
+            const generatedImage = document.getElementById('generatedImage');
+            const imageWord = document.getElementById('imageWord');
+
+            // Set image
+            generatedImage.src = imageUrl;
+            imageWord.textContent = word;
+
+            // Show container
+            imageContainer.style.display = 'block';
+
+            // Log for debugging
+            console.log('Image generated:', imageUrl);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = `❌ Error: ${message}`;
+            errorDiv.style.display = 'block';
+        }
+
+        function clearResults() {
+            document.getElementById('imageContainer').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1e293b;
+            color: #fff;
+        }
+        .test { margin: 20px 0; padding: 15px; background: #334155; border-radius: 8px; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        button { padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 SSL400 App Connection Test</h1>
+    
+    <div class="test">
+        <h3>1. Server Health Check</h3>
+        <button onclick="testServer()">Test Server</button>
+        <p id="server-result">Click button to test...</p>
+    </div>
+
+    <div class="test">
+        <h3>2. CSS Loading</h3>
+        <p id="css-result">Checking...</p>
+    </div>
+
+    <div class="test">
+        <h3>3. JavaScript Loading</h3>
+        <p id="js-result">If you see this, JS is working ✅</p>
+    </div>
+
+    <div class="test">
+        <h3>4. Camera Access</h3>
+        <button onclick="testCamera()">Test Camera</button>
+        <p id="camera-result">Click button to test...</p>
+        <video id="test-video" width="320" height="240" autoplay style="border: 2px solid #4f46e5; border-radius: 8px; display: none;"></video>
+    </div>
+
+    <div class="test">
+        <h3>5. MediaPipe CDN</h3>
+        <button onclick="testMediaPipe()">Test MediaPipe</button>
+        <p id="mediapipe-result">Click button to test...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Update JS status
+        document.getElementById('js-result').innerHTML = '✅ JavaScript is working!';
+        document.getElementById('js-result').className = 'success';
+
+        // Test CSS
+        const cssTest = document.getElementById('css-result');
+        const computedStyle = window.getComputedStyle(document.body);
+        if (computedStyle.backgroundColor === 'rgb(30, 41, 59)') {
+            cssTest.innerHTML = '✅ CSS is loading correctly!';
+            cssTest.className = 'success';
+        } else {
+            cssTest.innerHTML = '❌ CSS might not be loading';
+            cssTest.className = 'error';
+        }
+
+        // Test server connection
+        async function testServer() {
+            const result = document.getElementById('server-result');
+            result.innerHTML = '⏳ Testing...';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/');
+                const data = await response.json();
+                
+                if (data.status === 'running') {
+                    result.innerHTML = `✅ Server connected! Model loaded: ${data.model_loaded}`;
+                    result.className = 'success';
+                } else {
+                    result.innerHTML = '⚠️ Server responded but status unclear';
+                    result.className = 'error';
+                }
+            } catch (error) {
+                result.innerHTML = `❌ Connection failed: ${error.message}`;
+                result.className = 'error';
+            }
+        }
+
+        // Test camera access
+        async function testCamera() {
+            const result = document.getElementById('camera-result');
+            const video = document.getElementById('test-video');
+            result.innerHTML = '⏳ Requesting camera access...';
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 320, height: 240 } 
+                });
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                result.innerHTML = '✅ Camera access granted! See video below.';
+                result.className = 'success';
+                
+                // Stop after 5 seconds
+                setTimeout(() => {
+                    stream.getTracks().forEach(track => track.stop());
+                    video.style.display = 'none';
+                    result.innerHTML += ' (Stopped after 5 seconds)';
+                }, 5000);
+                
+            } catch (error) {
+                result.innerHTML = `❌ Camera access failed: ${error.message}`;
+                result.className = 'error';
+            }
+        }
+
+        // Test MediaPipe
+        function testMediaPipe() {
+            const result = document.getElementById('mediapipe-result');
+            result.innerHTML = '⏳ Checking MediaPipe...';
+            
+            if (typeof Hands !== 'undefined') {
+                result.innerHTML = '✅ MediaPipe Hands loaded successfully!';
+                result.className = 'success';
+            } else {
+                result.innerHTML = '❌ MediaPipe Hands not loaded';
+                result.className = 'error';
+            }
+        }
+
+        // Auto-run server test
+        setTimeout(() => testServer(), 1000);
+    </script>
+</body>
+</html>
