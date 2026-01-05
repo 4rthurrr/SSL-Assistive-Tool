@@ -11,12 +11,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import numpy as np
 from contextlib import asynccontextmanager
+import httpx
+from google import genai
+from dotenv import load_dotenv
+import base64
+import io
 
 from model_loader import load_model, get_class_labels
 from landmark_utils import preprocess_landmarks
+from sinhala_translations import get_display_names
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -85,6 +94,8 @@ class PredictionResult(BaseModel):
     """Single prediction result"""
     sign: str
     confidence: float
+    sinhala: Optional[str] = None  # Sinhala translation
+    english: Optional[str] = None  # English word only
 
 
 class PredictResponse(BaseModel):
@@ -92,6 +103,22 @@ class PredictResponse(BaseModel):
     prediction: str
     confidence: float
     top_3: list[PredictionResult]
+    sinhala: Optional[str] = None  # Sinhala translation of top prediction
+    english: Optional[str] = None  # English word only of top prediction
+
+
+class ImageGenerationRequest(BaseModel):
+    """Request model for image generation"""
+    text: str
+    style: Optional[str] = "educational, child-friendly, simple illustration"
+
+
+class ImageGenerationResponse(BaseModel):
+    """Response model for image generation"""
+    success: bool
+    image_url: Optional[str] = None
+    error: Optional[str] = None
+    text: str
 
 
 @app.get("/")
@@ -169,30 +196,40 @@ async def predict_sign(request: PredictRequest):
         top_confidence = float(probabilities[top_index])
         top_sign = class_labels[top_index]
         
-        # Get top 3 predictions
+        # Get display names (English and Sinhala) for top prediction
+        top_display = get_display_names(top_sign)
+        
+        # Get top 3 predictions with translations
         top_3_indices = np.argsort(probabilities)[-3:][::-1]
-        top_3 = [
-            PredictionResult(
-                sign=class_labels[idx],
-                confidence=round(float(probabilities[idx]) * 100, 2)
+        top_3 = []
+        for idx in top_3_indices:
+            sign_name = class_labels[idx]
+            display = get_display_names(sign_name)
+            top_3.append(
+                PredictionResult(
+                    sign=sign_name,
+                    confidence=round(float(probabilities[idx]) * 100, 2),
+                    sinhala=display["sinhala"],
+                    english=display["english"]
+                )
             )
-            for idx in top_3_indices
-        ]
         
         # Log prediction with confidence assessment
         confidence_pct = top_confidence * 100
         if confidence_pct >= 70:
-            logger.info(f"✅ HIGH CONFIDENCE: {top_sign} ({confidence_pct:.2f}%)")
+            logger.info(f"✅ HIGH CONFIDENCE: {top_sign} ({confidence_pct:.2f}%) - සිංහල: {top_display['sinhala']}")
         elif confidence_pct >= 50:
-            logger.info(f"⚠️ MEDIUM CONFIDENCE: {top_sign} ({confidence_pct:.2f}%)")
+            logger.info(f"⚠️ MEDIUM CONFIDENCE: {top_sign} ({confidence_pct:.2f}%) - සිංහල: {top_display['sinhala']}")
         else:
-            logger.warning(f"❌ LOW CONFIDENCE: {top_sign} ({confidence_pct:.2f}%) - May be inaccurate!")
-            logger.warning(f"   Top 3: {', '.join([f'{c.sign} ({c.confidence}%)' for c in top_3])}")
+            logger.warning(f"❌ LOW CONFIDENCE: {top_sign} ({confidence_pct:.2f}%) - සිංහල: {top_display['sinhala']}")
+            logger.warning(f"   Top 3: {', '.join([f'{c.english}/{c.sinhala} ({c.confidence}%)' for c in top_3])}")
         
         return PredictResponse(
             prediction=top_sign,
             confidence=round(top_confidence * 100, 2),
-            top_3=top_3
+            top_3=top_3,
+            sinhala=top_display["sinhala"],
+            english=top_display["english"]
         )
         
     except ValueError as e:
@@ -201,6 +238,115 @@ async def predict_sign(request: PredictRequest):
     except Exception as e:
         logger.error(f"Prediction error: {e}")
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
+@app.post("/generate-image", response_model=ImageGenerationResponse)
+async def generate_image(request: ImageGenerationRequest):
+    """
+    Generate educational images using Pollinations.ai with API key
+    Creates AI-generated educational illustrations for sign language learning
+    
+    Args:
+        request: Contains text to generate image from
+        
+    Returns:
+        Image URL from Pollinations.ai
+    """
+    try:
+        # Extract text and clean it
+        text = request.text.strip()
+        
+        if not text:
+            raise HTTPException(status_code=400, detail="Text cannot be empty")
+        
+        # Remove category prefix if present (e.g., "Greetings/Hello" -> "Hello")
+        if "/" in text:
+            text = text.split("/")[-1].strip()
+        
+        logger.info(f"Generating AI image for '{text}' using Pollinations.ai")
+        
+        import urllib.parse
+        
+        # Create enhanced educational prompt
+        prompt = f"{text}, educational illustration, child-friendly, colorful cartoon style, simple design, bright colors, suitable for teaching deaf children, clear and easy to understand"
+        
+        # Get Pollinations.ai API key from environment
+        api_key = os.getenv("POLLINATIONS_API_KEY", "")
+        
+        if not api_key:
+            logger.warning("POLLINATIONS_API_KEY not found, using free endpoint")
+        
+        # Try authenticated API first
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            try:
+                # Authenticated API endpoint
+                api_url = "https://enter.pollinations.ai/api/generate"
+                
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                }
+                
+                payload = {
+                    "prompt": prompt,
+                    "model": "flux",
+                    "width": 512,
+                    "height": 512,
+                    "nologo": True,
+                    "enhance": True
+                }
+                
+                logger.info(f"Calling Pollinations.ai authenticated API")
+                response = await client.post(api_url, json=payload, headers=headers)
+                response.raise_for_status()
+                
+                result = response.json()
+                
+                # Extract image URL from response
+                if "url" in result:
+                    image_url = result["url"]
+                elif "image" in result:
+                    image_data = result["image"]
+                    if not image_data.startswith("data:"):
+                        image_url = f"data:image/png;base64,{image_data}"
+                    else:
+                        image_url = image_data
+                else:
+                    # Use URL from response or construct it
+                    encoded_prompt = urllib.parse.quote(prompt)
+                    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=512&height=512&nologo=true&enhance=true"
+                
+                logger.info(f"✅ Generated AI image for '{text}' using authenticated API")
+                
+            except Exception as api_error:
+                logger.warning(f"Authenticated API failed: {api_error}, using free URL method")
+                # Fallback to free URL-based method
+                encoded_prompt = urllib.parse.quote(prompt)
+                image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=400&height=400&nologo=true&enhance=true"
+                logger.info(f"✅ Generated AI image for '{text}' using free URL method")
+        
+        return ImageGenerationResponse(
+            success=True,
+            image_url=image_url,
+            text=text
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Image generation error: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        
+        # Provide informative fallback
+        import urllib.parse
+        encoded_text = urllib.parse.quote(text)
+        fallback_url = f"https://via.placeholder.com/400x400/667eea/ffffff?text={encoded_text}"
+        
+        return ImageGenerationResponse(
+            success=False,
+            image_url=fallback_url,
+            text=text
+        )
 
 
 @app.get("/classes")
@@ -259,6 +405,22 @@ async def serve_fresh():
     if not fresh_file.exists():
         raise HTTPException(status_code=404, detail="Fresh frontend not found")
     return FileResponse(str(fresh_file))
+
+@app.get("/image-generator")
+async def serve_image_generator():
+    """Serve the image generator page"""
+    generator_file = FRONTEND_DIR / "image_generator.html"
+    if not generator_file.exists():
+        raise HTTPException(status_code=404, detail="Image generator page not found")
+    return FileResponse(str(generator_file))
+
+@app.get("/test-simple")
+async def serve_test_simple():
+    """Serve simple test page"""
+    test_file = FRONTEND_DIR / "test_simple.html"
+    if not test_file.exists():
+        raise HTTPException(status_code=404, detail="Test page not found")
+    return FileResponse(str(test_file))
 
 # Mount static files at /static/ (MUST be last - it's a wildcard catch-all)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
