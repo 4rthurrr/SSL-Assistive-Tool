@@ -1,6 +1,6 @@
 # SSL-Assistive-Tool 🤟
 
-**AI-Powered Sinhala Sign Language Assistive Technology Platform for Deaf/Mute Children**
+**AI-Powered Sinhala Sign Language Assistive Technology Platform for the Deaf Community**
 
 [![Research Project](https://img.shields.io/badge/Type-Research%20Project-blue.svg)](https://github.com/4rthurrr/SSL-Assistive-Tool)
 [![Status](https://img.shields.io/badge/Status-Active%20Development-green.svg)](https://github.com/4rthurrr/SSL-Assistive-Tool)
@@ -21,11 +21,11 @@
 
 ## 🎯 Overview
 
-SSL-Assistive-Tool is an innovative research project aimed at breaking communication barriers for deaf and mute children in Sri Lanka through AI-powered Sinhala Sign Language (SSL) technology. The platform combines cutting-edge computer vision, natural language processing, and machine learning to create a comprehensive assistive technology solution.
+SSL-Assistive-Tool is an innovative research project aimed at breaking communication barriers for children from the Deaf community in Sri Lanka through AI-powered Sinhala Sign Language (SSL) technology. The platform combines cutting-edge computer vision, natural language processing, and machine learning to create a comprehensive assistive technology solution.
 
 ### Mission
 
-To empower deaf and mute children in Sri Lanka by providing accessible, AI-driven tools that facilitate communication, learning, and social interaction through Sinhala Sign Language recognition and generation.
+To empower children from the Deaf community in Sri Lanka by providing accessible, AI-driven tools that facilitate communication, learning, and social interaction through Sinhala Sign Language recognition and generation.
 
 ### Research Focus
 
@@ -336,6 +336,6 @@ For research inquiries, collaborations, or support:
 
 ---
 
-**Made with ❤️ for the deaf and mute community of Sri Lanka**
+**Made with ❤️ for the Deaf community of Sri Lanka**
 
 *Last Updated: January 2026*
