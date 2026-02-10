@@ -140,11 +140,11 @@ def translate_sinhala_context(text):
                     break
             
             for check_word in candidates_to_check:
-                print(f"🔍 AI Checking Sinhala synonym for: '{check_word}'...")
+                print(f"🧪 [NOVELTY #7 CHECK] analyzing unknown word form: '{check_word}'...")
                 closest_word, score = ai_embeddings.get_closest_word(check_word, known_sinhala_keys)
                 
                 if closest_word:
-                     print(f"✅ AI Match (Sinhala): '{check_word}' ~ '{closest_word}' ({score:.2f})")
+                     print(f"✅ [AI SUCCESS] Recovered Concept: '{check_word}' -> '{closest_word}' (Confidence: {score:.2f})")
                      canonical = get_canonical(closest_word)
                      if canonical:
                          break

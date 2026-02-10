@@ -118,24 +118,73 @@ def step3_normalize_concepts(concept_sequence):
 
     return normalized_sequence
 
+
+# List of Concept IDs that function as Verbs (for SOV Reordering)
+VERB_CONCEPTS = {
+    "CONCEPT_GO", "CONCEPT_COME", "CONCEPT_EAT", "CONCEPT_DRINK", "CONCEPT_SLEEP", 
+    "CONCEPT_RUN", "CONCEPT_WALK", "CONCEPT_JUMP", "CONCEPT_SIT", "CONCEPT_STAND", 
+    "CONCEPT_DANCE", "CONCEPT_PLAY", "CONCEPT_WASH", "CONCEPT_COOK", "CONCEPT_CUT", 
+    "CONCEPT_DRAW", "CONCEPT_WRITE", "CONCEPT_READ", "CONCEPT_WATCH", "CONCEPT_SEE", 
+    "CONCEPT_LISTEN", "CONCEPT_TALK", "CONCEPT_TELL", "CONCEPT_GIVE", "CONCEPT_TAKE", 
+    "CONCEPT_BRING", "CONCEPT_BUY", "CONCEPT_SELL", "CONCEPT_HELP", "CONCEPT_LOVE", 
+    "CONCEPT_LIKE", "CONCEPT_WANT", "CONCEPT_STOP", "CONCEPT_OPEN", "CONCEPT_CLOSE",
+    "CONCEPT_MAKE", "CONCEPT_USE", "CONCEPT_WORK", "CONCEPT_STUDY", "CONCEPT_TEACH"
+}
+
+NEGATION_CONCEPTS = {
+    "CONCEPT_NO", "CONCEPT_NOT", "CONCEPT_DONT", "CONCEPT_CANT", "CONCEPT_NONE", 
+    "CONCEPT_NOT_GOOD", "CONCEPT_NOT_LIKE", "CONCEPT_NOT_LIKE_(DISLIKE)"
+}
+
+QUESTION_CONCEPTS = {
+    "CONCEPT_WHAT", "CONCEPT_WHERE", "CONCEPT_WHO", "CONCEPT_WHY", "CONCEPT_WHEN", 
+    "CONCEPT_HOW_MANY", "CONCEPT_HOW_MUCH", "CONCEPT_WHICH", "CONCEPT_WHOSE", "CONCEPT_WHOM"
+}
+
+TIME_CONCEPTS = {
+    "CONCEPT_TODAY", "CONCEPT_TOMORROW", "CONCEPT_YESTERDAY", "CONCEPT_NOW", 
+    "CONCEPT_MORNING", "CONCEPT_EVENING", "CONCEPT_NIGHT", "CONCEPT_WEEK", 
+    "CONCEPT_MONTH", "CONCEPT_YEAR", "CONCEPT_DAY_AFTER_TOMORROW"
+}
+
 def step4_apply_ssl_grammar(concept_sequence):
     """
     STEP 4: SSL GRAMMAR REORDERING
-    - Reorder Concept IDs according to SSL grammar.
+    - Reorder Concept IDs according to SSL grammar (Subject-Object-Verb).
     - Remove tense markers / stop concepts.
     """
     final_sequence = []
     
-    # 1. Filter Stop Concepts (Subject Drop etc.)
-    filtered_sequence = [cid for cid in concept_sequence if cid not in STOP_CONCEPTS]
+    # 1. Filter Stop Concepts
+    # Expand to include 'TO' which is often implicit in SSL
+    EXPANDED_STOP_CONCEPTS = STOP_CONCEPTS.union({"CONCEPT_TO", "CONCEPT_OF"})
     
-    # 2. Reordering Logic (Basic SOV Validation)
-    # Since Sinhala IS SOV, and SSL is SOV, we mainly need to keep the order 
-    # but ensure specific constructs like Time comes first, Questions last.
+    clean_sequence = [cid for cid in concept_sequence if cid not in EXPANDED_STOP_CONCEPTS]
     
-    # Simple Pass-through for now as Sinhala input order "Mama Potha Kiyawanawa" (Subject Object Verb)
-    # matches SSL "Book Read" (Object Verb) after Subject drop.
-    final_sequence = filtered_sequence
+    # 2. Reordering Logic (Time -> SOV -> Negation -> Question)
+    narrative_verbs = []
+    negations = []
+    questions = []
+    time_markers = []
+    other_concepts = []
+    
+    for cid in clean_sequence:
+        if cid in VERB_CONCEPTS:
+            narrative_verbs.append(cid)
+        elif cid in NEGATION_CONCEPTS:
+            negations.append(cid)
+        elif cid in QUESTION_CONCEPTS:
+            questions.append(cid)
+        elif cid in TIME_CONCEPTS:
+            time_markers.append(cid)
+        else:
+            other_concepts.append(cid)
+            
+    # Reassemble: [Time] + [Subject/Objects] + [Verbs] + [Negation] + [Question]
+    final_sequence = time_markers + other_concepts + narrative_verbs + negations + questions
+    
+    if any([narrative_verbs, negations, questions, time_markers]):
+        print(f"   🔄 Grammar Reordered: Time={time_markers} SOV={other_concepts}+{narrative_verbs} Neg={negations} Q={questions}")
     
     return final_sequence
 

@@ -249,6 +249,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_NO": {'label': 'No', 'sinhala': 'නෑ', 'synonyms': ['නෑ', 'නැහැ']},
     "CONCEPT_NONE": {'label': 'None', 'sinhala': 'කිසිවක් නැත', 'synonyms': ['කිසිවක් නැත']},
     "CONCEPT_NOSE": {'label': 'Nose', 'sinhala': 'නහය', 'synonyms': ['නහය']},
+    "CONCEPT_NOT": {'label': 'Not', 'sinhala': 'නෑ', 'synonyms': ['නෑ', 'නැහැ']},
     "CONCEPT_NOT_GOOD": {'label': 'Not good', 'sinhala': 'හොඳ නෑ', 'synonyms': ['හොඳ නෑ']},
     "CONCEPT_NOT_LIKE": {'label': 'Not like', 'sinhala': 'කැමති නැහැ', 'synonyms': ['කැමති නැහැ', 'අකමැතියි']},
     "CONCEPT_NOT_LIKE_(DISLIKE)": {'label': 'Not like (dislike)', 'sinhala': 'කැමති නෑ', 'synonyms': ['කැමති නෑ']},
