@@ -29,4 +29,14 @@ server.log
 *.mp4
 
 # Dataset
+backend/Dataset*Original/
 backend/Dataset - Original/
+Dataset - Original/
+**/Dataset - Original/
+
+
+
+# Large Data Files
+backend/data/grammar_dataset.csv
+backend/data/grammar_dataset_augmented.csv
+backend/data/training_data.json

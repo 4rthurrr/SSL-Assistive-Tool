@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from nlp_grammar import get_ssl_sequence, get_ssl_display_sequence
+from nlp_grammar import get_ssl_sequence, get_ssl_display_sequence # Legacy Rule-based
+# from inference_engine import LearnedInference
+from concepts import get_sinhala_display
 from video_manager import find_video_path
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 import os
@@ -30,6 +32,11 @@ AVATAR_DIR = "assets/avatars"
 if not os.path.exists(AVATAR_DIR):
     os.makedirs(AVATAR_DIR)
 
+# Init Learned Model
+# print("⌛ Initializing Learned Inference Engine...")
+# learned_engine = LearnedInference()
+# print("✅ Inference Engine Ready.")
+
 @app.route('/translate', methods=['POST'])
 def translate():
     try:
@@ -45,9 +52,12 @@ def translate():
         processed_text = process_input(text)
         print(f"🧠 Processed Text: '{processed_text}'")
         
-        # 2. Get SSL Grammar
-        ssl_words = get_ssl_sequence(processed_text)
+        # 2. Get SSL Grammar (Fully Learned)
+        ssl_words = get_ssl_sequence(processed_text) # Old Rule-based
         ssl_display_words = get_ssl_display_sequence(ssl_words)
+        
+        # ssl_words = learned_engine.translate(processed_text)
+        # ssl_display_words = [get_sinhala_display(c) or c for c in ssl_words]
         print(f"🔤 SSL Sequence: {ssl_words}")
         print(f"🔤 SSL Display: {ssl_display_words}")
         
