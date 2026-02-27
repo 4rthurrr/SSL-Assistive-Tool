@@ -100,6 +100,7 @@ def translate():
                     "end": current_time
                 })
 
+
         if not generated_clips:
             return jsonify({
                 "error": "No videos found", 
