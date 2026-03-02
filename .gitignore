@@ -83,3 +83,12 @@ build/
 # Docker
 .docker/
 docker-compose.override.yml
+
+# Python virtual environment
+venv/
+venv_new/
+Backend/venv_new/
+
+# Python
+__pycache__/
+*.pyc
