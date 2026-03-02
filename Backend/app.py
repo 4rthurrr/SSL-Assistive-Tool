@@ -17,6 +17,10 @@ import hashlib
 from google import genai
 from dotenv import load_dotenv
 
+# Fix Unicode encoding for Windows
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 # Load environment variables from .env file
 load_dotenv()
 print(f"🔑 GEMINI_API_KEY loaded: {'Yes' if os.getenv('GEMINI_API_KEY') else 'No'}")
@@ -28,10 +32,6 @@ try:
 except Exception as e:
     print(f"⚠️ MongoDB integration failed: {e}")
     mongodb_manager = None
-
-# Fix Unicode encoding for Windows
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -154,7 +154,7 @@ class StruggleDetector:
 struggle_detector = StruggleDetector()
 
 # ========================
-# AI HINTS - FIXED GEMINI IMPLEMENTATION
+# AI HINTS - IMPROVED GEMINI HINT GENERATION
 # ========================
 ai_hint_cache = {}
 
@@ -164,63 +164,119 @@ def _anonymize_user(user_id: str) -> str:
     except Exception:
         return 'anon'
 
-def generate_ai_hint(user_id, word, english, attempt_count, recent_attempts, level='basic'):
-    """Generate AI hint using Gemini API"""
-    key = f"{user_id}:{word}:{attempt_count}:{level}"
-    if key in ai_hint_cache:
-        return {'cached': True, 'hint': ai_hint_cache[key]}
+def generate_ai_hint(user_id, sinhala_word, english_word, attempt_count, recent_attempts, level='basic'):
+    """Generate a short, clue-style hint using Gemini API"""
+    cache_key = f"{user_id}:{sinhala_word}:{attempt_count}:{level}"
+    
+    # Check cache first
+    if cache_key in ai_hint_cache:
+        print(f"📦 Using cached hint for {sinhala_word}")
+        return {
+            'cached': True, 
+            'hint': ai_hint_cache[cache_key],
+            'hint_type': 'clue'
+        }
 
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
         print("⚠️ GEMINI_API_KEY not set")
-        return {'cached': False, 'hint': None, 'error': 'API key not configured'}
+        return {
+            'cached': False, 
+            'hint': None, 
+            'error': 'API key not configured'
+        }
 
     try:
         # Initialize Gemini client
         client = genai.Client(api_key=api_key)
         
-        # Build prompt
-        user_hash = _anonymize_user(user_id)
-        prompt = f"""You are a friendly sign language tutor for children. Generate a short, encouraging hint.
+        # Build prompt for clue-style hint (exactly like your example)
+        prompt = f"""Secret word: "{sinhala_word}" (which means "{english_word}" in English)
+Give one short clue without saying the word.
+Max 8 words.
 
-Context:
-- User: {user_hash}
-- Word: {word} ({english})
-- Attempt: {attempt_count}
-- Level: {level}
+Output format:
+🔎 Hint: [your clue here]"""
 
-Generate a JSON response with:
-- hint_text: Short encouraging tip (1-2 sentences)
-- micro_activity: Quick practice suggestion (<=30 seconds)
-- language: "si" or "en"
-
-Keep it positive and age-appropriate. Don't reveal the exact answer."""
-
-        # Call Gemini API (use correct model name for google-genai v1.x)
+        print(f"🤔 Generating hint for: {sinhala_word} ({english_word})")
+        
+        # Call Gemini API
         response = client.models.generate_content(
-            model='gemini-2.0-flash-exp',  # or 'gemini-1.5-pro' or 'gemini-1.5-flash-latest'
+            model="gemini-2.5-flash",  # Using free tier model
             contents=prompt
         )
         
-        # Extract text from response
-        hint_text = response.text if hasattr(response, 'text') else str(response)
+        # Extract hint text
+        if hasattr(response, 'text'):
+            hint_text = response.text.strip()
+        else:
+            hint_text = str(response).strip()
         
-        # Try to parse JSON, fallback to raw text
-        try:
-            hint_data = json.loads(hint_text.strip())
-            formatted_hint = f"{hint_data.get('hint_text', '')} {hint_data.get('micro_activity', '')}"
-        except:
-            formatted_hint = hint_text.strip()
+        # Clean up the hint - remove the "🔎 Hint:" prefix if present
+        if hint_text.startswith('🔎 Hint:'):
+            hint_text = hint_text.replace('🔎 Hint:', '').strip()
+        elif hint_text.startswith('Hint:'):
+            hint_text = hint_text.replace('Hint:', '').strip()
+        
+        # Ensure it's short
+        words = hint_text.split()
+        if len(words) > 8:
+            hint_text = ' '.join(words[:8]) + '...'
+        
+        # Format with emoji
+        formatted_hint = f"🔎 Hint: {hint_text}"
         
         # Cache the hint
-        if formatted_hint:
-            ai_hint_cache[key] = formatted_hint
-            
-        return {'cached': False, 'hint': formatted_hint}
+        ai_hint_cache[cache_key] = formatted_hint
+        print(f"✅ Generated hint: {formatted_hint}")
+        
+        return {
+            'cached': False, 
+            'hint': formatted_hint,
+            'hint_type': 'clue'
+        }
         
     except Exception as e:
         print(f"⚠️ AI hint generation failed: {e}")
-        return {'cached': False, 'hint': None, 'error': str(e)}
+        
+        # Fallback hints based on word characteristics
+        fallback_hints = {
+            # Common Sinhala words with simple clues
+            'අම්මා': '🔎 Hint: 👩 The person who takes care of you',
+            'තාත්තා': '🔎 Hint: 👨 The head of the family',
+            'බල්ලා': '🔎 Hint: 🐕 A loyal pet that barks',
+            'පූසා': '🔎 Hint: 🐈 A furry pet that meows',
+            'ගස': '🔎 Hint: 🌳 Gives us shade and fruit',
+            'මල': '🔎 Hint: 🌸 Beautiful and fragrant',
+            'වතුර': '🔎 Hint: 💧 Clear liquid we drink',
+            'කිරි': '🔎 Hint: 🥛 White drink from cows',
+            'පාන්': '🔎 Hint: 🍞 Common breakfast food',
+            'බත්': '🔎 Hint: 🍚 Staple food in Sri Lanka',
+            'හිරු': '🔎 Hint: ☀️ Gives us light during the day',
+            'සඳ': '🔎 Hint: 🌙 Seen in the night sky',
+            'තරු': '🔎 Hint: ⭐ Twinkle in the night sky',
+            'මුහුද': '🔎 Hint: 🌊 Large body of salt water',
+            'ගඟ': '🔎 Hint: 💧 Flowing water body',
+            'කුරුල්ලා': '🔎 Hint: 🐦 Animal that can fly',
+            'මාළුවා': '🔎 Hint: 🐟 Lives in water',
+            'අලියා': '🔎 Hint: 🐘 Large animal with trunk',
+            'සිංහයා': '🔎 Hint: 🦁 King of the jungle',
+            'පුස්තකාලය': '🔎 Hint: 📚 Place with many books'
+        }
+        
+        if sinhala_word in fallback_hints:
+            return {
+                'cached': False, 
+                'hint': fallback_hints[sinhala_word],
+                'hint_type': 'fallback'
+            }
+        
+        # Generic fallback
+        return {
+            'cached': False, 
+            'hint': f"🔎 Hint: This word is about {english_word.lower()}",
+            'hint_type': 'generic'
+        }
 
 # ========================
 # MODEL
@@ -381,7 +437,7 @@ def record_attempt():
     try:
         data = request.json
         user_id = data.get('user_id', 'default')
-        word = data.get('word')
+        word = data.get('word')  # This is the Sinhala word
         level = data.get('level', 'basic')
         correct = data.get('correct', False)
         time_taken = data.get('time_taken', 0)
@@ -408,28 +464,91 @@ def record_attempt():
                 print(f"✅ Attempt saved: {saved}")
             except Exception as e:
                 print(f"⚠️ MongoDB save failed: {e}")
-                # Continue anyway - don't fail the request
         
         # Track in memory
         struggle_detector.record_attempt(user_id, word, level, correct, time_taken)
         attempt_count = struggle_detector.get_attempt_count(user_id, word)
         
-        # Generate AI hint if struggling
+        # Calculate wrong attempts for this specific word in current session
+        recent_attempts = list(struggle_detector.attempt_history.get(user_id, []))
+        wrong_attempts_for_word = sum(1 for a in recent_attempts 
+                                      if a['word'] == word and not a['correct'])
+        
+        # Check if game over condition reached (5 wrong attempts)
+        game_over = wrong_attempts_for_word >= 5
+        
+        # Generate AI hint if attempt count >= 2 and not correct
         ai_hint_result = None
         if not correct and attempt_count >= 2:
-            recent = list(struggle_detector.attempt_history.get(user_id, []))[-6:]
+            print(f"🎯 Generating hint for {word} (attempt #{attempt_count})")
+            recent = recent_attempts[-6:]
+            english_word = label_to_english.get(word, '')
+            
             ai_hint_result = generate_ai_hint(
-                user_id, word, label_to_english.get(word, ''), 
-                attempt_count, recent, level
+                user_id, 
+                word,  # Sinhala word
+                english_word,  # English translation
+                attempt_count, 
+                recent, 
+                level
             )
         
-        return jsonify({
+        # Prepare response
+        response_data = {
             'success': True,
             'saved': saved,
             'attempt_number': attempt_count,
-            'ai_hint': ai_hint_result.get('hint') if ai_hint_result else None,
-            'ai_hint_cached': ai_hint_result.get('cached', False) if ai_hint_result else False
+            'wrong_attempts': wrong_attempts_for_word,
+            'game_over': game_over,
+            'hint': ai_hint_result.get('hint') if ai_hint_result else None,
+            'hint_type': ai_hint_result.get('hint_type') if ai_hint_result else None,
+            'hint_cached': ai_hint_result.get('cached', False) if ai_hint_result else False
+        }
+        
+        # If game over, include the correct word
+        if game_over:
+            response_data['correct_word'] = word
+            response_data['correct_english'] = label_to_english.get(word, '')
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ai/hint', methods=['POST'])
+def get_hint_direct():
+    """Direct endpoint to get a hint for a word"""
+    try:
+        data = request.json
+        user_id = data.get('user_id', 'default')
+        word = data.get('word')  # Sinhala word
+        level = data.get('level', 'basic')
+        
+        if not word:
+            return jsonify({'success': False, 'error': 'Word is required'}), 400
+        
+        english_word = label_to_english.get(word, '')
+        attempt_count = struggle_detector.get_attempt_count(user_id, word)
+        recent = list(struggle_detector.attempt_history.get(user_id, []))[-6:]
+        
+        ai_hint_result = generate_ai_hint(
+            user_id, 
+            word,
+            english_word,
+            attempt_count + 1,
+            recent,
+            level
+        )
+        
+        return jsonify({
+            'success': True,
+            'word': word,
+            'english': english_word,
+            'hint': ai_hint_result.get('hint'),
+            'hint_type': ai_hint_result.get('hint_type')
         })
+        
     except Exception as e:
         print(f"❌ Error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -496,16 +615,26 @@ def get_progress_report():
                     'correct_attempts': 0
                 }
         
+        # Count how many hints were given
+        hint_count = 0
+        for a in attempts:
+            if not a.get('correct', True):
+                word = a.get('word')
+                if word and struggle_detector.get_attempt_count(user_id, word) >= 2:
+                    hint_count += 1
+        
         report = {
             'summary': {
                 'words_learned': words_learned,
                 'overall_accuracy': round(accuracy, 1),
                 'total_attempts': total,
-                'correct_attempts': correct
+                'correct_attempts': correct,
+                'hints_given': hint_count
             },
             'level_progress': level_progress,
             'insights': [
-                "🌟 Great progress!" if accuracy >= 70 else "💪 Keep practicing!"
+                "🌟 Great progress!" if accuracy >= 70 else "💪 Keep practicing!",
+                f"💡 You used {hint_count} hints to learn new words" if hint_count > 0 else "💡 Ask for hints when you're stuck!"
             ]
         }
         

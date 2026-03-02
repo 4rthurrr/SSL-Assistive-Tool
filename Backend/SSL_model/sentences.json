@@ -1,0 +1,1016 @@
+{
+  "level_1": [
+    {
+      "words": [
+        "දරුවා",
+        "ඇවිදිනවා"
+      ],
+      "sinhala": "දරුවා ඇවිදිනවා",
+      "english": "Child walks"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "දුවනවා"
+      ],
+      "sinhala": "දරුවා දුවනවා",
+      "english": "Child runs"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "නිදාගන්නවා"
+      ],
+      "sinhala": "දරුවා නිදාගන්නවා",
+      "english": "Child sleeps"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "අඬනවා"
+      ],
+      "sinhala": "දරුවා අඬනවා",
+      "english": "Child cries"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "හිනාවෙනවා"
+      ],
+      "sinhala": "දරුවා හිනාවෙනවා",
+      "english": "Child laughs"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "නටනවා"
+      ],
+      "sinhala": "දරුවා නටනවා",
+      "english": "Child dances"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "පනිනවා"
+      ],
+      "sinhala": "දරුවා පනිනවා",
+      "english": "Child jumps"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "සෙල්ලම් කරනවා"
+      ],
+      "sinhala": "දරුවා සෙල්ලම් කරනවා",
+      "english": "Child plays"
+    },
+    {
+      "words": [
+        "බබා",
+        "නිදාගන්නවා"
+      ],
+      "sinhala": "බබා නිදාගන්නවා",
+      "english": "Baby sleeps"
+    },
+    {
+      "words": [
+        "බබා",
+        "අඬනවා"
+      ],
+      "sinhala": "බබා අඬනවා",
+      "english": "Baby cries"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "එනවා"
+      ],
+      "sinhala": "අම්මා එනවා",
+      "english": "Mother comes"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "යනවා"
+      ],
+      "sinhala": "අම්මා යනවා",
+      "english": "Mother goes"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "උයනවා"
+      ],
+      "sinhala": "අම්මා උයනවා",
+      "english": "Mother cooks"
+    },
+    {
+      "words": [
+        "තාත්තා",
+        "එනවා"
+      ],
+      "sinhala": "තාත්තා එනවා",
+      "english": "Father comes"
+    },
+    {
+      "words": [
+        "තාත්තා",
+        "යනවා"
+      ],
+      "sinhala": "තාත්තා යනවා",
+      "english": "Father goes"
+    },
+    {
+      "words": [
+        "තාත්තා",
+        "වැඩ කරනවා"
+      ],
+      "sinhala": "තාත්තා වැඩ කරනවා",
+      "english": "Father works"
+    },
+    {
+      "words": [
+        "අක්කා",
+        "නටනවා"
+      ],
+      "sinhala": "අක්කා නටනවා",
+      "english": "Sister dances"
+    },
+    {
+      "words": [
+        "අයියා",
+        "දුවනවා"
+      ],
+      "sinhala": "අයියා දුවනවා",
+      "english": "Brother runs"
+    },
+    {
+      "words": [
+        "පූසා",
+        "ඇවිදිනවා"
+      ],
+      "sinhala": "පූසා ඇවිදිනවා",
+      "english": "Cat walks"
+    },
+    {
+      "words": [
+        "පූසා",
+        "දුවනවා"
+      ],
+      "sinhala": "පූසා දුවනවා",
+      "english": "Cat runs"
+    },
+    {
+      "words": [
+        "පූසා",
+        "නිදාගන්නවා"
+      ],
+      "sinhala": "පූසා නිදාගන්නවා",
+      "english": "Cat sleeps"
+    },
+    {
+      "words": [
+        "අලියා",
+        "ඇවිදිනවා"
+      ],
+      "sinhala": "අලියා ඇවිදිනවා",
+      "english": "Elephant walks"
+    },
+    {
+      "words": [
+        "මම",
+        "එනවා"
+      ],
+      "sinhala": "මම එනවා",
+      "english": "I come"
+    },
+    {
+      "words": [
+        "මම",
+        "යනවා"
+      ],
+      "sinhala": "මම යනවා",
+      "english": "I go"
+    },
+    {
+      "words": [
+        "මම",
+        "නිදාගන්නවා"
+      ],
+      "sinhala": "මම නිදාගන්නවා",
+      "english": "I sleep"
+    },
+    {
+      "words": [
+        "මම",
+        "කනවා"
+      ],
+      "sinhala": "මම කනවා",
+      "english": "I eat"
+    },
+    {
+      "words": [
+        "මම",
+        "බොනවා"
+      ],
+      "sinhala": "මම බොනවා",
+      "english": "I drink"
+    },
+    {
+      "words": [
+        "මම",
+        "දුවනවා"
+      ],
+      "sinhala": "මම දුවනවා",
+      "english": "I run"
+    },
+    {
+      "words": [
+        "මම",
+        "නටනවා"
+      ],
+      "sinhala": "මම නටනවා",
+      "english": "I dance"
+    },
+    {
+      "words": [
+        "මම",
+        "හිනාවෙනවා"
+      ],
+      "sinhala": "මම හිනාවෙනවා",
+      "english": "I laugh"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "එනවා"
+      ],
+      "sinhala": "ඔයා එනවා",
+      "english": "You come"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "යනවා"
+      ],
+      "sinhala": "ඔයා යනවා",
+      "english": "You go"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "කනවා"
+      ],
+      "sinhala": "ඔයා කනවා",
+      "english": "You eat"
+    },
+    {
+      "words": [
+        "අපි",
+        "යනවා"
+      ],
+      "sinhala": "අපි යනවා",
+      "english": "We go"
+    },
+    {
+      "words": [
+        "අපි",
+        "එනවා"
+      ],
+      "sinhala": "අපි එනවා",
+      "english": "We come"
+    },
+    {
+      "words": [
+        "අපි",
+        "කනවා"
+      ],
+      "sinhala": "අපි කනවා",
+      "english": "We eat"
+    },
+    {
+      "words": [
+        "මම",
+        "බඩගිනියි"
+      ],
+      "sinhala": "මම බඩගිනියි",
+      "english": "I am hungry"
+    },
+    {
+      "words": [
+        "මම",
+        "පිපාසයි"
+      ],
+      "sinhala": "මම පිපාසයි",
+      "english": "I am thirsty"
+    },
+    {
+      "words": [
+        "මම",
+        "සතුටුයි"
+      ],
+      "sinhala": "මම සතුටුයි",
+      "english": "I am happy"
+    },
+    {
+      "words": [
+        "මම",
+        "මහන්සියි"
+      ],
+      "sinhala": "මම මහන්සියි",
+      "english": "I am tired"
+    },
+    {
+      "words": [
+        "මම",
+        "හොඳයි"
+      ],
+      "sinhala": "මම හොඳයි",
+      "english": "I am good"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "බඩගිනියි"
+      ],
+      "sinhala": "දරුවා බඩගිනියි",
+      "english": "Child is hungry"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "සතුටුයි"
+      ],
+      "sinhala": "දරුවා සතුටුයි",
+      "english": "Child is happy"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "හොඳයි"
+      ],
+      "sinhala": "දරුවා හොඳයි",
+      "english": "Child is good"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "ලස්සනයි"
+      ],
+      "sinhala": "අම්මා ලස්සනයි",
+      "english": "Mother is beautiful"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "හොඳයි"
+      ],
+      "sinhala": "අම්මා හොඳයි",
+      "english": "Mother is good"
+    },
+    {
+      "words": [
+        "පවුල",
+        "හොඳයි"
+      ],
+      "sinhala": "පවුල හොඳයි",
+      "english": "Family is good"
+    },
+    {
+      "words": [
+        "බබා",
+        "පුංචියි"
+      ],
+      "sinhala": "බබා පුංචියි",
+      "english": "Baby is small"
+    }
+  ],
+  "level_2": [
+    {
+      "words": [
+        "මම",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "මම බත් කනවා",
+      "english": "I eat rice"
+    },
+    {
+      "words": [
+        "මම",
+        "කිරි",
+        "බොනවා"
+      ],
+      "sinhala": "මම කිරි බොනවා",
+      "english": "I drink milk"
+    },
+    {
+      "words": [
+        "මම",
+        "කෑම",
+        "කනවා"
+      ],
+      "sinhala": "මම කෑම කනවා",
+      "english": "I eat food"
+    },
+    {
+      "words": [
+        "මම",
+        "පරිගණකය",
+        "බලනවා"
+      ],
+      "sinhala": "මම පරිගණකය බලනවා",
+      "english": "I look at the computer"
+    },
+    {
+      "words": [
+        "මම",
+        "කාරේ",
+        "ගන්නවා"
+      ],
+      "sinhala": "මම කාරේ ගන්නවා",
+      "english": "I buy a car"
+    },
+    {
+      "words": [
+        "මම",
+        "බෑගය",
+        "රැගෙනයනවා"
+      ],
+      "sinhala": "මම බෑගය රැගෙනයනවා",
+      "english": "I carry the bag"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "අම්මා බත් කනවා",
+      "english": "Mother eats rice"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "කෑම",
+        "උයනවා"
+      ],
+      "sinhala": "අම්මා කෑම උයනවා",
+      "english": "Mother cooks food"
+    },
+    {
+      "words": [
+        "තාත්තා",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "තාත්තා බත් කනවා",
+      "english": "Father eats rice"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "දරුවා බත් කනවා",
+      "english": "Child eats rice"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "කෑම",
+        "කනවා"
+      ],
+      "sinhala": "දරුවා කෑම කනවා",
+      "english": "Child eats food"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "පරිගණකය",
+        "බලනවා"
+      ],
+      "sinhala": "දරුවා පරිගණකය බලනවා",
+      "english": "Child looks at computer"
+    },
+    {
+      "words": [
+        "අපි",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "අපි බත් කනවා",
+      "english": "We eat rice"
+    },
+    {
+      "words": [
+        "අපි",
+        "කෑම",
+        "කනවා"
+      ],
+      "sinhala": "අපි කෑම කනවා",
+      "english": "We eat food"
+    },
+    {
+      "words": [
+        "මම",
+        "ගෙදරට",
+        "යනවා"
+      ],
+      "sinhala": "මම ගෙදරට යනවා",
+      "english": "I go home"
+    },
+    {
+      "words": [
+        "මම",
+        "පාසලට",
+        "යනවා"
+      ],
+      "sinhala": "මම පාසලට යනවා",
+      "english": "I go to school"
+    },
+    {
+      "words": [
+        "මම",
+        "රෝහලට",
+        "යනවා"
+      ],
+      "sinhala": "මම රෝහලට යනවා",
+      "english": "I go to hospital"
+    },
+    {
+      "words": [
+        "මම",
+        "සාප්පුවට",
+        "යනවා"
+      ],
+      "sinhala": "මම සාප්පුවට යනවා",
+      "english": "I go to the shop"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "ගෙදරට",
+        "එනවා"
+      ],
+      "sinhala": "අම්මා ගෙදරට එනවා",
+      "english": "Mother comes home"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "පාසලට",
+        "යනවා"
+      ],
+      "sinhala": "දරුවා පාසලට යනවා",
+      "english": "Child goes to school"
+    },
+    {
+      "words": [
+        "වෛද්‍යවරයා",
+        "ගෙදරට",
+        "එනවා"
+      ],
+      "sinhala": "වෛද්‍යවරයා ගෙදරට එනවා",
+      "english": "Doctor comes home"
+    },
+    {
+      "words": [
+        "මම",
+        "අම්මාට",
+        "උදව් කරනවා"
+      ],
+      "sinhala": "මම අම්මාට උදව් කරනවා",
+      "english": "I help mother"
+    },
+    {
+      "words": [
+        "මම",
+        "වෛද්‍යවරයාට",
+        "හමුවෙනවා"
+      ],
+      "sinhala": "මම වෛද්‍යවරයාට හමුවෙනවා",
+      "english": "I meet the doctor"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "දරුවාට",
+        "උගන්වනවා"
+      ],
+      "sinhala": "අම්මා දරුවාට උගන්වනවා",
+      "english": "Mother teaches child"
+    },
+    {
+      "words": [
+        "වෛද්‍යවරයා",
+        "දරුවාට",
+        "උදව් කරනවා"
+      ],
+      "sinhala": "වෛද්‍යවරයා දරුවාට උදව් කරනවා",
+      "english": "Doctor helps child"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "දරුවාට",
+        "දෙනවා"
+      ],
+      "sinhala": "අම්මා දරුවාට දෙනවා",
+      "english": "Mother gives to child"
+    },
+    {
+      "words": [
+        "මම",
+        "හොඳ",
+        "කෑම",
+        "කනවා"
+      ],
+      "sinhala": "මම හොඳ කෑම කනවා",
+      "english": "I eat good food"
+    }
+  ],
+  "level_3": [
+    {
+      "words": [
+        "මම",
+        "බත්",
+        "කෑවා"
+      ],
+      "sinhala": "මම බත් කෑවා",
+      "english": "I ate rice"
+    },
+    {
+      "words": [
+        "මම",
+        "පොත",
+        "කියෙව්වා"
+      ],
+      "sinhala": "මම පොත කියෙව්වා",
+      "english": "I read the book"
+    },
+    {
+      "words": [
+        "මම",
+        "රෝහලට",
+        "ගියා"
+      ],
+      "sinhala": "මම රෝහලට ගියා",
+      "english": "I went to hospital"
+    },
+    {
+      "words": [
+        "මම",
+        "සාප්පුවට",
+        "ගියා"
+      ],
+      "sinhala": "මම සාප්පුවට ගියා",
+      "english": "I went to the shop"
+    },
+    {
+      "words": [
+        "මම",
+        "පාසලට",
+        "ගියා"
+      ],
+      "sinhala": "මම පාසලට ගියා",
+      "english": "I went to school"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "කෑම",
+        "කෑවා"
+      ],
+      "sinhala": "අම්මා කෑම කෑවා",
+      "english": "Mother ate food"
+    },
+    {
+      "words": [
+        "අම්මා",
+        "කෑම",
+        "උයලා"
+      ],
+      "sinhala": "අම්මා කෑම උයලා",
+      "english": "Mother cooked food"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "පාසලට",
+        "ගියා"
+      ],
+      "sinhala": "දරුවා පාසලට ගියා",
+      "english": "Child went to school"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "ගෙදරට",
+        "ආවා"
+      ],
+      "sinhala": "දරුවා ගෙදරට ආවා",
+      "english": "Child came home"
+    },
+    {
+      "words": [
+        "දරුවා",
+        "කෑම",
+        "කෑවා"
+      ],
+      "sinhala": "දරුවා කෑම කෑවා",
+      "english": "Child ate food"
+    },
+    {
+      "words": [
+        "අපි",
+        "ගෙදරට",
+        "ආවා"
+      ],
+      "sinhala": "අපි ගෙදරට ආවා",
+      "english": "We came home"
+    },
+    {
+      "words": [
+        "අපි",
+        "පාසලට",
+        "ගියා"
+      ],
+      "sinhala": "අපි පාසලට ගියා",
+      "english": "We went to school"
+    },
+    {
+      "words": [
+        "වෛද්‍යවරයා",
+        "දරුවාට",
+        "උදව් කළා"
+      ],
+      "sinhala": "වෛද්‍යවරයා දරුවාට උදව් කළා",
+      "english": "Doctor helped child"
+    },
+    {
+      "words": [
+        "අද",
+        "මම",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "අද මම බත් කනවා",
+      "english": "Today I eat rice"
+    },
+    {
+      "words": [
+        "අද",
+        "මම",
+        "පාසලට",
+        "යනවා"
+      ],
+      "sinhala": "අද මම පාසලට යනවා",
+      "english": "Today I go to school"
+    },
+    {
+      "words": [
+        "අද",
+        "අම්මා",
+        "කෑම",
+        "උයනවා"
+      ],
+      "sinhala": "අද අම්මා කෑම උයනවා",
+      "english": "Today mother cooks food"
+    },
+    {
+      "words": [
+        "අද",
+        "දරුවා",
+        "පාසලට",
+        "යනවා"
+      ],
+      "sinhala": "අද දරුවා පාසලට යනවා",
+      "english": "Today child goes to school"
+    },
+    {
+      "words": [
+        "ඊයේ",
+        "මම",
+        "බත්",
+        "කෑවා"
+      ],
+      "sinhala": "ඊයේ මම බත් කෑවා",
+      "english": "Yesterday I ate rice"
+    },
+    {
+      "words": [
+        "ඊයේ",
+        "දරුවා",
+        "පාසලට",
+        "ගියා"
+      ],
+      "sinhala": "ඊයේ දරුවා පාසලට ගියා",
+      "english": "Yesterday child went to school"
+    },
+    {
+      "words": [
+        "ඊයේ",
+        "අපි",
+        "ගෙදරට",
+        "ආවා"
+      ],
+      "sinhala": "ඊයේ අපි ගෙදරට ආවා",
+      "english": "Yesterday we came home"
+    },
+    {
+      "words": [
+        "හෙට",
+        "මම",
+        "රෝහලට",
+        "යනවා"
+      ],
+      "sinhala": "හෙට මම රෝහලට යනවා",
+      "english": "Tomorrow I go to hospital"
+    },
+    {
+      "words": [
+        "හෙට",
+        "අම්මා",
+        "ගෙදරට",
+        "එනවා"
+      ],
+      "sinhala": "හෙට අම්මා ගෙදරට එනවා",
+      "english": "Tomorrow mother comes home"
+    },
+    {
+      "words": [
+        "උදේ",
+        "මම",
+        "කෑම",
+        "කනවා"
+      ],
+      "sinhala": "උදේ මම කෑම කනවා",
+      "english": "In the morning I eat food"
+    },
+    {
+      "words": [
+        "උදේ",
+        "මම",
+        "බත්",
+        "කනවා"
+      ],
+      "sinhala": "උදේ මම බත් කනවා",
+      "english": "In the morning I eat rice"
+    },
+    {
+      "words": [
+        "හවස",
+        "දරුවා",
+        "සෙල්ලම් කරනවා"
+      ],
+      "sinhala": "හවස දරුවා සෙල්ලම් කරනවා",
+      "english": "In the evening child plays"
+    },
+    {
+      "words": [
+        "රෑ",
+        "බබා",
+        "නිදාගන්නවා"
+      ],
+      "sinhala": "රෑ බබා නිදාගන්නවා",
+      "english": "At night baby sleeps"
+    },
+    {
+      "words": [
+        "අද",
+        "අම්මා",
+        "දරුවාට",
+        "කිරි",
+        "දෙනවා"
+      ],
+      "sinhala": "අද අම්මා දරුවාට කිරි දෙනවා",
+      "english": "Today mother gives milk to child"
+    },
+    {
+      "words": [
+        "අද",
+        "වෛද්‍යවරයා",
+        "දරුවාට",
+        "බෙහෙත්",
+        "දෙනවා"
+      ],
+      "sinhala": "අද වෛද්‍යවරයා දරුවාට බෙහෙත් දෙනවා",
+      "english": "Today doctor gives medicine to child"
+    },
+    {
+      "words": [
+        "අද",
+        "මම",
+        "අම්මාට",
+        "උදව් කරනවා"
+      ],
+      "sinhala": "අද මම අම්මාට උදව් කරනවා",
+      "english": "Today I help mother"
+    },
+    {
+      "words": [
+        "අද",
+        "ගුරුවරයා",
+        "දරුවාට",
+        "උගන්වනවා"
+      ],
+      "sinhala": "අද ගුරුවරයා දරුවාට උගන්වනවා",
+      "english": "Today teacher teaches child"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "බත්",
+        "කනවා",
+        "ද"
+      ],
+      "sinhala": "ඔයා බත් කනවා ද",
+      "english": "Do you eat rice?"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "පාසලට",
+        "යනවා",
+        "ද"
+      ],
+      "sinhala": "ඔයා පාසලට යනවා ද",
+      "english": "Do you go to school?"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "රෝහලට",
+        "යනවා",
+        "ද"
+      ],
+      "sinhala": "ඔයා රෝහලට යනවා ද",
+      "english": "Do you go to hospital?"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "බත්",
+        "මොකද",
+        "කනවා"
+      ],
+      "sinhala": "ඔයා බත් මොකද කනවා",
+      "english": "What are you eating?"
+    },
+    {
+      "words": [
+        "ඔයා",
+        "කොහෙද",
+        "යනවා"
+      ],
+      "sinhala": "ඔයා කොහෙද යනවා",
+      "english": "Where are you going?"
+    },
+    {
+      "words": [
+        "අපි",
+        "බත්",
+        "කමු"
+      ],
+      "sinhala": "අපි බත් කමු",
+      "english": "Let's eat rice"
+    },
+    {
+      "words": [
+        "අපි",
+        "පාසලට",
+        "යමු"
+      ],
+      "sinhala": "අපි පාසලට යමු",
+      "english": "Let's go to school"
+    },
+    {
+      "words": [
+        "අපි",
+        "ගෙදරට",
+        "යමු"
+      ],
+      "sinhala": "අපි ගෙදරට යමු",
+      "english": "Let's go home"
+    },
+    {
+      "words": [
+        "අපි",
+        "සෙල්ලම් කරමු"
+      ],
+      "sinhala": "අපි සෙල්ලම් කරමු",
+      "english": "Let's play"
+    },
+    {
+      "words": [
+        "අපි",
+        "පොත",
+        "කියවමු"
+      ],
+      "sinhala": "අපි පොත කියවමු",
+      "english": "Let's read a book"
+    }
+  ]
+}

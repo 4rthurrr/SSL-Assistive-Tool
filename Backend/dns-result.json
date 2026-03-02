@@ -1,0 +1,27 @@
+{
+  "srv": [
+    {
+      "name": "ac-twrrg6d-shard-00-02.8tb8jax.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0
+    },
+    {
+      "name": "ac-twrrg6d-shard-00-01.8tb8jax.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0
+    },
+    {
+      "name": "ac-twrrg6d-shard-00-00.8tb8jax.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0
+    }
+  ],
+  "txt": [
+    [
+      "authSource=admin&replicaSet=atlas-a3tzo1-shard-0"
+    ]
+  ]
+}
