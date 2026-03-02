@@ -14,12 +14,14 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from collections import defaultdict
+from urllib.parse import quote
 
 import numpy as np
 import cv2
 from flask import Flask, request, jsonify, send_file, session
 from flask_cors import CORS
 from flask_session import Session
+
 
 # Fix Unicode encoding for Windows
 if sys.stdout.encoding != 'utf-8':
@@ -30,9 +32,10 @@ if sys.stdout.encoding != 'utf-8':
 # ========================
 class Config:
     # Paths - UPDATE THESE FOR YOUR SYSTEM
-    MODEL_DIR = r"/content/drive/MyDrive/SSL_model_v8"  # Colab path
-    # For local Windows, use:
-    # MODEL_DIR = r"D:\Downloads-D\Game_V2\Game_V2\Backend\SSL_model"
+  
+    MODEL_DIR = r"D:\Downloads-D\Game_V2\Game_V2\Backend\SSL_model"
+    # For Colab, use:
+    # MODEL_DIR = r"/content/drive/MyDrive/SSL_model_v8"
     
     VIDEO_OUT = os.path.join(MODEL_DIR, "sentence_videos")
     SECRET_KEY = 'ssl_game_secret_key_2024_v8'
@@ -89,13 +92,13 @@ print(f"🔌 CORS enabled for localhost:3000, 5173")
 # ========================
 # LOAD MODEL & METADATA
 # ========================
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"🖥 Device: {device}")
-
-# Import torch (do this after printing to see device)
+# Import torch first
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"🖥 Device: {device}")
 
 # ========================
 # MODEL DEFINITIONS (must match training)
@@ -657,8 +660,11 @@ class GameEngine:
             
             # Generate video URL
             safe_name = sent['sinhala'].replace(' ', '_')[:40]
-            video_filename = f"{level_id}_{i:02d}_{safe_name}.mp4"
-            video_url = f"/api/sentence-video/{video_filename}"
+            # Convert level_1, level_2, level_3 to L1, L2, L3 to match actual files
+            level_prefix = level_id.replace('level_', 'L')
+            video_filename = f"{level_prefix}_{i:02d}_{safe_name}.mp4"
+            # URL-encode the filename to handle special characters (Sinhala text)
+            video_url = f"/api/sentence-video/{quote(video_filename, safe='')}"
             
             questions.append({
                 "id": str(uuid.uuid4())[:8],
@@ -1078,23 +1084,34 @@ def serve_sentence_video(filename):
         
         video_path = os.path.join(Config.VIDEO_OUT, filename)
         print(f"📹 Serving video: {filename}")
+        print(f"   Full path: {video_path}")
         
         if not os.path.exists(video_path):
+            print(f"   ❌ File not found: {video_path}")
+            print(f"   Available files: {os.listdir(Config.VIDEO_OUT)[:5]}")
             # Try to find alternative
             base_name = filename.split('_')[0] if '_' in filename else filename
             for f in os.listdir(Config.VIDEO_OUT):
                 if base_name in f and f.endswith('.mp4'):
                     video_path = os.path.join(Config.VIDEO_OUT, f)
-                    print(f"   Found alternative: {f}")
+                    print(f"   ✅ Found alternative: {f}")
                     break
             else:
-                return jsonify({'error': 'Video not found'}), 404
+                print(f"   ❌ No alternative found for base: {base_name}")
+                return jsonify({'error': 'Video not found', 'requested': filename}), 404
         
-        return send_file(video_path, mimetype='video/mp4')
+        response = send_file(video_path, mimetype='video/mp4')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        print(f"   ✅ Sent video successfully")
+        return response
         
     except Exception as e:
         print(f"❌ Video serving error: {e}")
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'type': type(e).__name__}), 500
 
 
 @app.route('/api/debug-questions/<level_id>', methods=['GET'])

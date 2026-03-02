@@ -822,7 +822,7 @@ const SignLanguageGame = () => {
 
         {/* Video / Sentence Area */}
         <div className="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-[25px] p-10 border-4 border-indigo-200 min-h-[200px] flex items-center justify-center mb-6">
-          <div className="text-center w-full">
+          <div className="text-center w-full" key={`video-container-${currentQuestion.id}`}>
             {currentQuestion.video_url ? (
               <video
                 key={currentQuestion.id}
@@ -830,16 +830,30 @@ const SignLanguageGame = () => {
                 autoPlay loop muted playsInline
                 className="max-h-[200px] rounded-xl mx-auto"
                 onError={e => {
+                  console.error('❌ Video load error:', e.target.src);
+                  console.error('Error code:', e.target.error?.code, e.target.error?.message);
                   e.target.style.display = 'none';
                   const parent = e.target.parentNode;
+                  
+                  // Remove any existing fallback divs
+                  const existingFallbacks = parent.querySelectorAll('.video-fallback');
+                  existingFallbacks.forEach(f => f.remove());
+                  
                   const fallback = document.createElement('div');
-                  fallback.className = 'text-center';
+                  fallback.className = 'text-center video-fallback';
                   fallback.innerHTML = `
                     <div class="text-7xl mb-4">👋</div>
                     <p class="text-4xl font-black text-gray-800 mb-3">${currentQuestion.sinhala || currentQuestion.sentence_sinhala || ''}</p>
                     <p class="text-2xl text-gray-600 font-bold">${currentQuestion.english || currentQuestion.sentence_english || ''}</p>
                   `;
                   parent.appendChild(fallback);
+                }}
+                onLoadedData={(e) => {
+                  console.log('✅ Video loaded:', currentQuestion.video_url);
+                  // Remove any fallback divs if video loaded successfully
+                  const parent = e.target.parentNode;
+                  const fallbacks = parent.querySelectorAll('.video-fallback');
+                  fallbacks.forEach(f => f.remove());
                 }}
               />
             ) : (
