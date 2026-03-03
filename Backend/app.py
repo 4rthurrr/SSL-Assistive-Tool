@@ -45,8 +45,9 @@ CORS(app, resources={
 # ========================
 # PATHS
 # ========================
-MODEL_DIR = r"D:\Downloads-D\Game_V2\Game_V2\\Backend\SSL_model"
-VIDEO_DIR = r"D:\Downloads-D\Game_V2\Game_V2\Backend\public\Dataset - Original-20251215T123918Z-3-001"
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(_BASE_DIR, "SSL_model")
+VIDEO_DIR = os.path.join(_BASE_DIR, "Dataset - Original")
 
 # ========================
 # GLOBAL STORAGE

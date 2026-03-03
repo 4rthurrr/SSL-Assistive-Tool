@@ -46,7 +46,7 @@ function App() {
     setShowConfetti(false);
 
     try {
-      const res = await axios.post("http://localhost:5001/translate", {
+      const res = await axios.post("http://localhost:5002/translate", {
         text: inputText,
         style: avatarStyle,
       });

@@ -1,34 +1,46 @@
 import subprocess
 import sys
+import os
 import time
 
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+SERVERS = [
+    {"script": "app.py",               "label": "Game API       ", "port": 5001},
+    {"script": "app_translator.py",     "label": "SSL Translator ", "port": 5002},
+    {"script": "flask_sentence_game.py","label": "Sentence Game  ", "port": 5003},
+]
+
 def main():
-    print("🚀 Starting both backend servers...")
-    
-    # Start app.py
-    process1 = subprocess.Popen([sys.executable, "app.py"])
-    print("✅ Started app.py (Main Backend)")
-    
-    # Wait a moment to ensure ports don't clash on startup
-    time.sleep(2)
-    
-    # Start flask_sentence_game.py
-    process2 = subprocess.Popen([sys.executable, "flask_sentence_game.py"])
-    print("✅ Started flask_sentence_game.py (Sentence Game Backend)")
-    
-    print("\n⚠️ Press Ctrl+C to stop both servers\n")
-    
+    print("="*55)
+    print(" SSL Assistive Tool — Flask Server Launcher")
+    print("="*55)
+
+    processes = []
+    for srv in SERVERS:
+        script_path = os.path.join(BASE, srv["script"])
+        proc = subprocess.Popen(
+            [sys.executable, script_path],
+            cwd=BASE,
+        )
+        processes.append(proc)
+        print(f"  [+] {srv['label']}  ->  http://localhost:{srv['port']}  (PID {proc.pid})")
+        time.sleep(1)   # slight stagger to avoid startup races
+
+    print()
+    print("  All servers started.  Press Ctrl+C to stop all.")
+    print("="*55)
+
     try:
-        # Wait for both processes
-        process1.wait()
-        process2.wait()
+        for p in processes:
+            p.wait()
     except KeyboardInterrupt:
-        print("\n🛑 Stopping servers...")
-        process1.terminate()
-        process2.terminate()
-        process1.wait()
-        process2.wait()
-        print("✅ Servers stopped.")
+        print("\n  Stopping all servers...")
+        for p in processes:
+            p.terminate()
+        for p in processes:
+            p.wait()
+        print("  All servers stopped.")
 
 if __name__ == "__main__":
     main()
