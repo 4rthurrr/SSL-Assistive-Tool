@@ -4,13 +4,6 @@
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: "Fredoka", sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #fff9e6);
-    overflow-x: hidden;
-}
-
 .kids-app {
     min-height: 100vh;
     padding: 14px;
@@ -22,6 +15,31 @@ body {
     padding: 10px;
     text-align: center;
     margin-bottom: 12px;
+    position: relative;
+}
+
+.header-nav {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-bottom: 6px;
+}
+
+.nav-btn {
+    background: #6c63ff;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.nav-btn:hover {
+    background: #554fd8;
+    transform: scale(1.05);
+    color: white;
 }
 
 .kids-header h1 {

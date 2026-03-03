@@ -157,7 +157,7 @@ def translate():
                             
                             if result_path and os.path.exists(result_path):
                                 print(f"✅ AI Video Success: {result_path}")
-                                video_url = f"http://localhost:5000/{OUTPUT_DIR}/{ai_filename}"
+                                video_url = f"http://localhost:5001/{OUTPUT_DIR}/{ai_filename}"
                                 return jsonify({
                                     "video_url": video_url, 
                                     "ssl_grammar": ssl_words, 
@@ -184,7 +184,7 @@ def translate():
             
             if success:
                 print("✅ Skeleton Generation Successful!")
-                video_url = f"http://localhost:5000/{OUTPUT_DIR}/{sk_filename}"
+                video_url = f"http://localhost:5001/{OUTPUT_DIR}/{sk_filename}"
                 return jsonify({
                     "video_url": video_url, 
                     "ssl_grammar": ssl_words, 
@@ -198,7 +198,7 @@ def translate():
 
         
         # Default Return (Normal Video)
-        video_url = f"http://localhost:5000/{OUTPUT_DIR}/{filename}"
+        video_url = f"http://localhost:5001/{OUTPUT_DIR}/{filename}"
         return jsonify({
             "video_url": video_url, 
             "ssl_grammar": ssl_words, 
@@ -253,4 +253,4 @@ def serve_video(filename):
     return send_from_directory(OUTPUT_DIR, filename)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)

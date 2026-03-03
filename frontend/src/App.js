@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
 
@@ -45,7 +46,7 @@ function App() {
     setShowConfetti(false);
 
     try {
-      const res = await axios.post("http://localhost:5000/translate", {
+      const res = await axios.post("http://localhost:5001/translate", {
         text: inputText,
         style: avatarStyle,
       });
@@ -97,6 +98,10 @@ function App() {
   return (
     <div className="kids-app">
       <header className="kids-header">
+        <div className="header-nav">
+          <Link to="/" className="nav-btn">🏠 Home</Link>
+          <Link to="/game-register" className="nav-btn">🎮 Games</Link>
+        </div>
         <h1>🦁 Sign Language Buddy 🐘</h1>
         <p>සිංහලෙන් කියන්න, අපි Sign කරලා පෙන්වන්නම් 🤟</p>
       </header>

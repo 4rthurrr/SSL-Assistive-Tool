@@ -19,10 +19,7 @@
 body {
   margin: 0;
   font-family: 'Comic Neue', cursive, sans-serif;
-  background-color: var(--bg-color);
-  background-image: radial-gradient(#FFD700 10%, transparent 11%), radial-gradient(#00A6ED 10%, transparent 11%);
-  background-size: 40px 40px;
-  background-position: 0 0, 20px 20px;
+  background-color: #ffffff;
   color: var(--text-color);
   overflow-x: hidden;
 }
@@ -34,6 +31,10 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(#FFD700 10%, transparent 11%), radial-gradient(#00A6ED 10%, transparent 11%);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
 }
 
 .main-container {
