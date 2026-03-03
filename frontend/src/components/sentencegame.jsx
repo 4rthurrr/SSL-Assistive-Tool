@@ -6,7 +6,7 @@ import {
   AlertCircle, XCircle, TrendingUp, Medal
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5002/api';
+const API_URL = 'http://localhost:5003/api';
 
 const SignLanguageGame = () => {
   const [gameState, setGameState] = useState('map');
@@ -270,7 +270,7 @@ const SignLanguageGame = () => {
 
     } catch (error) {
       console.error('Error starting level:', error);
-      setError('Failed to connect to game server. Make sure the backend is running on port 5002.');
+      setError('Failed to connect to game server. Make sure the backend is running on port 5003.');
     } finally {
       setLoading(false);
     }
@@ -826,7 +826,7 @@ const SignLanguageGame = () => {
             {currentQuestion.video_url ? (
               <video
                 key={currentQuestion.id}
-                src={`http://localhost:5002${currentQuestion.video_url}`}
+                src={`http://localhost:5003${currentQuestion.video_url}`}
                 autoPlay loop muted playsInline
                 className="max-h-[200px] rounded-xl mx-auto"
                 onError={e => {
