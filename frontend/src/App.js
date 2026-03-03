@@ -8,6 +8,7 @@ function App() {
   const [meaningText, setMeaningText] = useState("");
   const [videoUrl, setVideoUrl] = useState(null);
   const [grammarSequence, setGrammarSequence] = useState([]);
+  const [animationBlocks, setAnimationBlocks] = useState([]);  // per-clause ordered blocks
   const [wordTimings, setWordTimings] = useState([]);
   const [activeWordIndex, setActiveWordIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
@@ -52,7 +53,18 @@ function App() {
       });
 
       setVideoUrl(res.data.video_url || null);
-      setGrammarSequence(res.data.ssl_grammar_display || []);
+
+      // Prefer per-clause animation_blocks (new parser) for ordered chip display
+      const blocks = res.data.animation_blocks || [];
+      if (blocks.length > 0) {
+        setAnimationBlocks(blocks);
+        // Build flat sequence from blocks for backward-compat highlighting
+        setGrammarSequence(blocks.flatMap(b => b.display_sinhala || []));
+      } else {
+        setAnimationBlocks([]);
+        setGrammarSequence(res.data.ssl_grammar_display || []);
+      }
+
       setWordTimings(res.data.word_timings || []);
     } catch (e) {
       alert("අපොයි! පොඩි ගැටලුවක්. ආයේ උත්සාහ කරන්න 😊");
@@ -169,17 +181,39 @@ function App() {
 
                 <div className="sign-box">
                   <h3>🤟 අපි Sign කරන්නෙ:</h3>
-                  <div className="chips">
-                    {grammarSequence.map((w, i) => (
-                      <span
-                        key={i}
-                        className={`chip ${i === activeWordIndex ? "active" : ""
-                          }`}
-                      >
-                        {w}
-                      </span>
-                    ))}
-                  </div>
+                  {animationBlocks.length > 0 ? (
+                    // Per-clause display — each clause is a separate chip row
+                    <div className="clause-blocks">
+                      {animationBlocks.map((block, bi) => (
+                        <div key={bi} className="clause-row">
+                          {block.display_sinhala.map((w, wi) => {
+                            // Map word back to overall flat index for highlight
+                            const flatIdx = animationBlocks
+                              .slice(0, bi)
+                              .reduce((acc, b) => acc + (b.display_sinhala?.length || 0), 0) + wi;
+                            return (
+                              <span
+                                key={wi}
+                                className={`chip ${flatIdx === activeWordIndex ? "active" : ""}`}
+                              >
+                                {w}
+                              </span>
+                            );
+                          })}
+                          {block.tense && block.tense !== "UNKNOWN" && (
+                            <span className="tense-badge">{block.tense === "PAST" ? "⬅️" : block.tense === "FUTURE" ? "➡️" : "●"}</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // Fallback: flat chip list (old behaviour)
+                    <div className="chips">
+                      {grammarSequence.map((w, i) => (
+                        <span key={i} className={`chip ${i === activeWordIndex ? "active" : ""}`}>{w}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

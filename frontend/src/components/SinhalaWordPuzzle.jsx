@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Play, Trophy, Heart, Lightbulb, RefreshCw, Home, 
@@ -189,12 +189,12 @@ const SinhalaWordPuzzleGame = () => {
       description: 'සරල වචන (2-3 අකුරු)',
       descriptionE: 'Simple words (2-3 letters)',
       gridSize: 7,
-      bgGradient: 'from-blue-100 to-cyan-200',
+      bgGradient: 'from-sky-100 to-blue-200',
       textColor: 'text-blue-800',
-      borderColor: 'border-blue-300',
+      borderColor: 'border-sky-300',
       icon: '🔍',
       difficulty: 2,
-      color: 'bg-gradient-to-r from-blue-100 to-cyan-200'
+      color: 'bg-gradient-to-r from-sky-100 to-blue-200'
     },
     medium: {
       name: language === 'sinhala' ? 'මධ්‍යම' : 'MEDIUM',
@@ -202,12 +202,12 @@ const SinhalaWordPuzzleGame = () => {
       description: 'මධ්‍යම වචන (4-6 අකුරු)',
       descriptionE: 'Medium words (4-6 letters)',
       gridSize: 8,
-      bgGradient: 'from-orange-100 to-amber-200',
-      textColor: 'text-orange-800',
-      borderColor: 'border-orange-300',
+      bgGradient: 'from-indigo-100 to-blue-200',
+      textColor: 'text-indigo-800',
+      borderColor: 'border-indigo-300',
       icon: '🏃',
       difficulty: 3,
-      color: 'bg-gradient-to-r from-orange-100 to-amber-200'
+      color: 'bg-gradient-to-r from-indigo-100 to-blue-200'
     },
     hard: {
       name: language === 'sinhala' ? 'දුෂ්කර' : 'HARD',
@@ -571,15 +571,15 @@ const SinhalaWordPuzzleGame = () => {
   // ---------- MENU SCREEN ----------
   if (gameState === 'menu') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden relative">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 overflow-hidden relative">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-48 h-48 bg-yellow-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-64 h-64 bg-pink-200 rounded-full blur-3xl opacity-30 animate-bounce" style={{animationDuration: '3s'}}></div>
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-200 rounded-full blur-3xl opacity-40 animate-ping" style={{animationDuration: '4s'}}></div>
+          <div className="absolute top-10 left-10 w-48 h-48 bg-blue-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-64 h-64 bg-indigo-200 rounded-full blur-3xl opacity-30 animate-bounce" style={{animationDuration: '3s'}}></div>
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-sky-200 rounded-full blur-3xl opacity-40 animate-ping" style={{animationDuration: '4s'}}></div>
           
-          <div className="absolute top-20 right-20 text-8xl opacity-10 animate-spin-slow">🤟</div>
-          <div className="absolute bottom-20 left-20 text-8xl opacity-10 animate-spin-slow-reverse">✋</div>
+          <div className="absolute top-20 right-20 text-8xl opacity-10 animate-spin-slow">🪷</div>
+          <div className="absolute bottom-20 left-20 text-8xl opacity-10 animate-spin-slow-reverse">🐘</div>
         </div>
 
         {/* Main Content */}
@@ -589,7 +589,7 @@ const SinhalaWordPuzzleGame = () => {
             <div className="flex justify-center items-center gap-3 mb-2">
               <div className="text-6xl animate-bounce">🤟</div>
               <h1 className="text-4xl md:text-5xl font-black text-gray-800 drop-shadow-lg">
-                <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-indigo-600 to-blue-700 bg-clip-text text-transparent">
                   {t.title}
                 </span>
               </h1>
@@ -603,7 +603,7 @@ const SinhalaWordPuzzleGame = () => {
           <div className="flex justify-end gap-2 mb-4">
             <button 
               onClick={toggleLanguage}
-              className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 text-white flex items-center gap-2"
+              className="p-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-700 text-white flex items-center gap-2"
             >
               <Globe size={20} />
               <span className="font-bold">{language === 'sinhala' ? 'සිං' : 'EN'}</span>
@@ -625,7 +625,7 @@ const SinhalaWordPuzzleGame = () => {
           {/* Instructions Modal */}
           {showInstructions && (
             <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-yellow-300">
+              <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-blue-300">
                 <h2 className="text-2xl font-black text-blue-800 mb-4 text-center">{t.instructionTitle}</h2>
                 <div className="space-y-3 mb-6">
                   {t.videoInstructions.map((instruction, index) => (
@@ -673,7 +673,7 @@ const SinhalaWordPuzzleGame = () => {
                     </p>
                     <div className="mt-3 flex items-center gap-2">
                       {[...Array(config.difficulty)].map((_, i) => (
-                        <Star key={i} size={16} className="text-yellow-600 fill-yellow-500" />
+                        <Star key={i} size={16} className="text-blue-500 fill-blue-400" />
                       ))}
                     </div>
                   </div>
@@ -689,7 +689,7 @@ const SinhalaWordPuzzleGame = () => {
               <div className="grid grid-cols-3 gap-4">
                 <button
                   onClick={() => navigate('/gameselection')}
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
                 >
                   <div className="text-xl">🎯</div>
                   <div className="text-left">
@@ -700,7 +700,7 @@ const SinhalaWordPuzzleGame = () => {
                 
                 <button
                   onClick={() => navigate('/profile')}
-                  className="bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
                 >
                   <div className="text-xl">👤</div>
                   <div className="text-left">
@@ -711,7 +711,7 @@ const SinhalaWordPuzzleGame = () => {
                 
                 <button
                   onClick={() => navigate('/achievements')}
-                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
                 >
                   <div className="text-xl">🏆</div>
                   <div className="text-left">
@@ -730,13 +730,13 @@ const SinhalaWordPuzzleGame = () => {
   // ---------- LOADING STATE ----------
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100 flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 flex flex-col items-center justify-center relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
-              className="absolute rounded-full bg-gradient-to-r from-yellow-200/40 to-pink-200/40 animate-float"
+              className="absolute rounded-full bg-gradient-to-r from-blue-200/40 to-indigo-200/40 animate-float"
               style={{
                 width: `${Math.random() * 60 + 20}px`,
                 height: `${Math.random() * 60 + 20}px`,
@@ -766,12 +766,12 @@ const SinhalaWordPuzzleGame = () => {
           </div>
 
           <div className="w-64 h-4 bg-gray-200 rounded-full overflow-hidden mx-auto">
-            <div className="h-full bg-gradient-to-r from-purple-500 via-pink-400 to-orange-400 rounded-full animate-progress"></div>
+            <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-400 to-sky-400 rounded-full animate-progress"></div>
           </div>
 
           <div className="bg-gradient-to-r from-blue-100 to-cyan-100 backdrop-blur-sm rounded-2xl p-4 border-2 border-blue-200 max-w-md mx-auto">
             <p className="text-gray-700 font-medium text-sm">
-              <span className="text-yellow-600">✨</span> {t.finding}
+              <span className="text-blue-500">✨</span> {t.finding}
             </p>
           </div>
         </div>
@@ -786,7 +786,7 @@ const SinhalaWordPuzzleGame = () => {
       3: { 
         text: t.gameOverMessages[3].text, 
         emoji: '🏆', 
-        color: 'from-yellow-300 to-orange-400',
+        color: 'from-blue-300 to-indigo-400',
         subtitle: t.gameOverMessages[3].subtitle
       },
       2: { 
@@ -798,13 +798,13 @@ const SinhalaWordPuzzleGame = () => {
       1: { 
         text: t.gameOverMessages[1].text, 
         emoji: '👏', 
-        color: 'from-blue-300 to-cyan-400',
+        color: 'from-sky-300 to-blue-400',
         subtitle: t.gameOverMessages[1].subtitle
       },
       0: { 
         text: t.gameOverMessages[0].text, 
         emoji: '💪', 
-        color: 'from-purple-300 to-pink-400',
+        color: 'from-indigo-300 to-violet-400',
         subtitle: t.gameOverMessages[0].subtitle
       }
     };
@@ -812,7 +812,7 @@ const SinhalaWordPuzzleGame = () => {
     const message = messages[stars];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-orange-200 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 flex items-center justify-center p-4 relative overflow-hidden">
         {/* Celebration Particles */}
         {Array.from({ length: 30 }).map((_, i) => (
           <div
@@ -834,7 +834,7 @@ const SinhalaWordPuzzleGame = () => {
         <div className="relative bg-white/90 backdrop-blur-2xl border-4 border-white/60 rounded-3xl shadow-2xl p-8 max-w-lg w-full text-center">
           <div className="relative inline-block mb-2">
             <div className="text-8xl animate-bounce">{message.emoji}</div>
-            <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
               {score}
             </div>
           </div>
@@ -857,7 +857,7 @@ const SinhalaWordPuzzleGame = () => {
               <div className="text-gray-600 text-xs font-bold uppercase">{t.level}</div>
               <div className="text-green-800 text-lg font-bold capitalize">{level}</div>
             </div>
-            <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl p-3 border-2 border-blue-200 shadow-lg">
+            <div className="bg-gradient-to-br from-sky-100 to-blue-100 rounded-xl p-3 border-2 border-sky-200 shadow-lg">
               <div className="text-2xl mb-1 text-blue-800">🔄</div>
               <div className="text-gray-600 text-xs font-bold uppercase">{t.round}</div>
               <div className="text-blue-800 text-lg font-bold">{round}/{totalRounds}</div>
@@ -880,7 +880,7 @@ const SinhalaWordPuzzleGame = () => {
 
             <button
               onClick={() => navigate('/gameselection')}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2 border-2 border-cyan-300/50"
+              className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2 border-2 border-teal-300/50"
             >
               <span className="text-xl">🎮</span>
               <span>{t.otherGames}</span>
@@ -893,7 +893,7 @@ const SinhalaWordPuzzleGame = () => {
 
   // ---------- PLAYING STATE ----------
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 overflow-auto">
       {/* Celebration Animation */}
       {celebration && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -922,13 +922,13 @@ const SinhalaWordPuzzleGame = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={restartGame}
-              className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border border-blue-400 shadow-md"
+              className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border border-indigo-400 shadow-md"
             >
               <Home className="w-5 h-5" />
               <span className="hidden sm:inline">{t.mainMenu}</span>
             </button>
             
-            <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl px-4 py-2 border border-blue-200 shadow-md">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-xl px-4 py-2 border border-blue-200 shadow-md">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-blue-700" />
                 <div>
@@ -945,7 +945,7 @@ const SinhalaWordPuzzleGame = () => {
           <div className="flex items-center gap-3">
             <div className="flex gap-3">
               <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
-                <Trophy className="w-5 h-5 text-yellow-600 mx-auto mb-1" />
+                <Trophy className="w-5 h-5 text-blue-500 mx-auto mb-1" />
                 <div className="text-xl font-black text-gray-800">{score}</div>
                 <div className="text-xs text-gray-600 font-bold">{t.points}</div>
               </div>
@@ -957,7 +957,7 @@ const SinhalaWordPuzzleGame = () => {
               </div>
               
               <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
-                <Lightbulb className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+                <Lightbulb className="w-5 h-5 text-blue-500 mx-auto mb-1" />
                 <div className="text-xl font-black text-gray-800">{hintsRemaining}</div>
                 <div className="text-xs text-gray-600 font-bold">{t.hintText}</div>
               </div>
@@ -1005,7 +1005,7 @@ const SinhalaWordPuzzleGame = () => {
                       onError={(e) => console.error('Video error:', e)}
                     />
                   ) : (
-                    <div className="w-full h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                    <div className="w-full h-56 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
                       <div className="text-6xl text-blue-400 animate-bounce">🤟</div>
                     </div>
                   )}
@@ -1024,7 +1024,7 @@ const SinhalaWordPuzzleGame = () => {
                     <div className="text-2xl text-blue-600">🔍</div>
                   </div>
                   
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-4 border border-gray-200">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 mb-4 border border-blue-200">
                     <p className="text-gray-700 text-center font-medium mb-3">{t.wordHas} {puzzle.syllables.length} {t.selectConnected}</p>
                     
                     <div className="flex justify-center gap-3 mb-4">
@@ -1043,7 +1043,7 @@ const SinhalaWordPuzzleGame = () => {
                               <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </>
                           )}
-                          <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-xs flex items-center justify-center text-white font-bold">
+                          <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full text-xs flex items-center justify-center text-white font-bold">
                             {index + 1}
                           </div>
                         </div>
@@ -1052,13 +1052,13 @@ const SinhalaWordPuzzleGame = () => {
                   </div>
                   
                   {/* MODIFIED: Enhanced Attempt Tracking with Wrong Attempts */}
-                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
                     <div className="grid grid-cols-2 gap-4 mb-3">
                       <div className="text-center">
                         <span className="text-gray-700 font-medium text-sm">{t.attempts}:</span>
                         <div className={`text-2xl font-bold ${
                           attempts >= 4 ? 'text-red-500' : 
-                          attempts >= 2 ? 'text-amber-500' : 
+                          attempts >= 2 ? 'text-yellow-500' : 
                           'text-green-500'
                         }`}>{attempts}</div>
                       </div>
@@ -1066,8 +1066,8 @@ const SinhalaWordPuzzleGame = () => {
                         <span className="text-gray-700 font-medium text-sm">{t.wrongAttempts}:</span>
                         <div className={`text-2xl font-bold ${
                           wrongAttempts >= 4 ? 'text-red-500' : 
-                          wrongAttempts >= 2 ? 'text-amber-500' : 
-                          'text-orange-400'
+                          wrongAttempts >= 2 ? 'text-yellow-500' : 
+                          'text-blue-400'
                         }`}>{wrongAttempts}</div>
                       </div>
                     </div>
@@ -1096,8 +1096,8 @@ const SinhalaWordPuzzleGame = () => {
                     
                     {/* Hint indicator */}
                     {attempts >= 2 && (
-                      <div className="mt-3 p-2 bg-gradient-to-r from-amber-200 to-yellow-200 rounded-lg border border-amber-300">
-                        <p className="text-amber-800 text-sm font-medium text-center">
+                      <div className="mt-3 p-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg border border-blue-200">
+                        <p className="text-blue-800 text-sm font-medium text-center">
                           💡 {language === 'sinhala' ? 'ඉඟි ලබා ගත හැක!' : 'Hints available!'}
                         </p>
                       </div>
@@ -1108,25 +1108,25 @@ const SinhalaWordPuzzleGame = () => {
 
               {/* Word Reveal on Game Over or Skip */}
               {puzzle && showWordAfterFail && (
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200 shadow-lg">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-200 shadow-lg">
                   <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="text-2xl text-amber-600">💡</div>
+                    <div className="text-2xl text-blue-500">💡</div>
                     <h3 className="text-gray-800 font-bold text-lg">{t.wordWas}:</h3>
-                    <div className="text-2xl text-amber-600">📝</div>
+                    <div className="text-2xl text-blue-500">📝</div>
                   </div>
                   
-                  <div className="bg-white rounded-xl p-4 mb-4 border border-amber-100">
+                  <div className="bg-white rounded-xl p-4 mb-4 border border-blue-100">
                     <p className="text-3xl font-black text-gray-800 text-center mb-3">{puzzle.word}</p>
                     <div className="flex justify-center gap-2 flex-wrap">
                       {puzzle.syllables.map((syllable, index) => (
-                        <span key={index} className="bg-gradient-to-r from-blue-100 to-cyan-100 px-3 py-1 rounded-lg text-blue-700 font-bold border border-blue-200">
+                        <span key={index} className="bg-gradient-to-r from-sky-100 to-blue-100 px-3 py-1 rounded-lg text-blue-700 font-bold border border-sky-200">
                           {syllable}
                         </span>
                       ))}
                     </div>
                   </div>
                   
-                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200">
+                  <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl p-3 border border-sky-200">
                     <p className="text-gray-700 text-center font-bold">📝 {puzzle.english}</p>
                   </div>
                 </div>
@@ -1140,7 +1140,7 @@ const SinhalaWordPuzzleGame = () => {
                     disabled={hintsRemaining === 0}
                     className={`py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                       hintsRemaining > 0
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border border-amber-400 shadow-md hover:scale-105'
+                        ? 'bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white border border-teal-400 shadow-md hover:scale-105'
                         : 'bg-gray-300 text-gray-500 border border-gray-400 cursor-not-allowed'
                     }`}
                   >
@@ -1190,10 +1190,10 @@ const SinhalaWordPuzzleGame = () => {
               {/* Hint Panel */}
               {showHintPanel && aiHints.length > 0 && (
                 <div className="sticky top-2 z-[999] space-y-3 mb-4">
-                  <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-2xl p-4 border-2 border-amber-300 shadow-lg">
+                  <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl p-4 border-2 border-blue-300 shadow-lg">
                     <div className="flex items-center gap-2 mb-3 justify-center">
                       <span className="text-2xl">💡</span>
-                      <h4 className="text-lg font-black text-amber-900">
+                      <h4 className="text-lg font-black text-blue-900">
                         {t.aiHint}
                       </h4>
                       <span className="text-2xl">🤖</span>
@@ -1203,9 +1203,9 @@ const SinhalaWordPuzzleGame = () => {
                       {aiHints.map((hint, idx) => (
                         <div
                           key={idx}
-                          className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200"
+                          className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200"
                         >
-                          <p className="text-amber-800 font-medium text-sm">
+                          <p className="text-blue-800 font-medium text-sm">
                             {hint}
                           </p>
                         </div>
@@ -1221,7 +1221,7 @@ const SinhalaWordPuzzleGame = () => {
                 <div className="text-3xl text-blue-400 animate-spin" style={{animationDuration: '3s', animationDirection: 'reverse'}}>✨</div>
               </div>
 
-              <div className="mb-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
+              <div className="mb-6 bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl p-4 border border-sky-200">
                 <p className="text-gray-700 text-center text-sm font-medium">
                   {t.instructions}
                 </p>
@@ -1229,7 +1229,7 @@ const SinhalaWordPuzzleGame = () => {
 
               <div className="flex-1 flex items-center justify-center p-3 min-h-[400px]">
                 <div 
-                  className="grid gap-2 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-gray-300 shadow-inner"
+                  className="grid gap-2 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 shadow-inner"
                   style={{
                     gridTemplateColumns: `repeat(${levelConfig[level].gridSize}, minmax(0, 1fr))`,
                     maxWidth: 'min(600px, 90vw)',
@@ -1254,7 +1254,7 @@ const SinhalaWordPuzzleGame = () => {
                         >
                           {cell.letter}
                           {isSelected && (
-                            <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-base font-black text-white border-2 border-white shadow-lg">
+                            <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-base font-black text-white border-2 border-white shadow-lg">
                               {selectionIndex + 1}
                             </div>
                           )}
@@ -1265,16 +1265,16 @@ const SinhalaWordPuzzleGame = () => {
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 shadow-sm">
+              <div className="mt-6 p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl border border-sky-200 shadow-sm">
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
                     <div className="text-sm text-gray-600 font-bold mb-1">{t.secretWordText}</div>
-                    <div className="text-2xl font-black text-blue-600">{puzzle ? puzzle.syllables.length : 0}</div>
+                    <div className="text-2xl font-black text-indigo-600">{puzzle ? puzzle.syllables.length : 0}</div>
                   </div>
                   <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
                     <div className="text-sm text-gray-600 font-bold mb-1">{t.selectedLetters}</div>
                     <div className={`text-2xl font-black ${
-                      selectedCells.length === puzzle?.syllables.length ? 'text-green-500' : 'text-amber-500'
+                      selectedCells.length === puzzle?.syllables.length ? 'text-green-500' : 'text-blue-500'
                     }`}>
                       {selectedCells.length}
                     </div>
@@ -1285,7 +1285,7 @@ const SinhalaWordPuzzleGame = () => {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg p-3 border border-blue-200">
+                <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg p-3 border border-blue-200">
                   <p className="text-center text-blue-800 text-sm font-medium">
                     {t.note}
                   </p>
@@ -1301,7 +1301,7 @@ const SinhalaWordPuzzleGame = () => {
                 ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-300'
                 : feedback.type === 'error'
                 ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-red-300'
-                : 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border-blue-300'
+                : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border-blue-300'
             }`}>
               <div className="flex items-center justify-center gap-3">
                 <div className="text-2xl">

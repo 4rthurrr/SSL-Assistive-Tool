@@ -203,7 +203,7 @@ Output format:
         
         # Call Gemini API
         response = client.models.generate_content(
-            model="gemini-2.5-flash",  # Using free tier model
+            model="gemini-2.0-flash",  # Higher free-tier quota than 2.5-flash
             contents=prompt
         )
         

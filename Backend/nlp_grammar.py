@@ -8,6 +8,14 @@ except ImportError:
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
     from concepts import get_concept_by_sinhala, get_sinhala_display, normalize_concept, get_all_synonyms
 
+# ── Sentence-level semantic parser (new pipeline) ───────────────────────────
+try:
+    from sinhala_sentence_parser import parse_text_to_glosses as _parse_text_to_glosses
+    _SENTENCE_PARSER_AVAILABLE = True
+except ImportError:
+    _SENTENCE_PARSER_AVAILABLE = False
+    print("⚠️ sinhala_sentence_parser not found – falling back to flat pipeline")
+
 from embeddings_handler import EmbeddingsHandler
 
 # Init Embeddings (Lazy or Global)
@@ -142,9 +150,11 @@ QUESTION_CONCEPTS = {
 }
 
 TIME_CONCEPTS = {
-    "CONCEPT_TODAY", "CONCEPT_TOMORROW", "CONCEPT_YESTERDAY", "CONCEPT_NOW", 
-    "CONCEPT_MORNING", "CONCEPT_EVENING", "CONCEPT_NIGHT", "CONCEPT_WEEK", 
-    "CONCEPT_MONTH", "CONCEPT_YEAR", "CONCEPT_DAY_AFTER_TOMORROW"
+    "CONCEPT_TODAY", "CONCEPT_TOMORROW", "CONCEPT_YESTERDAY", "CONCEPT_NOW",
+    "CONCEPT_MORNING", "CONCEPT_EVENING", "CONCEPT_NIGHT", "CONCEPT_WEEK",
+    "CONCEPT_MONTH", "CONCEPT_YEAR", "CONCEPT_DAY_AFTER_TOMORROW",
+    # Tense markers emitted by the semantic parser as explicit time signs
+    "CONCEPT_PAST", "CONCEPT_FUTURE",
 }
 
 def step4_apply_ssl_grammar(concept_sequence):
@@ -188,10 +198,57 @@ def step4_apply_ssl_grammar(concept_sequence):
     
     return final_sequence
 
+def get_ssl_sequence_with_blocks(text: str) -> dict:
+    """
+    NEW sentence-aware orchestrator.
+    Returns the full structured result from sinhala_sentence_parser:
+
+        {
+          "blocks": [ {clause_index, tense, gloss_sequence, display_sinhala, raw_clause}, … ],
+          "flat_sequence":  [CONCEPT_*, …],   ← used by video stitcher
+          "flat_display":   [sinhala_word, …], ← shown in UI
+          "semantic_json":  { … }              ← for debugging / analytics
+        }
+
+    Falls back to the legacy flat pipeline when the parser is unavailable.
+    """
+    if _SENTENCE_PARSER_AVAILABLE:
+        print(f"\n🧠 [semantic parser] Processing: '{text}'")
+        result = _parse_text_to_glosses(text)
+        print(f"   blocks  : {len(result['blocks'])}")
+        print(f"   flat    : {result['flat_display']}")
+        return result
+
+    # ── fallback: wrap legacy output in the same shape ──────────────────────
+    print(f"\n⚠️ Using legacy flat pipeline for: '{text}'")
+    flat_sequence = get_ssl_sequence(text)
+    flat_display  = get_ssl_display_sequence(flat_sequence)
+    return {
+        "blocks": [
+            {
+                "clause_index": 0,
+                "tense": "UNKNOWN",
+                "gloss_sequence": flat_sequence,
+                "display_sinhala": flat_display,
+                "raw_clause": text,
+            }
+        ],
+        "flat_sequence": flat_sequence,
+        "flat_display":  flat_display,
+        "semantic_json":  {"original_text": text, "clauses": []},
+    }
+
+
 def get_ssl_sequence(text):
     """
-    ORCHESTRATOR: Executes the Strict Concept Pipeline
+    ORCHESTRATOR: Executes the Strict Concept Pipeline (legacy flat path).
+    Kept for backward-compatibility; prefer get_ssl_sequence_with_blocks().
     """
+    # If the new parser is available, delegate to it and return the flat list
+    if _SENTENCE_PARSER_AVAILABLE:
+        result = _parse_text_to_glosses(text)
+        return result["flat_sequence"]
+
     print(f"\n🚀 Starting Pipeline for: '{text}'")
     
     # 1. Tokenize

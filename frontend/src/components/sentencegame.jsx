@@ -22,6 +22,13 @@ const SignLanguageGame = () => {
   const [showLevelComplete, setShowLevelComplete] = useState(false);
 
   const autoAdvanceTimer = useRef(null);
+  const wordVideoRef = useRef(null);
+
+  // ── Word-video sequential player state ────────────────────
+  const [activeWordVideoIdx, setActiveWordVideoIdx] = useState(0);
+  const [wordVideoPlaying, setWordVideoPlaying] = useState(false);
+  const [wordVideoSpeed, setWordVideoSpeed] = useState(1.0);
+  const [wordVideoError, setWordVideoError] = useState(false);
 
   const [attempts, setAttempts] = useState(0);
   const [maxAttempts] = useState(5);
@@ -55,6 +62,59 @@ const SignLanguageGame = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [canAdvance, setCanAdvance] = useState(false);
+
+  // ── Reset word-video player when question changes ──────────────────
+  useEffect(() => {
+    if (!currentQuestion) return;
+    setActiveWordVideoIdx(0);
+    setWordVideoSpeed(1.0);
+    setWordVideoError(false);
+    setWordVideoPlaying(false);
+  }, [currentQuestion?.id]);
+
+  // Sync speed to video element
+  useEffect(() => {
+    if (wordVideoRef.current) wordVideoRef.current.playbackRate = wordVideoSpeed;
+  }, [wordVideoSpeed]);
+
+  // Auto-play when activeWordVideoIdx changes
+  useEffect(() => {
+    if (!wordVideoRef.current) return;
+    wordVideoRef.current.load();
+    wordVideoRef.current.playbackRate = wordVideoSpeed;
+    wordVideoRef.current.play().then(() => setWordVideoPlaying(true)).catch(() => setWordVideoPlaying(false));
+    setWordVideoError(false);
+  }, [activeWordVideoIdx, currentQuestion?.id]);
+
+  const wordVideos = currentQuestion?.word_videos || [];
+  const validWordVideos = wordVideos.filter(Boolean);
+
+  const currentWordVideoUrl = wordVideos[activeWordVideoIdx] || null;
+
+  const toggleWordVideo = () => {
+    if (!wordVideoRef.current) return;
+    if (wordVideoRef.current.paused) {
+      wordVideoRef.current.play(); setWordVideoPlaying(true);
+    } else {
+      wordVideoRef.current.pause(); setWordVideoPlaying(false);
+    }
+  };
+
+  const replayAllWords = () => {
+    setActiveWordVideoIdx(0);
+  };
+
+  const advanceWordVideo = () => {
+    const words = currentQuestion?.correct_order || [];
+    setActiveWordVideoIdx(prev => (prev + 1) % Math.max(words.length, 1));
+  };
+
+  const onWordVideoEnded = () => {
+    const words = currentQuestion?.correct_order || [];
+    if (words.length === 0) return;
+    const next = (activeWordVideoIdx + 1) % words.length;
+    setActiveWordVideoIdx(next);
+  };
 
   const translations = {
     en: {
@@ -155,14 +215,14 @@ const SignLanguageGame = () => {
     },
     level_2: {
       name: language === 'en' ? 'Intermediate' : 'මධ්‍යම',
-      color: 'from-blue-400 to-indigo-500',
-      icon: '📘',
+      color: 'from-amber-400 to-orange-500',
+      icon: '🪷',
       difficulty: language === 'en' ? 'Medium' : 'මධ්‍යම',
       description: language === 'en' ? 'Eating, going, and describing (2-3 words)' : 'කෑම, යෑම සහ විස්තර කිරීම (වචන 2-3)'
     },
     level_3: {
       name: language === 'en' ? 'Advanced' : 'සංකීර්ණ',
-      color: 'from-purple-400 to-pink-500',
+      color: 'from-red-500 to-orange-600',
       icon: '🏆',
       difficulty: language === 'en' ? 'Hard' : 'දුෂ්කර',
       description: language === 'en' ? 'Past tense, questions, and helping others (3-4 words)' : 'අතීත කාලය, ප්‍රශ්න සහ උදව් කිරීම (වචන 3-4)'
@@ -461,7 +521,7 @@ const SignLanguageGame = () => {
   const LanguageToggle = () => (
     <button
       onClick={toggleLanguage}
-      className="fixed top-6 right-6 z-50 bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-4 rounded-full font-black text-lg hover:scale-110 transition-transform shadow-2xl border-4 border-white flex items-center gap-3"
+      className="fixed top-6 right-6 z-50 bg-gradient-to-r from-orange-600 to-red-700 text-white px-6 py-4 rounded-full font-black text-lg hover:scale-110 transition-transform shadow-2xl border-4 border-white flex items-center gap-3"
     >
       <Languages className="w-7 h-7" />
       <span>{language === 'en' ? 'සිංහල' : 'English'}</span>
@@ -471,7 +531,7 @@ const SignLanguageGame = () => {
   const SoundToggle = () => (
     <button
       onClick={() => setSoundOn(s => !s)}
-      className="fixed top-6 left-6 z-50 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-4 rounded-full font-black text-lg hover:scale-110 transition-transform shadow-2xl border-4 border-white flex items-center gap-3"
+      className="fixed top-6 left-6 z-50 bg-gradient-to-r from-amber-600 to-yellow-600 text-white px-6 py-4 rounded-full font-black text-lg hover:scale-110 transition-transform shadow-2xl border-4 border-white flex items-center gap-3"
     >
       {soundOn ? <Volume2 className="w-7 h-7" /> : <VolumeX className="w-7 h-7" />}
     </button>
@@ -513,7 +573,7 @@ const SignLanguageGame = () => {
           </div>
           <button
             onClick={() => setShowLeaderboard(false)}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform"
+            className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform"
           >
             {t.close}
           </button>
@@ -525,10 +585,10 @@ const SignLanguageGame = () => {
   // ── Loading Screen ──────────────────────────────────────────────────
   if (loadingLevels) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <LanguageToggle /><SoundToggle />
         <div className="text-center">
-          <div className="text-7xl animate-bounce mb-6">🤟</div>
+          <div className="text-7xl animate-bounce mb-6">�</div>
           <h2 className="text-3xl font-black text-gray-800 mb-4">{t.loading}</h2>
           <div className="w-48 h-3 bg-gray-200 rounded-full overflow-hidden mx-auto">
             <div className="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full animate-pulse" style={{ width: '60%' }} />
@@ -541,7 +601,7 @@ const SignLanguageGame = () => {
   // ── Loading spinner while starting a level ─────────────────────────
   if (loading && gameState === 'map') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <LanguageToggle /><SoundToggle />
         <div className="text-center">
           <div className="text-7xl animate-spin mb-6">⏳</div>
@@ -554,7 +614,7 @@ const SignLanguageGame = () => {
   // ── Error Screen ────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <LanguageToggle /><SoundToggle />
         <div className="bg-white rounded-[40px] shadow-2xl p-12 max-w-md w-full text-center border-8 border-red-400">
           <div className="text-7xl mb-6">😢</div>
@@ -563,7 +623,7 @@ const SignLanguageGame = () => {
           <div className="space-y-3">
             <button
               onClick={() => { setError(null); setGameState('map'); }}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center justify-center gap-3"
+              className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center justify-center gap-3"
             >
               <Home className="w-6 h-6" /><span>{t.levelMap}</span>
             </button>
@@ -613,11 +673,11 @@ const SignLanguageGame = () => {
                 <span>{t.nextLevel}</span><ArrowRight className="w-7 h-7" />
               </button>
             ) : (
-              <button onClick={goToMap} className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-purple-600">
+              <button onClick={goToMap} className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-orange-700">
                 <Home className="w-7 h-7" /><span>{t.levelMap}</span>
               </button>
             )}
-            <button onClick={() => startLevel(currentLevel)} className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-blue-600">
+              <button onClick={() => startLevel(currentLevel)} className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-amber-600">
               <RotateCcw className="w-7 h-7" /><span>{t.playAgain}</span>
             </button>
           </div>
@@ -630,7 +690,7 @@ const SignLanguageGame = () => {
   if (gameState === 'map') {
     const levelOrder = ['level_1', 'level_2', 'level_3'];
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-6">
         <LanguageToggle /><SoundToggle /><LeaderboardModal />
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -639,7 +699,7 @@ const SignLanguageGame = () => {
               <div className="absolute -top-2 -right-2 w-12 h-12 bg-yellow-400 rounded-full animate-ping" />
             </div>
             <h1 className="text-6xl font-black text-gray-800 mb-4">{t.title}</h1>
-            <div className="inline-block bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg">
+            <div className="inline-block bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg">
               {t.subtitle}
             </div>
           </div>
@@ -722,14 +782,14 @@ const SignLanguageGame = () => {
   // (this should not happen with the fixed startLevel above)
   if (!currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <LanguageToggle /><SoundToggle />
         <div className="text-center">
           <div className="text-7xl animate-spin mb-6">⏳</div>
           <p className="text-xl font-bold text-gray-600 mb-6">{t.loading}</p>
           <button
             onClick={goToMap}
-            className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center gap-3 mx-auto"
+            className="bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center gap-3 mx-auto"
           >
             <Home className="w-6 h-6" /><span>{t.levelMap}</span>
           </button>
@@ -739,7 +799,7 @@ const SignLanguageGame = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4">
       <LanguageToggle /><SoundToggle /><LeaderboardModal />
 
       {/* Game Over Overlay */}
@@ -759,7 +819,7 @@ const SignLanguageGame = () => {
               <button onClick={resetLevel} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-emerald-600">
                 <RotateCcw className="w-7 h-7" /><span>{t.tryAgain}</span>
               </button>
-              <button onClick={goToMap} className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-purple-600">
+              <button onClick={goToMap} className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-orange-700">
                 <Home className="w-7 h-7" /><span>{t.levelMap}</span>
               </button>
             </div>
@@ -770,9 +830,9 @@ const SignLanguageGame = () => {
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
-        <div className="bg-white rounded-[30px] shadow-xl p-6 mb-6 border-8 border-indigo-100">
+          <div className="bg-white rounded-[30px] shadow-xl p-6 mb-6 border-8 border-amber-200">
           <div className="flex justify-between items-center mb-4">
-            <button onClick={goToMap} className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-3 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg flex items-center gap-2">
+            <button onClick={goToMap} className="bg-gradient-to-r from-orange-600 to-red-700 text-white px-6 py-3 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg flex items-center gap-2">
               <Home className="w-6 h-6" /><span className="hidden sm:inline">{t.home}</span>
             </button>
             <div className="text-center flex-1">
@@ -820,58 +880,96 @@ const SignLanguageGame = () => {
           </div>
         )}
 
-        {/* Video / Sentence Area */}
-        <div className="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-[25px] p-10 border-4 border-indigo-200 min-h-[200px] flex items-center justify-center mb-6">
-          <div className="text-center w-full" key={`video-container-${currentQuestion.id}`}>
-            {currentQuestion.video_url ? (
-              <video
-                key={currentQuestion.id}
-                src={`http://localhost:5003${currentQuestion.video_url}`}
-                autoPlay loop muted playsInline
-                className="max-h-[200px] rounded-xl mx-auto"
-                onError={e => {
-                  console.error('❌ Video load error:', e.target.src);
-                  console.error('Error code:', e.target.error?.code, e.target.error?.message);
-                  e.target.style.display = 'none';
-                  const parent = e.target.parentNode;
-                  
-                  // Remove any existing fallback divs
-                  const existingFallbacks = parent.querySelectorAll('.video-fallback');
-                  existingFallbacks.forEach(f => f.remove());
-                  
-                  const fallback = document.createElement('div');
-                  fallback.className = 'text-center video-fallback';
-                  fallback.innerHTML = `
-                    <div class="text-7xl mb-4">👋</div>
-                    <p class="text-4xl font-black text-gray-800 mb-3">${currentQuestion.sinhala || currentQuestion.sentence_sinhala || ''}</p>
-                    <p class="text-2xl text-gray-600 font-bold">${currentQuestion.english || currentQuestion.sentence_english || ''}</p>
-                  `;
-                  parent.appendChild(fallback);
-                }}
-                onLoadedData={(e) => {
-                  console.log('✅ Video loaded:', currentQuestion.video_url);
-                  // Remove any fallback divs if video loaded successfully
-                  const parent = e.target.parentNode;
-                  const fallbacks = parent.querySelectorAll('.video-fallback');
-                  fallbacks.forEach(f => f.remove());
-                }}
-              />
-            ) : (
-              <div className="text-center">
-                <div className="text-7xl mb-4 animate-bounce">👋</div>
-                <p className="text-4xl font-black text-gray-800 mb-3">
-                  {currentQuestion.sinhala || currentQuestion.sentence_sinhala}
-                </p>
-                <p className="text-2xl text-gray-600 font-bold">
-                  {currentQuestion.english || currentQuestion.sentence_english}
-                </p>
-              </div>
-            )}
+        {/* ── Word-by-word sign video player (Dataset - Original) ── */}
+        <div className="bg-white rounded-[30px] shadow-xl border-8 border-indigo-200 mb-6 overflow-hidden">
+
+          {/* Title bar */}
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-3 flex items-center gap-3">
+            <span className="text-2xl">🤟</span>
+            <span className="text-white font-black text-lg">SSL Sign Animation</span>
+            <span className="ml-auto text-white/70 text-sm font-bold">
+              {language === 'en' ? 'Watch the sign, then arrange the words' : 'සංඥාව බලා, වචන සකසන්න'}
+            </span>
+          </div>
+
+          <div className="p-5">
+            {/* Video frame */}
+            <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-[20px] border-4 border-indigo-200 overflow-hidden mb-4">
+              {currentWordVideoUrl && !wordVideoError ? (
+                <>
+                  <video
+                    ref={wordVideoRef}
+                    src={`http://localhost:5003${currentWordVideoUrl}`}
+                    playsInline
+                    onClick={toggleWordVideo}
+                    onEnded={onWordVideoEnded}
+                    onError={() => setWordVideoError(true)}
+                    className="w-full max-h-[240px] object-contain block cursor-pointer"
+                  />
+                  {!wordVideoPlaying && (
+                    <button
+                      onClick={toggleWordVideo}
+                      className="absolute inset-0 flex items-center justify-center bg-black/20"
+                    >
+                      <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-2xl">
+                        <span className="text-3xl ml-1">▶️</span>
+                      </div>
+                    </button>
+                  )}
+                </>
+              ) : (
+                <div className="min-h-[180px] flex flex-col items-center justify-center py-6">
+                  <div className="text-7xl mb-3 animate-bounce">👋</div>
+                  <p className="text-2xl font-black text-gray-700 mb-1">
+                    {currentQuestion.correct_order?.[activeWordVideoIdx]}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center justify-center gap-3 mb-5">
+              <button
+                onClick={() => setWordVideoSpeed(0.5)}
+                className={`px-4 py-2 rounded-full font-bold text-sm transition-all border-2 ${
+                  wordVideoSpeed === 0.5
+                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-md'
+                    : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                }`}
+              >🐢 Slow</button>
+
+              <button
+                onClick={toggleWordVideo}
+                className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-4 border-white"
+              >{wordVideoPlaying ? '⏸' : '▶️'}</button>
+
+              <button
+                onClick={replayAllWords}
+                title="Replay from first word"
+                className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white text-base shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-2 border-white"
+              >🔄</button>
+
+              <button
+                onClick={advanceWordVideo}
+                title="Next word"
+                className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 text-white text-base shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-2 border-white"
+              >⏭</button>
+
+              <button
+                onClick={() => setWordVideoSpeed(1.0)}
+                className={`px-4 py-2 rounded-full font-bold text-sm transition-all border-2 ${
+                  wordVideoSpeed === 1.0
+                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-md'
+                    : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                }`}
+              >🐰 Normal</button>
+            </div>
+
           </div>
         </div>
 
         {/* Answer Zone */}
-        <div className="bg-white rounded-[30px] shadow-xl p-8 mb-6 border-8 border-indigo-100">
+        <div className="bg-white rounded-[30px] shadow-xl p-8 mb-6 border-8 border-amber-200">
           <h3 className="text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
             <span className="text-3xl">✏️</span>
             <span>{t.yourAnswer}</span>
@@ -896,7 +994,7 @@ const SignLanguageGame = () => {
         </div>
 
         {/* Word Bank */}
-        <div className="bg-white rounded-[30px] shadow-xl p-8 mb-6 border-8 border-indigo-100">
+        <div className="bg-white rounded-[30px] shadow-xl p-8 mb-6 border-8 border-amber-200">
           <h3 className="text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
             <span className="text-3xl">📝</span>
             <span>{t.words}</span>
@@ -907,7 +1005,7 @@ const SignLanguageGame = () => {
               <button
                 key={index}
                 onClick={() => handleWordClick(word, index)}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-[20px] text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-blue-600"
+              className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-8 py-4 rounded-[20px] text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-orange-600"
                 disabled={showResult || loading}
               >
                 {word}
@@ -946,7 +1044,7 @@ const SignLanguageGame = () => {
             <button
               onClick={loadNextQuestion}
               disabled={!canAdvance || loading}
-              className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-6 rounded-[25px] font-black text-2xl hover:scale-105 transition-transform shadow-lg border-8 border-blue-700 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-6 rounded-[25px] font-black text-2xl hover:scale-105 transition-transform shadow-lg border-8 border-amber-600 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{questionNumber < totalQuestions ? t.nextQuestion : t.finish}</span>
               <ArrowRight className="w-8 h-8" />

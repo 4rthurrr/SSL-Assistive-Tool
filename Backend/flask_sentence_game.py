@@ -31,12 +31,8 @@ if sys.stdout.encoding != 'utf-8':
 # CONFIGURATION
 # ========================
 class Config:
-    # Paths - UPDATE THESE FOR YOUR SYSTEM
-  
-    MODEL_DIR = r"D:\Downloads-D\Game_V2\Game_V2\Backend\SSL_model"
-    # For Colab, use:
-    # MODEL_DIR = r"/content/drive/MyDrive/SSL_model_v8"
-    
+    # Paths - resolved relative to this file
+    MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SSL_model")
     VIDEO_OUT = os.path.join(MODEL_DIR, "sentence_videos")
     SECRET_KEY = 'ssl_game_secret_key_2024_v8'
     SESSION_TYPE = 'filesystem'
@@ -73,9 +69,9 @@ CORS(app, resources={
     r"/api/*": {
         "origins": ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True,
-        "expose_headers": ["Content-Type"]
+        "allow_headers": ["Content-Type", "Authorization", "Range"],
+        "supports_credentials": False,
+        "expose_headers": ["Content-Type", "Content-Length", "Content-Range", "Accept-Ranges"]
     }
 })
 
@@ -471,10 +467,116 @@ print(f"📚 Loaded {len(word_list)} unique words for game")
 # Initialize grammar engine
 grammar = SSLGrammar()
 
+# ========================
+# DATASET WORD-VIDEO MAPPING
+# ========================
+DATASET_BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Dataset - Original")
 
-# ========================
-# VIDEO GENERATION
-# ========================
+# Maps each Sinhala game word -> (category_folder, english_word_folder)
+SINHALA_TO_DATASET = {
+    # People
+    "දරුවා":        ("People",     "Child"),
+    "දරුවාට":       ("People",     "Child"),
+    "අම්මා":        ("People",     "Mother"),
+    "අම්මාට":       ("People",     "Mother"),
+    "තාත්තා":       ("People",     "Father"),
+    "අයියා":        ("People",     "Elder bro"),
+    "අක්කා":        ("People",     "Elder sister"),
+    "වෛද්\u200dයවරයා":   ("People",     "Doctor"),
+    "වෛද්\u200dයවරයාට":  ("People",     "Doctor"),
+    "ගුරුවරයා":     ("People",     "Man"),
+    "බබා":          ("People",     "Baby"),
+    "පූසා":         ("Nouns",      "Cat"),
+    "අලියා":        ("Nouns",      "Elephant"),
+    "අපි":          ("People",     "Us"),
+    "මම":           ("Nouns",      "I"),
+    "ඔයා":          ("Nouns",      "You"),
+    "පවුල":         ("People",     "Family"),
+    # Verbs
+    "ඇවිදිනවා":     ("Verbs",      "Walk"),
+    "දුවනවා":       ("Verbs",      "Run"),
+    "නිදාගන්නවා":   ("Verbs",      "Sleep"),
+    "අඬනවා":        ("Verbs",      "Cry"),
+    "හිනාවෙනවා":    ("Verbs",      "Laugh"),
+    "නටනවා":        ("Verbs",      "Dance"),
+    "පනිනවා":       ("Verbs",      "Jump"),
+    "සෙල්ලම් කරනවා":("Verbs",      "Play"),
+    "සෙල්ලම් කරමු": ("Verbs",      "Play"),
+    "කනවා":         ("Verbs",      "Eat"),
+    "කමු":          ("Verbs",      "Eat"),
+    "කෑවා":         ("Verbs",      "Eat"),
+    "බොනවා":        ("Verbs",      "Drink"),
+    "යනවා":         ("Verbs",      "Go"),
+    "යමු":          ("Verbs",      "Go"),
+    "ගියා":         ("Verbs",      "Go"),
+    "එනවා":         ("Verbs",      "Come"),
+    "ආවා":          ("Verbs",      "Come"),
+    "උයනවා":        ("Verbs",      "Cook"),
+    "උයලා":         ("Verbs",      "Cook"),
+    "රැගෙනයනවා":    ("Verbs",      "Carry"),
+    "ගන්නවා":       ("Verbs",      "Take"),
+    "දෙනවා":        ("Verbs",      "Give"),
+    "බලනවා":        ("Verbs",      "Look"),
+    "උගන්වනවා":     ("Verbs",      "Teach"),
+    "උදව් කරනවා":   ("Verbs",      "Help"),
+    "උදව් කළා":     ("Verbs",      "Help"),
+    "හමුවෙනවා":     ("Verbs",      "Meet"),
+    "වැඩ කරනවා":    ("Verbs",      "Work"),
+    "කියෙව්වා":     ("Verbs",      "Study"),
+    "කියවමු":       ("Verbs",      "Study"),
+    # Nouns / Objects
+    "කෑම":          ("Nouns",      "Food"),
+    "බත්":          ("Nouns",      "Food"),
+    "කිරි":         ("Nouns",      "Milk"),
+    "වතුර":         ("Nouns",      "Tea"),
+    "පොත":          ("Nouns",      "Book"),
+    "පරිගණකය":      ("Nouns",      "Computer"),
+    "බෑගය":         ("Nouns",      "Bag"),
+    "කාරේ":         ("Vehicles",   "Car"),
+    "බෙහෙත්":       ("Nouns",      "Health"),
+    # Places
+    "ගෙදරට":        ("Places",     "House"),
+    "රෝහලට":        ("Places",     "Hospital"),
+    "සාප්පුවට":     ("Places",     "Shop"),
+    "පාසලට":        ("Places",     "Road"),
+    # State adjectives
+    "ලස්සනයි":      ("Adjectives", "Beautiful"),
+    "සතුටුයි":      ("Adjectives", "Happy"),
+    "බඩගිනියි":     ("Adjectives", "Thirsty"),
+    "පිපාසයි":      ("Adjectives", "Thirsty"),
+    "හොඳ":          ("Adjectives", "Good"),
+    "හොඳයි":        ("Adjectives", "Good"),
+    "පුංචියි":      ("Adjectives", "Small"),
+    "මහන්සියි":     ("Adjectives", "Hard"),
+    # Time / Adverbs
+    "අද":           ("Days",       "Today"),
+    "ඊයේ":          ("Days",       "Yesterday"),
+    "හෙට":          ("Days",       "Tomorrow"),
+    "උදේ":          ("Days",       "Morning"),
+    "හවස":          ("Days",       "Evening"),
+    "රෑ":           ("Days",       "Night"),
+    # Question words
+    "මොකද":         ("Adverb",     "Why"),
+    "කොහෙද":        ("Adverb",     "Where"),
+}
+
+
+def resolve_word_video_url(sinhala_word):
+    """Return /api/word-video/<cat>/<word> URL for a sinhala word, or None."""
+    entry = SINHALA_TO_DATASET.get(sinhala_word)
+    if not entry:
+        return None
+    cat, eng = entry
+    folder = os.path.join(DATASET_BASE, cat, eng)
+    if not os.path.isdir(folder):
+        return None
+    # Pick first available mp4 (deterministic: sorted)
+    for fname in sorted(os.listdir(folder)):
+        if fname.lower().endswith(('.mp4', '.mov')):
+            return f"/api/word-video/{quote(cat)}/{quote(eng)}/{quote(fname)}"
+    return None
+
+
 def generate_sentence_videos():
     """Generate placeholder videos for sentences if they don't exist"""
     if not os.path.exists(Config.VIDEO_OUT):
@@ -635,37 +737,37 @@ class GameEngine:
         if not sentences:
             return []
         
-        # Filter sentences that have words
-        valid = [s for s in sentences if s.get('words')]
+        # Filter sentences that have words, keeping original index
+        valid = [(idx, s) for idx, s in enumerate(sentences) if s.get('words')]
         if not valid:
             return []
         
-        # Select random sentences
+        # Select random sentences (preserves original index)
         selected = random.sample(valid, min(count, len(valid)))
         
         questions = []
-        for i, sent in enumerate(selected):
+        for i, (orig_idx, sent) in enumerate(selected):
             correct_words = sent['words'].copy()
             shuffled = correct_words.copy()
             random.shuffle(shuffled)
             
             # Add distractors if needed
             if len(shuffled) < 8:
-                all_words = [w for s in valid for w in s['words']]
+                all_words = [w for _, s in valid for w in s['words']]
                 other_words = list(set(all_words) - set(correct_words))
                 if other_words:
                     distractors = random.sample(other_words, min(3, len(other_words)))
                     shuffled.extend(distractors)
                     random.shuffle(shuffled)
             
-            # Generate video URL
-            safe_name = sent['sinhala'].replace(' ', '_')[:40]
-            # Convert level_1, level_2, level_3 to L1, L2, L3 to match actual files
+            # Simple clean filename: L1_00.mp4 (no Unicode)
             level_prefix = level_id.replace('level_', 'L')
-            video_filename = f"{level_prefix}_{i:02d}_{safe_name}.mp4"
-            # URL-encode the filename to handle special characters (Sinhala text)
-            video_url = f"/api/sentence-video/{quote(video_filename, safe='')}"
+            video_filename = f"{level_prefix}_{orig_idx:02d}.mp4"
+            video_url = f"/api/video/{level_id}/{orig_idx}"
             
+            # Build word-level videos from Dataset - Original
+            word_videos = [resolve_word_video_url(w) for w in correct_words]
+
             questions.append({
                 "id": str(uuid.uuid4())[:8],
                 "sinhala": sent['sinhala'],
@@ -675,8 +777,7 @@ class GameEngine:
                 "correct_order": correct_words,
                 "shuffled_words": shuffled,
                 "word_count": len(correct_words),
-                "video_url": video_url,
-                "video_filename": video_filename,
+                "word_videos": word_videos,
                 "level": level_id
             })
         
@@ -1074,44 +1175,128 @@ def get_leaderboard():
     })
 
 
+@app.route('/api/word-video/<cat>/<word>/<filename>', methods=['GET'])
+def serve_word_video(cat, word, filename):
+    """Serve a single word sign-language video from Dataset - Original."""
+    from flask import Response
+    # Security: only allow alphanumeric, space, underscore, hyphen, dot
+    import re
+    for part in (cat, word, filename):
+        if re.search(r'[^\w\s\-\.()]', part):
+            return jsonify({'error': 'Invalid path'}), 400
+
+    video_path = os.path.join(DATASET_BASE, cat, word, filename)
+    if not os.path.exists(video_path):
+        return jsonify({'error': f'Not found: {filename}'}), 404
+
+    ext = os.path.splitext(filename)[1].lower()
+    mime = 'video/quicktime' if ext == '.mov' else 'video/mp4'
+    file_size = os.path.getsize(video_path)
+    range_header = request.headers.get('Range')
+
+    if range_header:
+        byte_range = range_header.replace('bytes=', '').split('-')
+        start = int(byte_range[0])
+        end = int(byte_range[1]) if byte_range[1] else file_size - 1
+        length = end - start + 1
+        with open(video_path, 'rb') as f:
+            f.seek(start)
+            data = f.read(length)
+        resp = Response(
+            data, 206, mimetype=mime,
+            headers={
+                'Content-Range': f'bytes {start}-{end}/{file_size}',
+                'Accept-Ranges': 'bytes',
+                'Content-Length': str(length),
+                'Access-Control-Allow-Origin': '*',
+            }
+        )
+        return resp
+    else:
+        response = send_file(video_path, mimetype=mime, conditional=True)
+        response.headers['Accept-Ranges'] = 'bytes'
+        response.headers['Content-Length'] = str(file_size)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+
+
+@app.route('/api/video/<level_id>/<int:sent_idx>', methods=['GET'])
+def serve_sentence_video_by_index(level_id, sent_idx):
+    """Serve sentence video by level id and sentence index with range request support"""
+    try:
+        level_prefix = level_id.replace('level_', 'L')
+        filename = f"{level_prefix}_{sent_idx:02d}.mp4"
+        video_path = os.path.join(Config.VIDEO_OUT, filename)
+        print(f"[VIDEO] Serving {filename}")
+        if not os.path.exists(video_path):
+            print(f"[VIDEO] Not found: {video_path}")
+            return jsonify({'error': f'Video not found: {filename}'}), 404
+
+        file_size = os.path.getsize(video_path)
+        range_header = request.headers.get('Range')
+
+        if range_header:
+            byte_range = range_header.replace('bytes=', '').split('-')
+            start = int(byte_range[0])
+            end = int(byte_range[1]) if byte_range[1] else file_size - 1
+            length = end - start + 1
+            with open(video_path, 'rb') as f:
+                f.seek(start)
+                data = f.read(length)
+            from flask import Response
+            resp = Response(
+                data, 206, mimetype='video/mp4',
+                headers={
+                    'Content-Range': f'bytes {start}-{end}/{file_size}',
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': str(length),
+                    'Access-Control-Allow-Origin': '*',
+                }
+            )
+            return resp
+        else:
+            response = send_file(video_path, mimetype='video/mp4', conditional=True)
+            response.headers['Accept-Ranges'] = 'bytes'
+            response.headers['Content-Length'] = str(file_size)
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            return response
+    except Exception as e:
+        print(f"[VIDEO] Error: {e}")
+        return jsonify({'error': 'Video serving error'}), 500
+
 @app.route('/api/sentence-video/<path:filename>', methods=['GET'])
 def serve_sentence_video(filename):
-    """Serve sentence video file"""
+    """Legacy: serve sentence video file by filename (kept for compatibility)"""
     try:
-        # Security check
         if '..' in filename or filename.startswith('/'):
             return jsonify({'error': 'Invalid filename'}), 400
-        
         video_path = os.path.join(Config.VIDEO_OUT, filename)
-        print(f"📹 Serving video: {filename}")
-        print(f"   Full path: {video_path}")
-        
         if not os.path.exists(video_path):
-            print(f"   ❌ File not found: {video_path}")
-            print(f"   Available files: {os.listdir(Config.VIDEO_OUT)[:5]}")
-            # Try to find alternative
-            base_name = filename.split('_')[0] if '_' in filename else filename
-            for f in os.listdir(Config.VIDEO_OUT):
-                if base_name in f and f.endswith('.mp4'):
-                    video_path = os.path.join(Config.VIDEO_OUT, f)
-                    print(f"   ✅ Found alternative: {f}")
-                    break
-            else:
-                print(f"   ❌ No alternative found for base: {base_name}")
-                return jsonify({'error': 'Video not found', 'requested': filename}), 404
-        
-        response = send_file(video_path, mimetype='video/mp4')
+            return jsonify({'error': 'Video not found', 'requested': filename}), 404
+        file_size = os.path.getsize(video_path)
+        range_header = request.headers.get('Range')
+        if range_header:
+            byte_range = range_header.replace('bytes=', '').split('-')
+            start = int(byte_range[0])
+            end = int(byte_range[1]) if byte_range[1] else file_size - 1
+            length = end - start + 1
+            with open(video_path, 'rb') as f:
+                f.seek(start)
+                data = f.read(length)
+            from flask import Response
+            return Response(data, 206, mimetype='video/mp4', headers={
+                'Content-Range': f'bytes {start}-{end}/{file_size}',
+                'Accept-Ranges': 'bytes',
+                'Content-Length': str(length),
+                'Access-Control-Allow-Origin': '*',
+            })
+        response = send_file(video_path, mimetype='video/mp4', conditional=True)
+        response.headers['Accept-Ranges'] = 'bytes'
+        response.headers['Content-Length'] = str(file_size)
         response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        print(f"   ✅ Sent video successfully")
         return response
-        
     except Exception as e:
-        print(f"❌ Video serving error: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 500
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/debug-questions/<level_id>', methods=['GET'])
@@ -1176,8 +1361,8 @@ def internal_error(error):
 # ========================
 if __name__ == "__main__":
     print("\n" + "="*70)
-    print("🌐 Server starting at: http://localhost:5002")
-    print("📡 Available endpoints:")
+    print("** Server starting at: http://localhost:5003")
+    print("** Available endpoints:")
     print("   GET  /api/health")
     print("   GET  /api/levels")
     print("   POST /api/start-level")
@@ -1187,6 +1372,7 @@ if __name__ == "__main__":
     print("   POST /api/score")
     print("   POST /api/reset-level")
     print("   GET  /api/leaderboard")
+    print("   GET  /api/video/<level_id>/<sent_idx>")
     print("   GET  /api/sentence-video/<filename>")
     print("   GET  /api/debug-questions/<level_id>")
     print("   POST /api/cleanup-sessions")

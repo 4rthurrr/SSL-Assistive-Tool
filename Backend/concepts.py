@@ -146,6 +146,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_FRIDAY": {'label': 'Friday', 'sinhala': 'සිකුරාදා', 'synonyms': ['සිකුරාදා']},
     "CONCEPT_FRIEND": {'label': 'Friend', 'sinhala': 'යාළුවා', 'synonyms': ['යාළුවා', 'යාළුවෝ', 'යාළුවෙ', 'මිතුරේ']},
     "CONCEPT_FULL": {'label': 'Full', 'sinhala': 'පිරුණු', 'synonyms': ['පිරුණු']},
+    "CONCEPT_FUTURE": {'label': 'Future', 'sinhala': 'ඉදිරිය', 'synonyms': ['ඉදිරිය', 'හෙට', 'ඉදිරිදී', 'ඉදිරියේ']},
     "CONCEPT_GET_UP": {'label': 'Get up', 'sinhala': 'නැගිටිනවා', 'synonyms': ['නැගිටිනවා', 'නැගිටින්න', 'නැගිට්ටා']},
     "CONCEPT_GIVE": {'label': 'Give', 'sinhala': 'දෙනවා', 'synonyms': ['දෙනවා', 'දෙන්න', 'දුන්නා']},
     "CONCEPT_GO": {'label': 'Go', 'sinhala': 'යනවා', 'synonyms': ['යනවා', 'යන්න', 'ගියා', 'යමු', 'යන්නම්']},
@@ -418,6 +419,8 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_YES": {'label': 'Yes', 'sinhala': 'ඔව්', 'synonyms': ['ඔව්']},
     "CONCEPT_YESTERDAY": {'label': 'Yesterday', 'sinhala': 'ඊයේ', 'synonyms': ['ඊයේ']},
     "CONCEPT_YOU": {'label': 'You', 'sinhala': 'ඔයා', 'synonyms': ['ඔයා', 'ඔබ', 'තමුසේ', 'ඔහේ']},
+    "CONCEPT_YOU_ALL": {'label': 'You all', 'sinhala': 'ඔයාලා', 'synonyms': ['ඔයාලා', 'ඔබලා', 'ඔයාලාට']},
+    "CONCEPT_WE": {'label': 'We', 'sinhala': 'අපි', 'synonyms': ['අපි', 'අපිට', 'අපේ']},
     "CONCEPT_YOUNGER_BRO": {'label': 'Younger bro', 'sinhala': 'මල්ලි', 'synonyms': ['මල්ලි', 'මල්ලී', 'මල්ලියේ']},
     "CONCEPT_YOUNGER_SISTER": {'label': 'Younger sister', 'sinhala': 'නංගි', 'synonyms': ['නංගි', 'නංගී', 'නංගියේ', 'නංගා']},
 }

@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from nlp_grammar import get_ssl_sequence, get_ssl_display_sequence
+from nlp_grammar import get_ssl_sequence, get_ssl_display_sequence, get_ssl_sequence_with_blocks
 from concepts import get_sinhala_display
 from video_manager import find_video_path
 from moviepy.editor import VideoFileClip, concatenate_videoclips
@@ -44,18 +44,29 @@ def translate():
         processed_text = process_input(text)
         print(f"🧠 Processed Text: '{processed_text}'")
 
-        ssl_words = get_ssl_sequence(processed_text)
-        ssl_display_words = get_ssl_display_sequence(ssl_words)
-        print(f"🔤 SSL Sequence: {ssl_words}")
-        print(f"🔤 SSL Display: {ssl_display_words}")
+        # ── NEW: sentence-aware multi-block pipeline ─────────────────────────
+        # IMPORTANT: pass the ORIGINAL text (with commas / periods) so that
+        # the semantic parser can segment clauses correctly.  process_input()
+        # strips punctuation and collapses clause boundaries - it is only used
+        # by the legacy flat pipeline fallback path.
+        parsed = get_ssl_sequence_with_blocks(text)
+        ssl_words        = parsed["flat_sequence"]
+        ssl_display_words= parsed["flat_display"]
+        animation_blocks = parsed["blocks"]        # per-clause data for frontend
+        semantic_json    = parsed["semantic_json"]  # full parse tree
 
+        print(f"🔤 SSL Sequence  : {ssl_words}")
+        print(f"🔤 SSL Display   : {ssl_display_words}")
+        print(f"📦 Clauses found : {len(animation_blocks)}")
+
+        # ── video stitching (unchanged logic, operates on flat sequence) ─────
         generated_clips = []
-        word_timings = []
-        current_time = 0.0
+        word_timings    = []
+        current_time    = 0.0
 
         for i, word in enumerate(ssl_words):
             display_word = ssl_display_words[i] if i < len(ssl_display_words) else word
-            video_path = find_video_path(word)
+            video_path   = find_video_path(word)
 
             if video_path:
                 print(f"✅ Found video for '{word}': {video_path}")
@@ -75,8 +86,10 @@ def translate():
         if not generated_clips:
             return jsonify({
                 "error": "No videos found",
-                "ssl_grammar": ssl_words,
-                "ssl_grammar_display": ssl_display_words
+                "ssl_grammar":        ssl_words,
+                "ssl_grammar_display": ssl_display_words,
+                "animation_blocks":   animation_blocks,
+                "semantic_json":      semantic_json,
             }), 404
 
         final_clip = concatenate_videoclips(generated_clips, method="compose")
@@ -127,11 +140,13 @@ def translate():
 
         # Normal
         return jsonify({
-            "video_url": f"http://localhost:5002/{OUTPUT_DIR}/{filename}",
-            "ssl_grammar": ssl_words,
-            "ssl_grammar_display": ssl_display_words,
-            "word_timings": word_timings,
-            "mode": "normal"
+            "video_url":            f"http://localhost:5002/{OUTPUT_DIR}/{filename}",
+            "ssl_grammar":          ssl_words,
+            "ssl_grammar_display":  ssl_display_words,
+            "word_timings":         word_timings,
+            "animation_blocks":     animation_blocks,   # NEW: per-clause blocks
+            "semantic_json":        semantic_json,       # NEW: full parse tree
+            "mode":                 "normal"
         })
 
     except Exception as e:
