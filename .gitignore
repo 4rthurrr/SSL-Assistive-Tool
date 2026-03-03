@@ -1,94 +1,42 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Dependencies
-node_modules/
-venv/
-env/
-.venv/
-ENV/
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Build outputs
-dist/
-dist-ssr/
-build/
-*.local
-.next/
-out/
-
-# IDE & Editor
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.sublime-project
-.sublime-workspace
-
-# Environment variables
+*.py[cod]
+*$py.class
+venv/
 .env
-.env.local
-.env.*.local
 
-# OS specific
-Thumbs.db
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Testing
-coverage/
-.nyc_output/
-
-# ML Models & Large Files
-*.pth
-*.pt
-*.pkl
-*.h5
-*.onnx
-Dataset*/
-
-# Temporary files
-*.tmp
-*.bak
-.cache/
-
-# Node
-npm-shrinkwrap.json
-yarn.lock
-
-# Python
+# Javascript / Node
+node_modules/
 dist/
 build/
-*.egg-info/
-.pytest_cache/
-.coverage
+.DS_Store
 
-# Docker
-.docker/
-docker-compose.override.yml
+# Project Specific
+static/outputs/*.mp4
+static/outputs/driver_*.mp4
+static/outputs/sk_*.mp4
+static/outputs/ai_*.mp4
+server.log
+*.log
 
-# Python virtual environment
-venv/
-venv_new/
-Backend/venv_new/
+# VS Code
+.vscode/
 
-# Python
-__pycache__/
-*.pyc
+# Large/Binary Files
+*.glb
+*.pdf
+*.ipynb
+*.mp4
+
+# Dataset
+backend/Dataset*Original/
+backend/Dataset - Original/
+Dataset - Original/
+**/Dataset - Original/
+
+
+
+# Large Data Files
+backend/data/grammar_dataset.csv
+backend/data/grammar_dataset_augmented.csv
+backend/data/training_data.json

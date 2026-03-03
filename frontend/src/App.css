@@ -1,46 +1,205 @@
-.perspective {
-  perspective: 1000px;
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap");
+
+* {
+    box-sizing: border-box;
 }
 
-.transform-style-preserve-3d {
-  transform-style: preserve-3d;
+body {
+    margin: 0;
+    font-family: "Fredoka", sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #fff9e6);
+    overflow-x: hidden;
 }
 
-.rotate-y-180 {
-  transform: rotateY(180deg);
+.kids-app {
+    min-height: 100vh;
+    padding: 14px;
 }
 
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+.kids-header {
+    background: white;
+    border-radius: 16px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 12px;
 }
 
-@keyframes shake {
-  10%, 90% { transform: translateX(-1px); }
-  20%, 80% { transform: translateX(2px); }
-  30%, 50%, 70% { transform: translateX(-4px); }
-  40%, 60% { transform: translateX(4px); }
+.kids-header h1 {
+    margin: 0;
+    color: #ff6b6b;
 }
 
-.animate-shake {
-  animation: shake 0.5s;
-}
-/* Add these animations */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+.main-container {
+    width: 100%;
 }
 
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.split-layout {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.left-panel,
+.right-panel {
+    flex: 1;
+    min-width: 320px;
 }
 
-.animate-spin-slow {
-  animation: spin-slow 20s linear infinite;
+.input-section {
+    background: white;
+    padding: 14px;
+    border-radius: 18px;
 }
 
+textarea {
+    width: 100%;
+    min-height: 80px;
+    max-height: 260px;
+    resize: none;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 14px;
+    border: 2px solid #4ecdc4;
+    line-height: 1.5;
+}
+
+.action-row {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    background: #ff6b6b;
+    color: white;
+}
+
+.mode-toggle label {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.grammar-zone {
+    background: white;
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 2px dashed #ffe66d;
+}
+
+.grammar-zone h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.meaning-box {
+    background: #f0f4f8;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.meaning-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.sign-box {
+    background: #fff9e6;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    padding: 8px 16px;
+    border-radius: 24px;
+    background: white;
+    border: 2px solid #ffe66d;
+    font-weight: 600;
+    color: #444;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.chip.active {
+    background: #ff6b6b;
+    color: white;
+    border-color: #ff6b6b;
+    transform: scale(1.1);
+}
+
+.video-section {
+    background: white;
+    border-radius: 18px;
+    padding: 12px;
+    text-align: center;
+}
+
+video {
+    width: 100%;
+    max-height: 65vh;
+    border-radius: 12px;
+    background: black;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.controls button {
+    background: #4ecdc4;
+}
+
+.confetti {
+    font-size: 1.4rem;
+    margin-top: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: #2c3e50;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.empty,
+.loading {
+    padding: 40px;
+    font-size: 1.2rem;
+    color: #666;
+    background: #f9f9f9;
+    border-radius: 16px;
+}
+
+@media (max-width: 900px) {
+    .split-layout {
+        flex-direction: column;
+    }
+}
