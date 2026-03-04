@@ -27,7 +27,7 @@ print(f"🔑 GEMINI_API_KEY loaded: {'Yes' if os.getenv('GEMINI_API_KEY') else '
 
 # MongoDB integration
 try:
-    from mongodb_integration import mongodb_manager
+    from core.database.mongodb_integration import mongodb_manager
     print("✅ MongoDB integration loaded")
 except Exception as e:
     print(f"⚠️ MongoDB integration failed: {e}")
@@ -46,7 +46,7 @@ CORS(app, resources={
 # PATHS
 # ========================
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_DIR = os.path.join(_BASE_DIR, "SSL_model")
+MODEL_DIR = os.path.join(_BASE_DIR, "text-to-sign", "SSL_model")
 VIDEO_DIR = os.path.join(_BASE_DIR, "Dataset - Original")
 
 # ========================

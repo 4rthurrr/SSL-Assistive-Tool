@@ -5,11 +5,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
-const userRoutes = require('./route/userroutes');
-const gameProfileRoutes = require('./route/gameProfileRoutes');
+const userRoutes = require('./auth/routes/userroutes');
+const gameProfileRoutes = require('./game-engine/routes/gameProfileRoutes');
 
-const GameAttempt = require('./model/GameAttempt');
-const UserLevel = require('./model/UserLevel');
+const GameAttempt = require('./game-engine/models/GameAttempt');
+const UserLevel = require('./game-engine/models/UserLevel');
 
 const app = express();
 
@@ -287,8 +287,8 @@ app.post('/api/questions/validate', verifyToken, async (req, res) => {
 // ========================
 // REGISTRATION ENDPOINT WITH JWT + BCRYPT
 // ========================
-const User = require('./model/usermodel');
-const GameProfile = require('./model/GameProfile');
+const User = require('./auth/models/usermodel');
+const GameProfile = require('./game-engine/models/GameProfile');
 
 app.post('/api/register', async (req, res) => {
   try {
