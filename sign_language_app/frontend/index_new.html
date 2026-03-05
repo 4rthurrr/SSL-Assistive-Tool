@@ -540,21 +540,15 @@
 
             // Collect frames during recording
             if (isRecording && results.poseLandmarks) {
-                // TRAINING DATA: 33 pose landmarks × 4 values = 132 features
-                // MediaPipe Holistic provides exactly 33 pose landmarks!
-                
+                // Collect RAW pose landmarks (33 × 4 = 132 features).
+                // Normalization (body-center + shoulder-scale) is applied in
+                // normalizeFrame() before the sequence is sent to the backend.
+
                 const frameFeatures = [];
-                
-                // CRITICAL: Use RAW MediaPipe coordinates (NO normalization!)
-                // Training CSV files contain raw MediaPipe values directly
-                // X/Y are image-relative (0.0-1.0, can exceed for off-frame landmarks)
-                // Z is depth relative to hips (negative values)
-                // Visibility is 0.0-1.0 confidence
-                
-                // Extract all 33 pose landmarks with RAW values
+
+                // Extract all 33 pose landmarks with raw MediaPipe values
                 for (let i = 0; i < 33; i++) {
                     if (results.poseLandmarks[i]) {
-                        // Use raw MediaPipe coordinates exactly as training data
                         const x = results.poseLandmarks[i].x;
                         const y = results.poseLandmarks[i].y;
                         const z = results.poseLandmarks[i].z || 0;
@@ -591,7 +585,7 @@
                 if (collectedFrames.length === 1) {
                     console.log('📊 First frame captured:');
                     console.log('   Total features:', frameFeatures.length);
-                    console.log('   Format: 33 pose landmarks × 4 values (RAW MediaPipe coords)');
+                    console.log('   Format: 33 pose landmarks × 4 values (raw, will be normalized before sending)');
                     console.log('   Sample (first 12 - nose x,y,z,vis + left-eye-inner x,y,z,vis):', frameFeatures.slice(0, 12).map(v => v.toFixed(3)));
                 }
             }
@@ -666,15 +660,60 @@
             return result;
         }
 
+        /**
+         * Normalize one frame's 132 features using body-center + shoulder-scale normalization.
+         * This MUST match the normalize_sequence() logic in retrain_fixed.py exactly.
+         *
+         * Format: [x0,y0,z0,vis0, x1,y1,z1,vis1, ... x32,y32,z32,vis32]
+         * Reference landmarks:
+         *   left shoulder  = 11  → base index 44
+         *   right shoulder = 12  → base index 48
+         *   left hip       = 23  → base index 92
+         *   right hip      = 24  → base index 96
+         */
+        function normalizeFrame(frame) {
+            const f = frame.slice(); // copy so we don't mutate original
+
+            const ls_x = f[11 * 4 + 0], ls_y = f[11 * 4 + 1];
+            const rs_x = f[12 * 4 + 0], rs_y = f[12 * 4 + 1];
+            const lh_x = f[23 * 4 + 0], lh_y = f[23 * 4 + 1];
+            const rh_x = f[24 * 4 + 0], rh_y = f[24 * 4 + 1];
+
+            const center_x = (ls_x + rs_x + lh_x + rh_x) / 4.0;
+            const center_y = (ls_y + rs_y + lh_y + rh_y) / 4.0;
+
+            let scale = Math.sqrt(Math.pow(rs_x - ls_x, 2) + Math.pow(rs_y - ls_y, 2));
+            if (scale < 1e-6) scale = 1.0; // avoid division by zero
+
+            for (let lm = 0; lm < 33; lm++) {
+                const base = lm * 4;
+                f[base + 0] = (f[base + 0] - center_x) / scale; // x
+                f[base + 1] = (f[base + 1] - center_y) / scale; // y
+                f[base + 2] = f[base + 2] / scale;               // z
+                // base + 3 = visibility → unchanged
+            }
+
+            return f;
+        }
+
         async function sendPrediction(frames) {
             try {
                 console.log('📤 Sending prediction...');
                 elements.loading.classList.add('active');
                 elements.results.style.display = 'none';
 
+                // Apply body-center + shoulder-scale normalization to match training pipeline
+                const normalizedFrames = frames.map(normalizeFrame);
+
+                // Debug: verify normalization (nose should now be relative to body center)
+                const firstNorm = normalizedFrames[0];
+                console.log(`🔧 Normalization applied - nose (norm): x=${firstNorm[0].toFixed(3)}, y=${firstNorm[1].toFixed(3)}, z=${firstNorm[2].toFixed(3)}`);
+                console.log(`   Left shoulder (norm): x=${firstNorm[44].toFixed(3)}, y=${firstNorm[45].toFixed(3)}`);
+                console.log(`   Right shoulder (norm): x=${firstNorm[48].toFixed(3)}, y=${firstNorm[49].toFixed(3)}`);
+
                 const payload = {
-                    sequence: frames.map(frame => ({
-                        landmarks: frame  // Send as flat array: [wrist_x, wrist_y, index_x, index_y]
+                    sequence: normalizedFrames.map(frame => ({
+                        landmarks: frame
                     }))
                 };
 
