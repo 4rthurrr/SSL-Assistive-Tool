@@ -176,7 +176,7 @@ function Translator() {
             <div className="sl-card" style={{ background:"linear-gradient(135deg,#fffbe6,#fff3cd)",
               border:"3px solid var(--sl-saffron)", textAlign:"center" }}>
               <div style={{ fontSize:"2rem", marginBottom:"6px" }}>🦚</div>
-              <p style={{ margin:0, color:"#7a4f20", fontSize:".9rem",
+              <p style={{ margin:0, color:"#64748B", fontSize:".9rem",
                 fontFamily:"var(--sl-font)", fontWeight:600 }}>
                 Sinhala is one of Sri Lanka's official languages.<br/>
                 Over <strong>16 million</strong> people speak it! 🇱🇰
@@ -203,7 +203,7 @@ function Translator() {
                   border:"3px solid #e74c3c", borderRadius:"16px",
                   padding:"16px", textAlign:"center" }}>
                   <span style={{ fontSize:"2rem" }}>😢</span>
-                  <p style={{ margin:"8px 0 0", color:"#c0392b",
+                  <p style={{ margin:"8px 0 0", color:"#dc2626",
                     fontFamily:"var(--sl-font)", fontWeight:700 }}>{error}</p>
                 </div>
               )}

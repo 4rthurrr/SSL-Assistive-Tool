@@ -884,7 +884,7 @@ const SignLanguageGame = () => {
         <div className="bg-white rounded-[30px] shadow-xl border-8 border-indigo-200 mb-6 overflow-hidden">
 
           {/* Title bar */}
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-3 flex items-center gap-3">
+          <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-6 py-3 flex items-center gap-3">
             <span className="text-2xl">🤟</span>
             <span className="text-white font-black text-lg">SSL Sign Animation</span>
             <span className="ml-auto text-white/70 text-sm font-bold">
@@ -894,7 +894,7 @@ const SignLanguageGame = () => {
 
           <div className="p-5">
             {/* Video frame */}
-            <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-[20px] border-4 border-indigo-200 overflow-hidden mb-4">
+            <div className="relative bg-gradient-to-br from-sky-50 to-blue-50 rounded-[20px] border-4 border-sky-200 overflow-hidden mb-4">
               {currentWordVideoUrl && !wordVideoError ? (
                 <>
                   <video
@@ -940,7 +940,7 @@ const SignLanguageGame = () => {
 
               <button
                 onClick={toggleWordVideo}
-                className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-4 border-white"
+                className="w-12 h-12 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white text-xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-4 border-white"
               >{wordVideoPlaying ? '⏸' : '▶️'}</button>
 
               <button
@@ -1023,7 +1023,7 @@ const SignLanguageGame = () => {
         )}
 
         {showResult && !isCorrect && !gameOver && (
-          <div className="bg-gradient-to-r from-red-400 to-pink-500 border-8 border-red-600 rounded-[30px] shadow-xl p-8 mb-6 text-center">
+          <div className="bg-gradient-to-r from-red-400 to-orange-500 border-8 border-red-600 rounded-[30px] shadow-xl p-8 mb-6 text-center">
             <div className="text-8xl mb-4 animate-bounce">💪</div>
             <h3 className="text-5xl font-black text-white mb-4">{t.keepTrying}</h3>
             <p className="text-white text-xl font-bold">{attempts}/{maxAttempts} {t.attempts}</p>

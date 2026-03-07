@@ -410,7 +410,7 @@ const GameUserForm = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -423,7 +423,7 @@ const GameUserForm = () => {
 
   if (step === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-xl text-white">Checking your status...</p>
@@ -479,10 +479,10 @@ const GameUserForm = () => {
 
   if (step === 'register') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
           <div className="text-center mb-6">
-            <User className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+            <User className="w-16 h-16 text-sky-600 mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-gray-800">සින්හල සංඥා භාෂා</h1>
             <p className="text-gray-600 mt-2">Sinhala Sign Language Learning</p>
           </div>
@@ -531,7 +531,7 @@ const GameUserForm = () => {
             <button
               onClick={handleRegister}
               disabled={!formData.name || loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ආරම්භ කරන්න / Start
             </button>
@@ -588,7 +588,7 @@ const GameUserForm = () => {
               </span>
               <div className="flex items-center gap-2">
                 {question.visualType === 'image' && <Image className="w-5 h-5 text-blue-600" />}
-                {question.visualType === 'video' && <Video className="w-5 h-5 text-purple-600" />}
+                {question.visualType === 'video' && <Video className="w-5 h-5 text-sky-600" />}
                 <div className="flex gap-2">
                   {questions.map((_, i) => (
                     <div
@@ -671,7 +671,7 @@ const GameUserForm = () => {
           
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Quiz Complete!</h2>
           
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-6">
+          <div className="bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl p-6 mb-6">
             <div className="text-5xl font-bold text-blue-600 mb-2">{score}/{total}</div>
             <div className="text-xl text-gray-700">{percentage.toFixed(0)}% Correct</div>
           </div>

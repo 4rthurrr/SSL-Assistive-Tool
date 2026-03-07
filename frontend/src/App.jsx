@@ -36,28 +36,28 @@ function Navbar() {
 
   return (
     <nav style={{
-      background: "linear-gradient(135deg, #C0392B, #8B1A1A, #F4A820)",
+      background: "linear-gradient(135deg, #4DA6FF, #2B8FE8)",
       padding: "12px 24px",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      boxShadow: "0 4px 18px rgba(139,26,26,.35)",
-      fontFamily: "'Fredoka One', 'Comic Sans MS', cursive",
+      boxShadow: "0 4px 18px rgba(77,166,255,.30)",
+      fontFamily: "'Fredoka', 'Comic Neue', cursive",
       position: "sticky",
       top: 0,
       zIndex: 100,
     }}>
-      {/* Decorative lotus row */}
+      {/* Decorative sparkle row */}
       <div style={{ position:"absolute", bottom:"-4px", left:0, right:0,
-        textAlign:"center", fontSize:".9rem", opacity:.2, letterSpacing:"6px",
+        textAlign:"center", fontSize:".9rem", opacity:.18, letterSpacing:"6px",
         pointerEvents:"none" }}>
-        🪷 🌿 🪷 🌿 🪷 🌿 🪷 🌿 🪷 🌿 🪷
+        ⭐ 🌟 ⭐ 🌟 ⭐ 🌟 ⭐ 🌟 ⭐ 🌟 ⭐
       </div>
 
       <Link to="/" style={{ color:"#fff", fontWeight:900, fontSize:"1.3rem",
         textDecoration:"none", display:"flex", alignItems:"center", gap:"8px",
-        textShadow:"2px 2px 5px rgba(0,0,0,.4)", zIndex:1 }}>
-        🪷 සංඥා භාෂා
+        textShadow:"1px 2px 5px rgba(0,0,0,.20)", zIndex:1 }}>
+        🤟 සංඥා භාෂා
       </Link>
 
       <div style={{ display:"flex", gap:"10px", alignItems:"center", zIndex:1 }}>
@@ -76,7 +76,7 @@ function Navbar() {
               👋 {user?.name?.split(" ")[0] || "User"}
             </span>
             <button onClick={handleLogout} style={{
-              color:"#C0392B", background:"#fff", border:"none", cursor:"pointer",
+              color:"#2B8FE8", background:"#fff", border:"none", cursor:"pointer",
               fontWeight:800, fontSize:".85rem", padding:"6px 16px",
               borderRadius:"20px", boxShadow:"0 2px 8px rgba(0,0,0,.2)",
               transition:"transform .15s"
@@ -99,9 +99,9 @@ function NavLink({ to, label, locked, highlight }) {
   if (locked) {
     return (
       <Link to="/login" title="Login required" style={{
-        color:"rgba(255,255,255,.6)", textDecoration:"none", fontWeight:700,
+        color:"rgba(255,255,255,.65)", textDecoration:"none", fontWeight:700,
         fontSize:".92rem", padding:"6px 14px", borderRadius:"20px",
-        background:"rgba(255,255,255,.08)", border:"2px dashed rgba(255,255,255,.3)",
+        background:"rgba(255,255,255,.10)", border:"2px dashed rgba(255,255,255,.35)",
         display:"flex", alignItems:"center", gap:"4px"
       }}>
         🔒 {label.split(" ").slice(1).join(" ")}
@@ -110,10 +110,10 @@ function NavLink({ to, label, locked, highlight }) {
   }
   return (
     <Link to={to} style={{
-      color:"#fff", textDecoration:"none", fontWeight:700,
+      textDecoration:"none", fontWeight:700,
       fontSize:".92rem", padding:"6px 16px", borderRadius:"20px",
-      background: highlight ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.18)",
-      color: highlight ? "#C0392B" : "#fff",
+      background: highlight ? "#FFD93D" : "rgba(255,255,255,.18)",
+      color: highlight ? "#2D3748" : "#fff",
       border:"2px solid rgba(255,255,255,.35)",
       transition:"background .2s, transform .15s"
     }}>
@@ -172,9 +172,9 @@ const HomePage = () => {
       titleSi: "සංඥා පරිවර්තකය",
       desc: "Type Sinhala text and watch it signed by an avatar in real-time",
       btnLabel: "Open Translator",
-      color: "#C0392B",
-      gradient: "linear-gradient(135deg,#C0392B,#8B1A1A)",
-      shadow: "rgba(192,57,43,.25)",
+      color: "#4DA6FF",
+      gradient: "linear-gradient(135deg,#4DA6FF,#2B8FE8)",
+      shadow: "rgba(77,166,255,.25)",
     },
     {
       to: user?.hasTakenQuiz ? "/gameselection" : "/game-register",
@@ -183,37 +183,37 @@ const HomePage = () => {
       titleSi: "ඉගෙනුම් ක්‍රීඩා",
       desc: "Practice sign language with fun interactive puzzles and sentence games",
       btnLabel: "Play Now",
-      color: "#27AE60",
-      gradient: "linear-gradient(135deg,#27AE60,#1B7A38)",
-      shadow: "rgba(27,122,56,.25)",
+      color: "#4CAF50",
+      gradient: "linear-gradient(135deg,#4CAF50,#388E3C)",
+      shadow: "rgba(76,175,80,.25)",
     },
     {
       to: "/translate",
-      icon: "🪷",
+      icon: "🌟",
       title: "Word Translator",
       titleSi: "පෙළ පරිවර්තකය",
       desc: "Quick English to Sinhala word lookup for everyday vocabulary",
       btnLabel: "Translate",
-      color: "#F4A820",
-      gradient: "linear-gradient(135deg,#F4A820,#C0392B)",
-      shadow: "rgba(244,168,32,.3)",
+      color: "#FFD93D",
+      gradient: "linear-gradient(135deg,#FFD93D,#E6C200)",
+      shadow: "rgba(255,217,61,.30)",
       public: true,   // not protected
     },
   ];
 
   return (
-    <div style={{ minHeight:"100vh", fontFamily:"'Fredoka One','Comic Sans MS',cursive",
-      background:"linear-gradient(160deg,#FFF8F0 0%,#FEF0E4 50%,#FFF8F0 100%)",
+    <div style={{ minHeight:"100vh", fontFamily:"'Fredoka','Comic Neue',cursive",
+      background:"linear-gradient(160deg,#F5F9FF 0%,#EBF4FF 50%,#F5F9FF 100%)",
       display:"flex", flexDirection:"column", alignItems:"center",
       gap:"36px", padding:"48px 20px 60px", position:"relative", overflow:"hidden" }}>
 
       {/* Floating decos */}
       {[
-        { top:"4%",  left:"3%",  f:"3rem",   e:"🪷", d:"0s"   },
-        { top:"7%",  right:"4%", f:"2.5rem", e:"🐘", d:".5s"  },
-        { top:"45%", left:"1%",  f:"2.2rem", e:"🦚", d:"1s"   },
-        { top:"75%", right:"2%", f:"2.5rem", e:"🌿", d:".3s"  },
-        { top:"88%", left:"5%",  f:"2rem",   e:"🥥", d:"1.5s" },
+        { top:"4%",  left:"3%",  f:"3rem",   e:"⭐", d:"0s"   },
+        { top:"7%",  right:"4%", f:"2.5rem", e:"🌟", d:".5s"  },
+        { top:"45%", left:"1%",  f:"2.2rem", e:"✨", d:"1s"   },
+        { top:"75%", right:"2%", f:"2.5rem", e:"🎯", d:".3s"  },
+        { top:"88%", left:"5%",  f:"2rem",   e:"🎨", d:"1.5s" },
       ].map((s, i) => (
         <div key={i} style={{ position:"absolute", top:s.top, left:s.left,
           right:s.right, fontSize:s.f, opacity:.15, pointerEvents:"none",
@@ -222,30 +222,30 @@ const HomePage = () => {
 
       {/* Hero */}
       <div style={{ textAlign:"center", zIndex:1 }}>
-        <div style={{ fontSize:"4.5rem", marginBottom:"10px" }}>🪷 🤟 🪷</div>
+        <div style={{ fontSize:"4.5rem", marginBottom:"10px" }}>� ✨ 🤟</div>
         <h1 style={{ margin:"0 0 8px", fontSize:"clamp(2rem,5vw,3.2rem)", fontWeight:900,
-          background:"linear-gradient(135deg,#C0392B,#8B1A1A,#F4A820)",
+          background:"linear-gradient(135deg,#4DA6FF,#2B8FE8)",
           WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
           backgroundClip:"text" }}>
           සංඥා භාෂා ඉගෙන ගනිමු!
         </h1>
-        <p style={{ margin:0, fontSize:"1.2rem", color:"#7a4f20", fontWeight:600 }}>
+        <p style={{ margin:0, fontSize:"1.2rem", color:"#2B8FE8", fontWeight:600 }}>
           Sinhala Sign Language Learning Platform
         </p>
         <div style={{ marginTop:"12px", display:"inline-flex", gap:"8px",
-          background:"linear-gradient(135deg,#C0392B,#F4A820)",
-          color:"#fff", borderRadius:"30px", padding:"7px 20px",
-          fontSize:".9rem", fontWeight:700, boxShadow:"0 4px 12px rgba(192,57,43,.3)" }}>
+          background:"linear-gradient(135deg,#4DA6FF,#FFD93D)",
+          color:"#2D3748", borderRadius:"30px", padding:"7px 20px",
+          fontSize:".9rem", fontWeight:700, boxShadow:"0 4px 12px rgba(77,166,255,.30)" }}>
           🇱🇰 Sri Lanka 🇱🇰
         </div>
       </div>
 
       {/* Welcome banner for logged-in users */}
       {isLoggedIn && user && (
-        <div style={{ background:"linear-gradient(135deg,#C0392B,#F4A820)",
+        <div style={{ background:"linear-gradient(135deg,#4DA6FF,#2B8FE8)",
           color:"#fff", borderRadius:"20px", padding:"14px 32px",
           fontWeight:700, fontSize:"1.1rem", zIndex:1,
-          boxShadow:"0 6px 20px rgba(192,57,43,.3)" }}>
+          boxShadow:"0 6px 20px rgba(77,166,255,.30)" }}>
           👋 Welcome back, {user.name}! &nbsp;🎉 Ready to learn today?
         </div>
       )}
@@ -253,23 +253,23 @@ const HomePage = () => {
       {/* NOT logged in — CTA banner */}
       {!isLoggedIn && (
         <div style={{ background:"#fff", borderRadius:"20px", padding:"20px 36px",
-          border:"3px solid rgba(192,57,43,.2)", textAlign:"center", zIndex:1,
-          boxShadow:"0 6px 24px rgba(192,57,43,.1)", maxWidth:"480px" }}>
-          <p style={{ margin:"0 0 14px", color:"#7a4f20", fontWeight:700, fontSize:"1rem" }}>
+          border:"3px solid rgba(77,166,255,.25)", textAlign:"center", zIndex:1,
+          boxShadow:"0 6px 24px rgba(77,166,255,.12)", maxWidth:"480px" }}>
+          <p style={{ margin:"0 0 14px", color:"#2B8FE8", fontWeight:700, fontSize:"1rem" }}>
             🔒 Sign in to unlock <strong>Games</strong> and the <strong>SSL Translator</strong>
           </p>
           <div style={{ display:"flex", gap:"12px", justifyContent:"center", flexWrap:"wrap" }}>
             <Link to="/login" style={{
-              background:"linear-gradient(135deg,#C0392B,#8B1A1A)",
+              background:"linear-gradient(135deg,#4DA6FF,#2B8FE8)",
               color:"#fff", padding:"10px 28px", borderRadius:"22px",
               textDecoration:"none", fontWeight:800, fontSize:"1rem",
-              boxShadow:"0 4px 12px rgba(192,57,43,.35)" }}>
+              boxShadow:"0 4px 12px rgba(77,166,255,.35)" }}>
               👤 Sign In
             </Link>
             <Link to="/register" style={{
-              background:"#fff", color:"#C0392B", padding:"10px 28px",
+              background:"#fff", color:"#4DA6FF", padding:"10px 28px",
               borderRadius:"22px", textDecoration:"none", fontWeight:800,
-              fontSize:"1rem", border:"2px solid #C0392B" }}>
+              fontSize:"1rem", border:"2px solid #4DA6FF" }}>
               📝 Create Account
             </Link>
           </div>
@@ -313,9 +313,9 @@ const HomePage = () => {
               onMouseOut={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.boxShadow=`0 8px 30px ${shadow}`; }}
               >
                 <span style={{ fontSize:"3.5rem" }}>{icon}</span>
-                <h2 style={{ margin:0, fontSize:"1.25rem", fontWeight:900, color:"#2C1810", textAlign:"center" }}>{title}</h2>
-                <p style={{ margin:0, color:"#8B6347", fontSize:".82rem", textAlign:"center", fontWeight:600 }}>{titleSi}</p>
-                <p style={{ margin:0, color:"#a0826a", fontSize:".78rem", textAlign:"center", lineHeight:1.4 }}>{desc}</p>
+                <h2 style={{ margin:0, fontSize:"1.25rem", fontWeight:900, color:"#2D3748", textAlign:"center" }}>{title}</h2>
+                <p style={{ margin:0, color:"#4DA6FF", fontSize:".82rem", textAlign:"center", fontWeight:600 }}>{titleSi}</p>
+                <p style={{ margin:0, color:"#64748B", fontSize:".78rem", textAlign:"center", lineHeight:1.4 }}>{desc}</p>
                 {!locked && (
                   <span style={{ background:gradient, color:"#fff", padding:"9px 20px",
                     borderRadius:"22px", fontWeight:700, fontSize:".9rem",
@@ -329,10 +329,10 @@ const HomePage = () => {
         })}
       </div>
 
-      {/* Cultural strip */}
-      <div style={{ color:"rgba(139,26,26,.2)", fontSize:"1.3rem",
+      {/* Decorative strip */}
+      <div style={{ color:"rgba(77,166,255,.25)", fontSize:"1.3rem",
         letterSpacing:"10px", userSelect:"none", zIndex:1 }}>
-        🪷 🐘 🦚 🌿 🥥 🪷 🐘 🦚 🌿 🥥
+        ⭐ 🤟 🌟 ✨ 🎯 ⭐ 🤟 🌟 ✨ 🎯
       </div>
     </div>
   );

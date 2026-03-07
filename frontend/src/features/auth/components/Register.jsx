@@ -69,14 +69,14 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-sky-200 via-blue-300 to-yellow-200 p-4">
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md space-y-4"
       >
         <div className="text-center">
           <div className="text-5xl mb-3">🧸</div>
-          <h1 className="text-2xl font-bold text-purple-600">Create Account</h1>
+          <h1 className="text-2xl font-bold text-sky-600">Create Account</h1>
           <p className="text-gray-600 text-sm mt-1">Join our learning community</p>
         </div>
 
@@ -100,7 +100,7 @@ export default function Register() {
             placeholder="👤 Full Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition-all"
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-sky-400 outline-none transition-all"
             required
           />
           
@@ -110,7 +110,7 @@ export default function Register() {
             placeholder="📧 Email Address"
             value={form.email}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition-all"
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-sky-400 outline-none transition-all"
             required
           />
           
@@ -120,7 +120,7 @@ export default function Register() {
             placeholder="🔑 Password (min 6 characters)"
             value={form.password}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition-all"
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-sky-400 outline-none transition-all"
             required
             minLength={6}
           />
@@ -131,7 +131,7 @@ export default function Register() {
             placeholder="🎂 Age"
             value={form.age}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition-all"
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-sky-400 outline-none transition-all"
             required
             min="1"
             max="120"
@@ -144,7 +144,7 @@ export default function Register() {
           className={`w-full py-3 px-4 rounded-xl font-bold text-white transition-all duration-200 transform hover:scale-102 ${
             isLoading
               ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-purple-500 hover:bg-purple-600 shadow-lg'
+              : 'bg-sky-500 hover:bg-sky-600 shadow-lg'
           }`}
         >
           {isLoading ? (
@@ -165,7 +165,7 @@ export default function Register() {
           <button
             type="button"
             onClick={() => navigate('/login')}
-            className="text-purple-600 font-semibold hover:underline"
+            className="text-sky-600 font-semibold hover:underline"
           >
             Sign In
           </button>

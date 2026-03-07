@@ -96,14 +96,14 @@ export default function GameSelection() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-300 p-3">
+    <div className="min-h-screen bg-gradient-to-br from-sky-300 via-blue-200 to-yellow-200 p-3">
       {/* Fixed Navigation Bar with Quiz Score */}
       <div className="sticky top-0 z-50 mb-3">
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-3">
           <div className="flex items-center justify-between">
             {/* User Info */}
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+              <div className="w-12 h-12 bg-gradient-to-br from-sky-500 to-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
                 {userData.name?.substring(0, 2).toUpperCase() || 'SS'}
               </div>
               <div>
@@ -115,7 +115,7 @@ export default function GameSelection() {
                   {userData.recommendedLevel && (
                     <>
                       <span className="text-gray-400">•</span>
-                      <span className="text-sm font-medium text-purple-600 capitalize">
+                      <span className="text-sm font-medium text-sky-600 capitalize">
                         {userData.recommendedLevel}
                       </span>
                     </>
@@ -194,7 +194,7 @@ export default function GameSelection() {
             <Trophy className="text-yellow-500 w-5 h-5 md:w-6 md:h-6" />
             Your Progress
           </h3>
-          <div className="flex items-center gap-2 text-purple-600">
+          <div className="flex items-center gap-2 text-sky-600">
             <Brain className="w-4 h-4 md:w-5 md:h-5" />
             <span className="text-sm font-semibold">View AI Analytics</span>
             <ChevronRight className="w-4 h-4" />
@@ -205,13 +205,13 @@ export default function GameSelection() {
           <div>
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Words Mastered</span>
-              <span className="font-bold text-purple-600">
+              <span className="font-bold text-sky-600">
                 {userProgress.masteredWords}/50
               </span>
             </div>
             <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-1000"
+                className="h-full bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all duration-1000"
                 style={{ width: `${masteryProgress}%` }}
               />
             </div>
@@ -219,14 +219,14 @@ export default function GameSelection() {
           
           {/* Additional progress metrics */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="text-center bg-purple-50 rounded-lg p-2">
-              <div className="text-lg font-bold text-purple-600">
+            <div className="text-center bg-sky-50 rounded-lg p-2">
+              <div className="text-lg font-bold text-sky-600">
                 {userProgress.accuracy}%
               </div>
               <div className="text-xs text-gray-600">Accuracy</div>
             </div>
-            <div className="text-center bg-pink-50 rounded-lg p-2">
-              <div className="text-lg font-bold text-pink-600">
+            <div className="text-center bg-yellow-50 rounded-lg p-2">
+              <div className="text-lg font-bold text-yellow-600">
                 {userProgress.streak}
               </div>
               <div className="text-xs text-gray-600">Day Streak</div>
@@ -240,7 +240,7 @@ export default function GameSelection() {
             <BarChart className="w-3 h-3 md:w-4 md:h-4" />
             <span>AI-powered insights available</span>
           </div>
-          <div className="text-purple-600 font-semibold animate-pulse">
+          <div className="text-sky-600 font-semibold animate-pulse">
             Click to view →
           </div>
         </div>
@@ -334,7 +334,7 @@ export default function GameSelection() {
                 <div className="text-xs text-gray-300">Insights</div>
               </div>
               <div className="bg-white/10 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-purple-400">3</div>
+                <div className="text-lg font-bold text-sky-400">3</div>
                 <div className="text-xs text-gray-300">Tips</div>
               </div>
             </div>
@@ -353,7 +353,7 @@ export default function GameSelection() {
         </button>
         <button
           onClick={() => navigate('/ai-analytics')}
-          className="bg-purple-600 rounded-lg p-2 text-center text-white hover:bg-purple-700 transition-colors"
+          className="bg-sky-600 rounded-lg p-2 text-center text-white hover:bg-sky-700 transition-colors"
         >
           <div className="text-lg">📊</div>
           <div className="text-xs font-medium">Analytics</div>
@@ -378,7 +378,7 @@ export default function GameSelection() {
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <div className="text-sm text-gray-600">Level</div>
-                <div className="text-lg font-bold text-purple-600 capitalize">
+                <div className="text-lg font-bold text-sky-600 capitalize">
                   {userData.recommendedLevel || 'basic'}
                 </div>
               </div>

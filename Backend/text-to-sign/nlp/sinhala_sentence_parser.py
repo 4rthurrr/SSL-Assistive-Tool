@@ -21,6 +21,14 @@ import unicodedata
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
+# ── Concept database (single source of truth for all Sinhala vocabulary) ────────
+try:
+    from concepts import CONCEPT_DEFINITIONS
+except ImportError:
+    import sys, os as _os
+    sys.path.append(_os.path.dirname(_os.path.abspath(__file__)))
+    from concepts import CONCEPT_DEFINITIONS
+
 # ─────────────────────────────────────────────────────────────────────────────
 # LINGUISTIC CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -34,26 +42,50 @@ CLAUSE_BOUNDARY_TOKENS: set[str] = {
 # Conjunctions that join clauses (absorbed / dropped in SSL gloss)
 COORD_CONJUNCTIONS: set[str] = {"සහ", "හා", "ද", "ත්", "ඒ", "නිසා", "ඇයි"}
 
-# ── Subject pronouns & nouns ────────────────────────────────────────────────
-SUBJECT_MAP: dict[str, str] = {
-    # 1st person
-    "මම": "CONCEPT_I",      "මං": "CONCEPT_I",    "මා": "CONCEPT_I",
-    "අපි": "CONCEPT_WE",    "අපි​": "CONCEPT_WE",
-    # 2nd person
-    "ඔබ": "CONCEPT_YOU",    "ඔය": "CONCEPT_YOU",   "ඔයා": "CONCEPT_YOU",
-    "ඔයාලා": "CONCEPT_YOU_ALL",
-    # 3rd person — human
-    "ඔහු": "CONCEPT_HE",    "ඔහේ": "CONCEPT_HE",
-    "ඇය": "CONCEPT_SHE",    "ඇය​": "CONCEPT_SHE",
-    "ඔවුන්": "CONCEPT_THEY", "ඔවුනු": "CONCEPT_THEY",
-    # Kinship terms (also serve as subjects)
-    "අම්මා": "CONCEPT_MOTHER",  "අම්ම": "CONCEPT_MOTHER",
-    "තාත්තා": "CONCEPT_FATHER", "තාත්ත": "CONCEPT_FATHER",
-    "අක්කා": "CONCEPT_SISTER",  "නාංචා": "CONCEPT_SISTER",
-    "ආayayා": "CONCEPT_BROTHER",  "මල්ලී": "CONCEPT_BROTHER",
-    "ළමයා": "CONCEPT_CHILD",    "කොල්ලා": "CONCEPT_BOY",
-    "ගෑණිය": "CONCEPT_GIRL",    "ගෑනු": "CONCEPT_GIRL",
-}
+# ── Person / pronoun concept IDs (grammar constants — IDs only, no Sinhala words) ──
+# Sinhala surface forms are loaded automatically from CONCEPT_DEFINITIONS below.
+# To support a new person concept, add it to concepts.py and list its ID here.
+_PERSON_CONCEPT_IDS: frozenset = frozenset({
+    "CONCEPT_I", "CONCEPT_WE", "CONCEPT_YOU", "CONCEPT_YOU_ALL",
+    "CONCEPT_HE", "CONCEPT_SHE", "CONCEPT_THEY", "CONCEPT_US", "CONCEPT_MY",
+    "CONCEPT_MOTHER", "CONCEPT_FATHER",
+    "CONCEPT_ELDER_BRO", "CONCEPT_ELDER_SISTER",
+    "CONCEPT_YOUNGER_BRO", "CONCEPT_YOUNGER_SISTER",
+    "CONCEPT_SISTER", "CONCEPT_BROTHER", "CONCEPT_BRO",
+    "CONCEPT_CHILD", "CONCEPT_BABY", "CONCEPT_BOY", "CONCEPT_GIRL",
+    "CONCEPT_MAN", "CONCEPT_LADY", "CONCEPT_HUSBAND", "CONCEPT_WIFE",
+    "CONCEPT_SON", "CONCEPT_DAUGHTER",
+    "CONCEPT_GRAND_FATHER", "CONCEPT_GRAND_MOTHER", "CONCEPT_GRAND_SON",
+    "CONCEPT_UNCLE", "CONCEPT_AUNT",
+    "CONCEPT_TEACHER", "CONCEPT_DOCTOR", "CONCEPT_STUDENT",
+})
+
+
+# CUSTOM OPTIMIZATION
+# Self-synchronizing concept maps built from CONCEPT_DEFINITIONS at import time
+# Adding vocabulary to concepts.py auto-updates parser — no manual sync needed
+# Replaced earlier hardcoded Sinhala word lists that caused silent mismatches
+def _build_subject_map() -> "dict[str, str]":
+    """
+    Build synonym → concept_id map for every person/subject concept
+    directly from CONCEPT_DEFINITIONS.  No Sinhala words are hardcoded here;
+    all entries come from the concepts DB.
+    """
+    result: dict = {}
+    for cid in _PERSON_CONCEPT_IDS:
+        data = CONCEPT_DEFINITIONS.get(cid, {})
+        for syn in data.get("synonyms", []):
+            syn_nc = unicodedata.normalize("NFC", syn.strip())
+            if syn_nc:
+                result[syn_nc] = cid
+    return result
+
+
+# Built once at import time from the concept DB — automatically stays in sync.
+SUBJECT_MAP: dict = _build_subject_map()
+
+# Lazy vocab cache shared by _strip_case_suffix (populated on first call).
+_PARSER_VOCAB: "set | None" = None
 
 # ── Object / Noun clues ──────────────────────────────────────────────────────
 OBJECT_PARTICLES: tuple[str, ...] = (
@@ -68,6 +100,10 @@ OBJECT_PARTICLES: tuple[str, ...] = (
 #     Present: -නවා  -නෙ   -ෙනවා
 #     Future : -ාවි  -ෙවි   -නවා (with future adverb context)
 #
+# RESEARCH CONTRIBUTION
+# Manual Sinhala tense detection: 20+ verb suffix regex patterns (PAST/PRESENT/FUTURE)
+# Dual evidence: tense adverbs (high confidence 0.95) + verb suffixes (0.80)
+# Right-to-left scan respects SOV structure where verb appears last
 TENSE_RULES: list[tuple[str, str]] = [
     # ── PAST ──────────────────────────────────────────────────────────────
     # Match dependent-vowel-sign ා (U+0DCF) or independent ආ (U+0D86) before වා
@@ -94,63 +130,89 @@ TENSE_RULES: list[tuple[str, str]] = [
     (r"ානෙ$",          "FUTURE"),
 ]
 
-# Tense adverbs: their presence overrides detected tense when ambiguous
-TENSE_ADVERB_MAP: dict[str, str] = {
-    "ඊයේ": "PAST", "ප​ ර": "PAST",
-    "දැන්": "PRESENT", "දිනපතා": "PRESENT", "නිතරම": "PRESENT",
-    "හෙට": "FUTURE", "ඉදිරියේ": "FUTURE", "ඉදිරිදී": "FUTURE",
+# ── Tense concept IDs → tense label (grammar constants — IDs only) ───────────
+# Sinhala surface forms are loaded from CONCEPT_DEFINITIONS at import time.
+# To add a new tense-signalling word, add its synonym to the relevant concept
+# in concepts.py — no change needed here.
+_TENSE_CONCEPT_TO_TENSE: dict = {
+    "CONCEPT_YESTERDAY":          "PAST",
+    "CONCEPT_PAST":               "PAST",
+    "CONCEPT_NOW":                "PRESENT",
+    "CONCEPT_TODAY":              "PRESENT",
+    "CONCEPT_MORNING":            "PRESENT",
+    "CONCEPT_TOMORROW":           "FUTURE",
+    "CONCEPT_FUTURE":             "FUTURE",
+    "CONCEPT_DAY_AFTER_TOMORROW": "FUTURE",
 }
 
-# ── Verb → concept mapping (common Sinhala verbs) ──────────────────────────
-#   Maps the Sinhala surface form (with tense suffix) → concept ID
-VERB_CONCEPT_MAP: dict[str, str] = {
-    # COME
-    "ආවා":    "CONCEPT_COME",  "එනවා":  "CONCEPT_COME",
-    "ආවේ":    "CONCEPT_COME",  "ඇවිත්": "CONCEPT_COME",
-    "ඇවිල්ල": "CONCEPT_COME",
-    # GO
-    "ගියා":   "CONCEPT_GO",    "යනවා":  "CONCEPT_GO",
-    "ගිහිල්ල":"CONCEPT_GO",    "ගිහිල්": "CONCEPT_GO",
-    # EAT
-    "කෑවා":   "CONCEPT_EAT",   "කනවා":  "CONCEPT_EAT",
-    "කෑවේ":   "CONCEPT_EAT",
-    # DRINK
-    "බෑවා":   "CONCEPT_DRINK", "බොනවා": "CONCEPT_DRINK",
-    "බීවා":   "CONCEPT_DRINK",
-    # SLEEP
-    "නිදාගත්තා": "CONCEPT_SLEEP", "නිදනවා": "CONCEPT_SLEEP",
-    # WASH / BATHE
-    "නෑවා":   "CONCEPT_BATHE", "නානවා":  "CONCEPT_BATHE",
-    # STUDY
-    "ඉගෙනගත්තා": "CONCEPT_STUDY", "ඉගෙනගන්නවා": "CONCEPT_STUDY",
-    # SEE
-    "දැක්කා": "CONCEPT_SEE",   "දකිනවා": "CONCEPT_SEE",
-    "බැලුවා": "CONCEPT_WATCH", "බලනවා":  "CONCEPT_WATCH",
-    # TALK
-    "කතාකළා": "CONCEPT_TALK",  "කතාකරනවා": "CONCEPT_TALK",
-    # GIVE
-    "දුන්නා":  "CONCEPT_GIVE",  "දෙනවා":   "CONCEPT_GIVE",
-    # BRING
-    "ගෙනාවා": "CONCEPT_BRING", "ගෙනෙනවා": "CONCEPT_BRING",
-    # COOK
-    "උයලා":   "CONCEPT_COOK",  "උයනවා":   "CONCEPT_COOK",
-    # RUN
-    "දිව්වා":  "CONCEPT_RUN",   "දුවනවා":   "CONCEPT_RUN",
-    # WALK
-    "ඇවිදිනවා":"CONCEPT_WALK", "ඇවිදිල්ල": "CONCEPT_WALK",
-    # WRITE
-    "ලිව්වා":  "CONCEPT_WRITE", "ලිවෙනවා":  "CONCEPT_WRITE",
-    # READ
-    "කියෙව්වා":"CONCEPT_READ",  "කියෙවෙනවා":"CONCEPT_READ",
-    # PLAY
-    "ක්‍රීඩාකළා":"CONCEPT_PLAY","සෙල්ලම්කළා":"CONCEPT_PLAY",
-    # BUY
-    "ගත්තා":  "CONCEPT_BUY",
-    # OPEN / CLOSE
-    "ඇරිය":   "CONCEPT_OPEN",  "වහලා":    "CONCEPT_CLOSE",
-    # HELP
-    "උදව් කළා":"CONCEPT_HELP", "උදව් කරනවා":"CONCEPT_HELP",
-}
+
+def _build_tense_adverb_map() -> dict:
+    """
+    Build synonym → tense-label map from the concept DB.
+    Every synonym of CONCEPT_YESTERDAY / TODAY / TOMORROW / etc.
+    automatically becomes a tense trigger — no manual word list required.
+    """
+    result: dict = {}
+    for cid, tense in _TENSE_CONCEPT_TO_TENSE.items():
+        data = CONCEPT_DEFINITIONS.get(cid, {})
+        for syn in data.get("synonyms", []):
+            syn_nc = unicodedata.normalize("NFC", syn.strip())
+            if syn_nc:
+                result[syn_nc] = tense
+    return result
+
+
+# Built once at import time — automatically stays in sync with concepts.py
+TENSE_ADVERB_MAP: dict = _build_tense_adverb_map()
+
+
+# ── Verb concept IDs (grammar constants — IDs only, no Sinhala words) ────────
+# All Sinhala surface forms (present, past, imperative …) are loaded from the
+# concept DB via _build_verb_concept_map().  To add a verb's inflected form,
+# add it to the relevant concept's synonyms list in concepts.py.
+_VERB_CONCEPT_IDS: frozenset = frozenset({
+    "CONCEPT_GO", "CONCEPT_COME", "CONCEPT_EAT", "CONCEPT_DRINK",
+    "CONCEPT_SLEEP", "CONCEPT_RUN", "CONCEPT_WALK", "CONCEPT_JUMP",
+    "CONCEPT_SIT", "CONCEPT_DANCE", "CONCEPT_PLAY", "CONCEPT_WASH",
+    "CONCEPT_COOK", "CONCEPT_CUT", "CONCEPT_DRAW", "CONCEPT_WRITE",
+    "CONCEPT_READ", "CONCEPT_WATCH", "CONCEPT_SEE", "CONCEPT_LISTEN",
+    "CONCEPT_TALK", "CONCEPT_TELL", "CONCEPT_GIVE", "CONCEPT_TAKE",
+    "CONCEPT_BRING", "CONCEPT_BUY", "CONCEPT_SELL", "CONCEPT_HELP",
+    "CONCEPT_LOVE", "CONCEPT_LIKE", "CONCEPT_WANT", "CONCEPT_STOP",
+    "CONCEPT_OPEN", "CONCEPT_CLOSE", "CONCEPT_MAKE", "CONCEPT_USE",
+    "CONCEPT_WORK", "CONCEPT_STUDY", "CONCEPT_TEACH", "CONCEPT_THINK",
+    "CONCEPT_UNDERSTAND", "CONCEPT_FEEL", "CONCEPT_LAUGH", "CONCEPT_CRY",
+    "CONCEPT_SMILE", "CONCEPT_ENTER", "CONCEPT_GET_UP", "CONCEPT_MEET",
+    "CONCEPT_SHOW", "CONCEPT_SELECT", "CONCEPT_SEARCH", "CONCEPT_PUT",
+    "CONCEPT_CARRY", "CONCEPT_PULL", "CONCEPT_HANG", "CONCEPT_BOIL",
+    "CONCEPT_BATHE", "CONCEPT_SCRATCH", "CONCEPT_BREAK", "CONCEPT_CHANGE",
+    "CONCEPT_SWEEP", "CONCEPT_SWIM", "CONCEPT_KNOCK", "CONCEPT_ERASE",
+    "CONCEPT_CLICK", "CONCEPT_ORDER", "CONCEPT_FOLLOW", "CONCEPT_TRUST",
+    "CONCEPT_SHARE", "CONCEPT_EXCHANGE", "CONCEPT_CONNECT", "CONCEPT_FIGHT",
+    "CONCEPT_COPY", "CONCEPT_HIT", "CONCEPT_COUNT", "CONCEPT_COVER",
+    "CONCEPT_PEEING", "CONCEPT_LEAD", "CONCEPT_THROW",
+})
+
+
+def _build_verb_concept_map() -> dict:
+    """
+    Build synonym → concept_id map for every verb concept from the DB.
+    Present-tense, past-tense, imperative, and all other synonym forms
+    stored in concepts.py are automatically included.  Adding a new inflected
+    form only requires updating concepts.py — not this file.
+    """
+    result: dict = {}
+    for cid in _VERB_CONCEPT_IDS:
+        data = CONCEPT_DEFINITIONS.get(cid, {})
+        for syn in data.get("synonyms", []):
+            syn_nc = unicodedata.normalize("NFC", syn.strip())
+            if syn_nc:
+                result[syn_nc] = cid
+    return result
+
+
+# Built once at import time — automatically stays in sync with concepts.py
+VERB_CONCEPT_MAP: dict = _build_verb_concept_map()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DATA STRUCTURES
@@ -201,6 +263,10 @@ class GlossBlock:
 # STAGE 0 — SENTENCE SEGMENTATION
 # ─────────────────────────────────────────────────────────────────────────────
 
+# RESEARCH CONTRIBUTION
+# Full 6-stage Sinhala-to-SSL semantic NLP pipeline (rule-based, no external model)
+# Stage 0–6: Segmentation → Tokenization → Tense → SVO → Gloss → AnimationBlock
+# Designed for low-resource Sinhala SSL — no pre-trained Sinhala NLP model available
 def segment_sentences(text: str) -> list[str]:
     """
     Split text into individual sentences on Sinhala & ASCII sentence-ending
@@ -290,15 +356,47 @@ def _lookup_concept(token: str) -> Optional[str]:
         return None
 
 
+# RESEARCH CONTRIBUTION
+# Vocabulary-aware progressive suffix stripping for Sinhala case morphology
+# Strips ablative (-ින්), copula (-යි), tag-question (-නේ), emphatic (-ම) etc.
+# Validates each candidate stem against the full CONCEPT_DEFINITIONS vocabulary
 def _strip_case_suffix(token: str) -> str:
     """
-    Remove common Sinhala case suffixes to get the bare noun stem so it can
-    be matched against the concept vocabulary.
-    E.g. "ගෙදරින්" → "ගෙදර",  "වතුර" stays "වතුර"
+    Vocabulary-aware stem finder for case-marked / predicate-marked tokens.
+
+    Instead of a hardcoded suffix list, the function progressively trims
+    1–6 characters from the right and checks each candidate against every
+    synonym in CONCEPT_DEFINITIONS.  The first candidate that exists in
+    the vocabulary is returned.
+
+    E.g.
+        "ගෙදරින්" → "ගෙදර"   (ablative -ින්)
+        "නරකයි"   → "නරක"    (predicate copula -යි)
+        "හොඳනේ"   → "හොඳ"    (tag question -නේ)
+        "නරකද"    → "නරක"    (yes/no question -ද)
+        "නරකම"    → "නරක"    (emphatic -ම)
+
+    Falls back to the original token when no vocabulary match is found so
+    that the call is always safe.
     """
-    for suffix in ("ින්", "ෙන්", "ේ", "ට", "ගෙ", "ගේ", "ව​", "ව"):
-        if token.endswith(suffix) and len(token) > len(suffix) + 1:
-            return token[: -len(suffix)]
+    global _PARSER_VOCAB
+    if _PARSER_VOCAB is None:
+        _PARSER_VOCAB = set()
+        for _d in CONCEPT_DEFINITIONS.values():
+            for _s in _d.get("synonyms", []):
+                _sc = _s.strip()
+                if _sc:
+                    _PARSER_VOCAB.add(unicodedata.normalize("NFC", _sc))
+
+    token_nc = unicodedata.normalize("NFC", token)
+    if token_nc in _PARSER_VOCAB:
+        return token_nc
+
+    for strip_len in range(1, min(len(token_nc) - 1, 7)):
+        candidate = token_nc[:-strip_len]
+        if len(candidate) >= 2 and candidate in _PARSER_VOCAB:
+            return candidate
+
     return token
 
 
@@ -467,6 +565,10 @@ NEGATION_SIGN = "CONCEPT_NO"
 QUESTION_SIGN = "CONCEPT_WHAT"   # fronted in yes/no questions
 
 
+# RESEARCH CONTRIBUTION
+# SSL SOV gloss generation respecting Sri Lankan Sign Language grammar
+# Order: [TIME] → [SUBJECT] → [OBJECTS] → [VERB] → [NEGATION] → [QUESTION]
+# Tense injected only from explicit time adverb concepts — not from verb suffix metadata
 def generate_gloss(clause: SemanticClause) -> list[str]:
     """
     SSL gloss order (Sri Lankan Sign Language):

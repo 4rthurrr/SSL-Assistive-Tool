@@ -215,12 +215,12 @@ const SinhalaWordPuzzleGame = () => {
       description: 'දුෂ්කර වචන (7+ අකුරු)',
       descriptionE: 'Hard words (7+ letters)',
       gridSize: 10,
-      bgGradient: 'from-rose-100 to-pink-200',
-      textColor: 'text-rose-800',
-      borderColor: 'border-pink-300',
+      bgGradient: 'from-amber-100 to-yellow-200',
+      textColor: 'text-amber-800',
+      borderColor: 'border-yellow-300',
       icon: '🏆',
       difficulty: 4,
-      color: 'bg-gradient-to-r from-rose-100 to-pink-200'
+      color: 'bg-gradient-to-r from-amber-100 to-yellow-200'
     }
   };
 
@@ -758,7 +758,7 @@ const SinhalaWordPuzzleGame = () => {
 
           <div>
             <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-2 drop-shadow-lg">
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
                 {language === 'sinhala' ? 'ප්‍රහේලිකා සූදානම් වෙමින්...' : 'Preparing Puzzle...'}
               </span>
             </h2>
@@ -862,10 +862,10 @@ const SinhalaWordPuzzleGame = () => {
               <div className="text-gray-600 text-xs font-bold uppercase">{t.round}</div>
               <div className="text-blue-800 text-lg font-bold">{round}/{totalRounds}</div>
             </div>
-            <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-3 border-2 border-purple-200 shadow-lg">
-              <div className="text-2xl mb-1 text-purple-800">❤️</div>
+            <div className="bg-gradient-to-br from-sky-100 to-blue-100 rounded-xl p-3 border-2 border-sky-200 shadow-lg">
+              <div className="text-2xl mb-1 text-sky-800">❤️</div>
               <div className="text-gray-600 text-xs font-bold uppercase">{t.lives}</div>
-              <div className="text-purple-800 text-lg font-bold">{lives}</div>
+              <div className="text-sky-800 text-lg font-bold">{lives}</div>
             </div>
           </div>
 
@@ -1153,7 +1153,7 @@ const SinhalaWordPuzzleGame = () => {
                     disabled={selectedCells.length === 0}
                     className={`py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                       selectedCells.length > 0
-                        ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border border-red-400 shadow-md hover:scale-105'
+                        ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border border-red-400 shadow-md hover:scale-105'
                         : 'bg-gray-300 text-gray-500 border border-gray-400 cursor-not-allowed'
                     }`}
                   >
@@ -1248,7 +1248,7 @@ const SinhalaWordPuzzleGame = () => {
                           onClick={() => toggleCell(rowIdx, colIdx)}
                           className={`aspect-square flex items-center justify-center text-3xl font-black rounded-xl transition-all duration-200 border-2 relative ${
                             isSelected
-                              ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white scale-105 border-yellow-400 shadow-lg z-10'
+                              ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white scale-105 border-yellow-400 shadow-lg z-10'
                               : 'bg-white text-gray-800 hover:bg-blue-50 hover:scale-102 border-gray-300 shadow-sm hover:shadow-md'
                           }`}
                         >
@@ -1300,7 +1300,7 @@ const SinhalaWordPuzzleGame = () => {
               feedback.type === 'success'
                 ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-300'
                 : feedback.type === 'error'
-                ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-red-300'
+                ? 'bg-gradient-to-r from-red-100 to-orange-100 text-red-800 border-red-300'
                 : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border-blue-300'
             }`}>
               <div className="flex items-center justify-center gap-3">

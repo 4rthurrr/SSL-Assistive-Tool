@@ -99,14 +99,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-sky-300 via-blue-400 to-yellow-300 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm transform hover:scale-102 transition-transform duration-200">
         
         <div className="text-center mb-8">
           <div className="text-5xl mb-3 animate-bounce">
             👋
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-blue-500 bg-clip-text text-transparent">
             Welcome Back!
           </h1>
           <p className="text-gray-600 text-sm mt-1">Sign in to continue learning</p>
@@ -139,7 +139,7 @@ export default function Login() {
                 value={form.email}
                 onChange={handleChange}
                 onKeyPress={handleKeyPress}
-                className="w-full p-3 pl-10 text-base border rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 outline-none"
+                className="w-full p-3 pl-10 text-base border rounded-lg focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition-all duration-200 outline-none"
                 placeholder="your@email.com"
                 required
               />
@@ -161,7 +161,7 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
                 onKeyPress={handleKeyPress}
-                className="w-full p-3 pl-10 pr-10 text-base border rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 outline-none"
+                className="w-full p-3 pl-10 pr-10 text-base border rounded-lg focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition-all duration-200 outline-none"
                 placeholder="Enter your password"
                 required
               />
@@ -184,7 +184,7 @@ export default function Login() {
             className={`w-full py-3 px-5 rounded-xl text-lg font-bold text-white transition-all duration-200 transform hover:scale-102 ${
               isLoading 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow'
+                : 'bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 shadow'
             }`}
           >
             {isLoading ? (
@@ -211,7 +211,7 @@ export default function Login() {
 
           <button
             onClick={handleRegisterRedirect}
-            className="w-full py-3 px-5 rounded-xl text-lg font-bold text-gray-700 border border-purple-300 bg-white hover:bg-purple-50 transition-all duration-200 transform hover:scale-102"
+            className="w-full py-3 px-5 rounded-xl text-lg font-bold text-gray-700 border border-sky-300 bg-white hover:bg-sky-50 transition-all duration-200 transform hover:scale-102"
           >
             <div className="flex items-center justify-center text-sm">
               <span>Create New Account</span>
@@ -220,10 +220,10 @@ export default function Login() {
           </button>
         </div>
 
-        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-purple-100">
+        <div className="mt-6 p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl border border-sky-100">
           <div className="text-center">
             <div className="text-2xl mb-2">💡</div>
-            <p className="text-sm text-purple-800 font-medium">
+            <p className="text-sm text-sky-800 font-medium">
               Smart Learning Path:
             </p>
             <div className="mt-2 space-y-1 text-xs text-gray-600">
@@ -244,8 +244,8 @@ export default function Login() {
         </div>
 
         <div className="flex justify-center mt-6 space-x-2">
-          <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
-          <div className="w-3 h-3 bg-pink-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+          <div className="w-3 h-3 bg-sky-400 rounded-full animate-pulse"></div>
+          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
           <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
         </div>
       </div>

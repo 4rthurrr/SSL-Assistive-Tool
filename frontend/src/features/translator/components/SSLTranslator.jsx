@@ -16,6 +16,7 @@ function App() {
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [avatarStyle, setAvatarStyle] = useState("normal");
+  const [translationError, setTranslationError] = useState("");
 
   const videoRef = useRef(null);
 
@@ -45,12 +46,19 @@ function App() {
     setWordTimings([]);
     setActiveWordIndex(-1);
     setShowConfetti(false);
+    setTranslationError("");
 
     try {
       const res = await axios.post("http://localhost:5002/translate", {
         text: inputText,
         style: avatarStyle,
       });
+
+      // Handle graceful backend errors (concept not found, etc.)
+      if (res.data.error) {
+        setTranslationError(res.data.message || "Sign Language video not found. Please try a different word.");
+        return;
+      }
 
       setVideoUrl(res.data.video_url || null);
 
@@ -67,7 +75,7 @@ function App() {
 
       setWordTimings(res.data.word_timings || []);
     } catch (e) {
-      alert("අපොයි! පොඩි ගැටලුවක්. ආයේ උත්සාහ කරන්න 😊");
+      setTranslationError("සම්බන්ධ කිරීමේ ගැටලුවක්. Flask සේවාව ධාවනය වේදැයි පරීක්ෂා කරන්න. 😊");
     } finally {
       setLoading(false);
     }
@@ -171,6 +179,17 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {translationError && (
+              <div className="error-msg" style={{
+                background: "#fff3cd", border: "2px solid #ffc107",
+                borderRadius: "14px", padding: "14px 18px",
+                color: "#856404", fontSize: "1rem", marginTop: "12px",
+                fontFamily: "var(--sl-font)"
+              }}>
+                ⚠️ {translationError}
+              </div>
+            )}
 
             {grammarSequence.length > 0 && (
               <div className="grammar-zone">

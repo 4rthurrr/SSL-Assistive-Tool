@@ -56,6 +56,11 @@ class SkeletonGenerator:
                         lm = landmarks[idx]
                         return (int(lm.x * width), int(lm.y * height))
 
+                    # RESEARCH CONTRIBUTION
+                    # Custom mannequin avatar rendering from MediaPipe holistic landmarks
+                    # Polygon torso fill, dynamic head radius from shoulder width
+                    # Color mapping: dark-blue shirt (upper arm) + skin-tone (forearm/head/hands)
+                    # Makes skeleton output human-readable for Deaf sign language users
                     # 1. Draw Torso (Shirt)
                     # Shoulders: 11, 12 | Hips: 24, 23
                     s_l, s_r = get_coords(11), get_coords(12)

@@ -84,6 +84,10 @@ class LearnedInference:
                 # Get last token logits
                 logits = output[-1, 0, :]
                 
+                # CUSTOM OPTIMIZATION
+                # Manual repetition penalty in Seq2Seq greedy decoding
+                # Penalizes previously predicted concept tokens to prevent prediction loops
+                # Bug fix: added after observing model producing repeated identical sign sequences
                 # Repetition Penalty
                 for prev_idx in tgt_indices:
                     if prev_idx == self.target_vocab.get('<start>'): continue

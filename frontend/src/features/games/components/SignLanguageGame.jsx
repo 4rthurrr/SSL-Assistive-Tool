@@ -135,7 +135,7 @@ const SignLanguageGame = () => {
 
   if (!gameStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-sky-400 via-blue-400 to-yellow-300 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
           <div className="text-6xl mb-4">🤟</div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">සංඥා භාෂා ක්‍රීඩාව</h1>
@@ -150,7 +150,7 @@ const SignLanguageGame = () => {
           </div>
           <button
             onClick={startGame}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition shadow-lg"
+            className="bg-gradient-to-r from-sky-500 to-blue-500 text-white px-8 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition shadow-lg"
           >
             ආරම්භ කරන්න / Start Game
           </button>
@@ -162,7 +162,7 @@ const SignLanguageGame = () => {
   if (gameCompleted) {
     const accuracy = attempts > 0 ? Math.round((foundPairs.length / attempts) * 100) : 0;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-400 via-blue-400 to-purple-400 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-400 via-blue-400 to-sky-400 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-3xl font-bold text-gray-800 mb-4">ඉවරයි! Game Complete!</h2>
@@ -195,7 +195,7 @@ const SignLanguageGame = () => {
   const currentWord = gameWords[currentWordIndex];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-2 transition-all ${
+    <div className={`min-h-screen bg-gradient-to-br from-sky-300 via-blue-400 to-yellow-200 p-2 transition-all ${
       wrongAttempt ? 'animate-shake' : ''
     }`}>
       {/* Celebration overlay */}
@@ -222,7 +222,7 @@ const SignLanguageGame = () => {
           </div>
           
           {/* Current Word Display */}
-          <div className={`bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 text-center transition-all ${
+          <div className={`bg-gradient-to-r from-sky-100 to-blue-100 rounded-xl p-6 text-center transition-all ${
             wrongAttempt ? 'ring-4 ring-red-500' : ''
           }`}>
             <div className="text-sm text-gray-500 mb-2">Find the matching pair for:</div>
@@ -274,7 +274,7 @@ const SignLanguageGame = () => {
 >
 
                   {/* Card Back */}
-  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center backface-hidden">
+  <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl shadow-lg flex items-center justify-center backface-hidden">
     <div className="text-4xl">❓</div>
   </div>
                   
