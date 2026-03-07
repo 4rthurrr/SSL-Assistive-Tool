@@ -521,19 +521,20 @@ const SignLanguageGame = () => {
   const LanguageToggle = () => (
     <button
       onClick={toggleLanguage}
-      className="fixed top-6 right-6 z-50 bg-gradient-to-r from-orange-600 to-red-700 text-white px-6 py-4 rounded-full font-black text-lg hover:scale-110 transition-transform shadow-2xl border-4 border-white flex items-center gap-3"
+      className="fixed bottom-6 sm:bottom-8 right-4 sm:right-6 z-50 bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-full font-black text-xs sm:text-sm hover:scale-110 transition-transform shadow-2xl border-2 sm:border-3 border-white flex items-center gap-1 sm:gap-2"
     >
-      <Languages className="w-7 h-7" />
-      <span>{language === 'en' ? 'සිංහල' : 'English'}</span>
+      <Languages className="w-4 sm:w-5 h-4 sm:h-5" />
+      <span className="hidden sm:inline text-xs">{language === 'en' ? 'සි' : 'EN'}</span>
     </button>
   );
 
   const SoundToggle = () => (
     <button
       onClick={() => setSoundOn(s => !s)}
-      className="fixed top-6 left-6 z-50 bg-gradient-to-r from-amber-600 to-yellow-600 text-white px-6 py-4 rounded-full font-black text-lg hover:scale-110 transition-transform shadow-2xl border-4 border-white flex items-center gap-3"
+      className="fixed bottom-6 sm:bottom-8 left-4 sm:left-6 z-50 bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-full font-black text-xs sm:text-sm hover:scale-110 transition-transform shadow-2xl border-2 sm:border-3 border-white flex items-center gap-1 sm:gap-2"
     >
-      {soundOn ? <Volume2 className="w-7 h-7" /> : <VolumeX className="w-7 h-7" />}
+      {soundOn ? <Volume2 className="w-4 sm:w-5 h-4 sm:h-5" /> : <VolumeX className="w-4 sm:w-5 h-4 sm:h-5" />}
+      <span className="hidden sm:inline text-xs">{soundOn ? 'On' : 'Off'}</span>
     </button>
   );
 
@@ -620,18 +621,18 @@ const SignLanguageGame = () => {
           <div className="text-7xl mb-6">😢</div>
           <h2 className="text-3xl font-black text-gray-800 mb-4">{t.error}</h2>
           <p className="text-gray-600 mb-8">{error}</p>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <button
               onClick={() => { setError(null); setGameState('map'); }}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center justify-center gap-3"
+              className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 py-3 rounded-xl font-black text-base sm:text-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 border-3 border-blue-700 whitespace-nowrap"
             >
-              <Home className="w-6 h-6" /><span>{t.levelMap}</span>
+              <Home className="w-5 h-5 flex-shrink-0" /><span>{t.levelMap}</span>
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center justify-center gap-3"
+              className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-black text-base sm:text-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 border-3 border-emerald-700 whitespace-nowrap"
             >
-              <RefreshCw className="w-6 h-6" /><span>{t.refresh}</span>
+              <RefreshCw className="w-5 h-5 flex-shrink-0" /><span>{t.refresh}</span>
             </button>
           </div>
         </div>
@@ -664,21 +665,21 @@ const SignLanguageGame = () => {
             <p className="text-5xl font-black text-emerald-600">{score} / {totalQuestions * 10}</p>
             <p className="text-sm text-gray-500 mt-2">{t.starsEarned}: {stars}/3</p>
           </div>
-          <div className="space-y-3">
-            <button onClick={() => setShowLeaderboard(true)} className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-yellow-600">
-              <TrendingUp className="w-7 h-7" /><span>{t.leaderboard}</span>
+          <div className="space-y-2 sm:space-y-3">
+            <button onClick={() => setShowLeaderboard(true)} className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 sm:gap-3 border-3 sm:border-4 border-blue-700 whitespace-nowrap">
+              <TrendingUp className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" /><span>{t.leaderboard}</span>
             </button>
             {currentLevel !== 'level_3' ? (
-              <button onClick={nextLevel} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-emerald-600">
-                <span>{t.nextLevel}</span><ArrowRight className="w-7 h-7" />
+              <button onClick={nextLevel} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 sm:gap-3 border-3 sm:border-4 border-emerald-700 whitespace-nowrap">
+                <span>{t.nextLevel}</span><ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" />
               </button>
             ) : (
-              <button onClick={goToMap} className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-orange-700">
-                <Home className="w-7 h-7" /><span>{t.levelMap}</span>
+              <button onClick={goToMap} className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 sm:gap-3 border-3 sm:border-4 border-blue-700 whitespace-nowrap">
+                <Home className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" /><span>{t.levelMap}</span>
               </button>
             )}
-              <button onClick={() => startLevel(currentLevel)} className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-amber-600">
-              <RotateCcw className="w-7 h-7" /><span>{t.playAgain}</span>
+            <button onClick={() => startLevel(currentLevel)} className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 sm:gap-3 border-3 sm:border-4 border-amber-600 whitespace-nowrap">
+              <RotateCcw className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" /><span>{t.playAgain}</span>
             </button>
           </div>
         </div>
@@ -694,10 +695,6 @@ const SignLanguageGame = () => {
         <LanguageToggle /><SoundToggle /><LeaderboardModal />
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <div className="inline-block relative mb-6">
-              <div className="text-8xl animate-bounce mb-4">🤟</div>
-              <div className="absolute -top-2 -right-2 w-12 h-12 bg-yellow-400 rounded-full animate-ping" />
-            </div>
             <h1 className="text-6xl font-black text-gray-800 mb-4">{t.title}</h1>
             <div className="inline-block bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg">
               {t.subtitle}
@@ -705,26 +702,26 @@ const SignLanguageGame = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-white rounded-2xl p-4 text-center shadow-lg border-2 border-indigo-200">
-              <Trophy className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-2xl font-black text-gray-800">{totalScore}</div>
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
+            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center shadow-lg border-2 border-blue-200">
+              <Trophy className="w-6 sm:w-8 h-6 sm:h-8 text-yellow-500 mx-auto mb-1 sm:mb-2" />
+              <div className="text-xl sm:text-2xl font-black text-gray-800">{totalScore}</div>
               <div className="text-xs text-gray-600">{t.points}</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 text-center shadow-lg border-2 border-indigo-200">
-              <Star className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-2xl font-black text-gray-800">{Object.values(levelStars).reduce((a, b) => a + b, 0)}</div>
+            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center shadow-lg border-2 border-blue-200">
+              <Star className="w-6 sm:w-8 h-6 sm:h-8 text-yellow-500 mx-auto mb-1 sm:mb-2" />
+              <div className="text-xl sm:text-2xl font-black text-gray-800">{Object.values(levelStars).reduce((a, b) => a + b, 0)}</div>
               <div className="text-xs text-gray-600">{t.totalStars}</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 text-center shadow-lg border-2 border-indigo-200">
-              <Target className="w-8 h-8 text-green-500 mx-auto mb-2" />
-              <div className="text-2xl font-black text-gray-800">{Math.round((completedLevels.length / 3) * 100)}%</div>
+            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center shadow-lg border-2 border-blue-200">
+              <Target className="w-6 sm:w-8 h-6 sm:h-8 text-green-500 mx-auto mb-1 sm:mb-2" />
+              <div className="text-xl sm:text-2xl font-black text-gray-800">{Math.round((completedLevels.length / 3) * 100)}%</div>
               <div className="text-xs text-gray-600">{t.progress}</div>
             </div>
           </div>
 
-          {/* Levels Grid */}
-          <div className="grid grid-cols-3 gap-8">
+          {/* Levels Grid - Responsive layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {levelOrder.map(levelKey => {
               const isLocked = levelKey !== 'level_1' && !completedLevels.includes('level_' + (parseInt(levelKey.split('_')[1]) - 1));
               const stars = levelStars[levelKey] || 0;
@@ -732,7 +729,7 @@ const SignLanguageGame = () => {
               const levelInfo = levels[levelKey];
               return (
                 <div key={levelKey}
-                  className={`relative transform transition-all duration-300 ${hoveredLevel === levelKey ? 'scale-110 z-20' : 'scale-100'}`}
+                  className={`relative transform transition-all duration-300 ${hoveredLevel === levelKey ? 'scale-105 sm:scale-110 z-20' : 'scale-100'}`}
                   onMouseEnter={() => setHoveredLevel(levelKey)}
                   onMouseLeave={() => setHoveredLevel(null)}
                 >
@@ -741,24 +738,24 @@ const SignLanguageGame = () => {
                     disabled={isLocked || loading}
                     className={`relative w-full ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                   >
-                    <div className={`bg-gradient-to-br ${config.color} rounded-[35px] p-8 shadow-xl border-8 border-white ${isLocked ? 'opacity-60 grayscale' : 'hover:shadow-2xl'}`}>
-                      <div className="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-2xl font-black text-gray-800 border-4 border-white shadow-lg">
+                    <div className={`bg-gradient-to-br ${config.color} rounded-2xl sm:rounded-[35px] p-4 sm:p-6 lg:p-8 shadow-lg sm:shadow-xl border-4 sm:border-8 border-white ${isLocked ? 'opacity-60 grayscale' : 'hover:shadow-2xl'}`}>
+                      <div className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 w-12 sm:w-16 h-12 sm:h-16 bg-blue-400 rounded-full flex items-center justify-center text-xl sm:text-2xl font-black text-white border-3 sm:border-4 border-white shadow-lg">
                         {levelOrder.indexOf(levelKey) + 1}
                       </div>
-                      <div className="text-7xl mb-4 text-center">{isLocked ? '🔒' : config.icon}</div>
-                      <h3 className="text-2xl font-black text-white text-center mb-2 drop-shadow-lg">{config.name}</h3>
-                      <p className="text-white text-center font-bold mb-2 opacity-90">
+                      <div className="text-5xl sm:text-6xl lg:text-7xl mb-2 sm:mb-4 text-center">{isLocked ? '🔒' : config.icon}</div>
+                      <h3 className="text-lg sm:text-2xl font-black text-white text-center mb-1 sm:mb-2 drop-shadow-lg">{config.name}</h3>
+                      <p className="text-white text-center text-sm sm:text-base font-bold mb-2 opacity-90">
                         {levelInfo?.question_count || 8} {t.questions}
                       </p>
                       {stars > 0 && (
-                        <div className="flex justify-center gap-1 mb-3">
+                        <div className="flex justify-center gap-1 mb-2 sm:mb-3">
                           {[1, 2, 3].map(star => (
-                            <Star key={star} className={`w-6 h-6 ${star <= stars ? 'fill-yellow-300 text-yellow-400' : 'text-white/30'}`} />
+                            <Star key={star} className={`w-4 sm:w-6 h-4 sm:h-6 ${star <= stars ? 'fill-yellow-300 text-yellow-400' : 'text-white/30'}`} />
                           ))}
                         </div>
                       )}
-                      <div className="bg-white/30 backdrop-blur-sm rounded-full px-4 py-2 text-center">
-                        <span className="text-white font-bold">{config.difficulty}</span>
+                      <div className="bg-white/30 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1 sm:py-2 text-center">
+                        <span className="text-white font-bold text-sm sm:text-base">{config.difficulty}</span>
                       </div>
                     </div>
                   </button>
@@ -767,9 +764,9 @@ const SignLanguageGame = () => {
             })}
           </div>
 
-          <div className="mt-8 text-center">
-            <button onClick={() => setShowLeaderboard(true)} className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-8 py-4 rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-lg inline-flex items-center gap-3">
-              <Medal className="w-6 h-6" /><span>{t.leaderboard}</span>
+          <div className="text-center">
+            <button onClick={() => setShowLeaderboard(true)} className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm sm:text-base hover:scale-105 transition-transform shadow-lg inline-flex items-center gap-2 sm:gap-3 border-2 sm:border-4 border-blue-700 whitespace-nowrap">
+              <Medal className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" /><span>{t.leaderboard}</span>
             </button>
           </div>
         </div>
@@ -782,16 +779,16 @@ const SignLanguageGame = () => {
   // (this should not happen with the fixed startLevel above)
   if (!currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 flex items-center justify-center p-4">
         <LanguageToggle /><SoundToggle />
         <div className="text-center">
-          <div className="text-7xl animate-spin mb-6">⏳</div>
-          <p className="text-xl font-bold text-gray-600 mb-6">{t.loading}</p>
+          <div className="text-6xl sm:text-7xl animate-spin mb-6">⏳</div>
+          <p className="text-lg sm:text-xl font-bold text-gray-600 mb-6">{t.loading}</p>
           <button
             onClick={goToMap}
-            className="bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center gap-3 mx-auto"
+            className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-lg sm:text-xl hover:scale-105 transition-transform flex items-center gap-2 sm:gap-3 mx-auto"
           >
-            <Home className="w-6 h-6" /><span>{t.levelMap}</span>
+            <Home className="w-5 sm:w-6 h-5 sm:h-6" /><span>{t.levelMap}</span>
           </button>
         </div>
       </div>
@@ -799,28 +796,28 @@ const SignLanguageGame = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 p-2 sm:p-4">
       <LanguageToggle /><SoundToggle /><LeaderboardModal />
 
       {/* Game Over Overlay */}
       {gameOver && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-[40px] shadow-2xl p-12 max-w-md w-full text-center border-8 border-red-400">
-            <AlertCircle className="w-32 h-32 text-red-500 animate-pulse mx-auto mb-6" />
-            <h2 className="text-5xl font-black text-red-600 mb-3">{t.gameOver}</h2>
-            <p className="text-2xl font-bold text-gray-700 mb-6">{t.noMoreAttempts}</p>
+          <div className="bg-white rounded-3xl sm:rounded-[40px] shadow-2xl p-8 sm:p-12 max-w-md w-full text-center border-6 sm:border-8 border-red-400">
+            <AlertCircle className="w-24 sm:w-32 h-24 sm:h-32 text-red-500 animate-pulse mx-auto mb-4 sm:mb-6" />
+            <h2 className="text-3xl sm:text-5xl font-black text-red-600 mb-2 sm:mb-3">{t.gameOver}</h2>
+            <p className="text-lg sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6">{t.noMoreAttempts}</p>
             {correctAnswer && (
-              <div className="bg-red-50 rounded-3xl p-6 mb-8 border-4 border-red-200">
-                <p className="text-gray-600 mb-2">{t.correctAnswer}</p>
-                <p className="text-3xl font-black text-red-600">{correctAnswer.join(' ')}</p>
+              <div className="bg-red-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-6 sm:mb-8 border-4 border-red-200">
+                <p className="text-gray-600 mb-2 text-sm">{t.correctAnswer}</p>
+                <p className="text-2xl sm:text-3xl font-black text-red-600">{correctAnswer.join(' ')}</p>
               </div>
             )}
             <div className="space-y-3">
-              <button onClick={resetLevel} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-emerald-600">
-                <RotateCcw className="w-7 h-7" /><span>{t.tryAgain}</span>
+              <button onClick={resetLevel} className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 sm:px-8 py-4 sm:py-5 rounded-2xl sm:rounded-3xl font-black text-lg sm:text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 sm:gap-3 border-4 border-blue-600">
+                <RotateCcw className="w-6 sm:w-7 h-6 sm:h-7" /><span>{t.tryAgain}</span>
               </button>
-              <button onClick={goToMap} className="w-full bg-gradient-to-r from-orange-600 to-red-700 text-white px-8 py-5 rounded-3xl font-black text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 border-4 border-orange-700">
-                <Home className="w-7 h-7" /><span>{t.levelMap}</span>
+              <button onClick={goToMap} className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 sm:px-8 py-4 sm:py-5 rounded-2xl sm:rounded-3xl font-black text-lg sm:text-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 sm:gap-3 border-4 border-blue-600">
+                <Home className="w-6 sm:w-7 h-6 sm:h-7" /><span>{t.levelMap}</span>
               </button>
             </div>
           </div>
@@ -830,9 +827,9 @@ const SignLanguageGame = () => {
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
-          <div className="bg-white rounded-[30px] shadow-xl p-6 mb-6 border-8 border-amber-200">
+          <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-6 mb-6 border-8 border-blue-200">
           <div className="flex justify-between items-center mb-4">
-            <button onClick={goToMap} className="bg-gradient-to-r from-orange-600 to-red-700 text-white px-6 py-3 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg flex items-center gap-2">
+            <button onClick={goToMap} className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 py-3 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg flex items-center gap-2">
               <Home className="w-6 h-6" /><span className="hidden sm:inline">{t.home}</span>
             </button>
             <div className="text-center flex-1">
@@ -843,7 +840,7 @@ const SignLanguageGame = () => {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-lg flex items-center gap-2">
+              <div className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-2 rounded-full font-bold text-lg flex items-center gap-2">
                 <Star className="w-5 h-5 fill-white" /><span>{score}</span>
               </div>
               <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-full font-black text-xl shadow-lg">
@@ -855,7 +852,7 @@ const SignLanguageGame = () => {
           <div className="flex gap-2">
             {Array.from({ length: totalQuestions }).map((_, i) => (
               <div key={i} className={`flex-1 h-4 rounded-full transition-all ${i < questionNumber - 1 ? 'bg-emerald-500' :
-                  i === questionNumber - 1 ? 'bg-yellow-400 animate-pulse' : 'bg-gray-200'
+                  i === questionNumber - 1 ? 'bg-blue-400 animate-pulse' : 'bg-gray-200'
                 }`} />
             ))}
           </div>
@@ -863,7 +860,7 @@ const SignLanguageGame = () => {
 
         {/* Attempts Warning */}
         {attempts >= 3 && (
-          <div className={`mb-4 p-3 rounded-2xl text-center font-bold border-2 ${attempts >= 4 ? 'bg-red-100 text-red-800 border-red-300 animate-pulse' : 'bg-orange-100 text-orange-800 border-orange-300'
+          <div className={`mb-4 p-2 sm:p-3 rounded-2xl text-center font-bold text-sm sm:text-base border-2 ${attempts >= 4 ? 'bg-red-100 text-red-800 border-red-300 animate-pulse' : 'bg-yellow-100 text-yellow-800 border-yellow-300'
             }`}>
             ⚠️ {attempts}/{maxAttempts} {t.attempts} — {maxAttempts - attempts} {t.attemptsLeft}
           </div>
@@ -871,28 +868,28 @@ const SignLanguageGame = () => {
 
         {/* Hint Panel */}
         {showHint && currentHint && (
-          <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-[30px] p-6 mb-6 border-4 border-amber-300 shadow-xl">
+          <div className="bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-[30px] p-4 sm:p-6 mb-6 border-4 border-yellow-300 shadow-xl">
             <div className="flex items-center gap-3 mb-3">
-              <Lightbulb className="w-8 h-8 text-amber-600" />
-              <h3 className="text-2xl font-black text-amber-800">{t.hint}</h3>
+              <Lightbulb className="w-6 sm:w-8 h-6 sm:h-8 text-yellow-600" />
+              <h3 className="text-xl sm:text-2xl font-black text-yellow-800">{t.hint}</h3>
             </div>
-            <p className="text-xl text-amber-900 font-bold">{currentHint.hint}</p>
+            <p className="text-lg sm:text-xl text-yellow-900 font-bold">{currentHint.hint}</p>
           </div>
         )}
 
         {/* ── Word-by-word sign video player (Dataset - Original) ── */}
-        <div className="bg-white rounded-[30px] shadow-xl border-8 border-indigo-200 mb-6 overflow-hidden">
+        <div className="bg-white rounded-[30px] shadow-xl border-8 border-blue-300 mb-6 overflow-hidden">
 
           {/* Title bar */}
-          <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-6 py-3 flex items-center gap-3">
-            <span className="text-2xl">🤟</span>
-            <span className="text-white font-black text-lg">SSL Sign Animation</span>
-            <span className="ml-auto text-white/70 text-sm font-bold">
+          <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-3">
+            <span className="text-xl sm:text-2xl">🤟</span>
+            <span className="text-white font-black text-sm sm:text-lg">SSL Sign Animation</span>
+            <span className="ml-auto text-white/70 text-xs sm:text-sm font-bold">
               {language === 'en' ? 'Watch the sign, then arrange the words' : 'සංඥාව බලා, වචන සකසන්න'}
             </span>
           </div>
 
-          <div className="p-5">
+          <div className="p-3 sm:p-5">
             {/* Video frame */}
             <div className="relative bg-gradient-to-br from-sky-50 to-blue-50 rounded-[20px] border-4 border-sky-200 overflow-hidden mb-4">
               {currentWordVideoUrl && !wordVideoError ? (
@@ -904,7 +901,7 @@ const SignLanguageGame = () => {
                     onClick={toggleWordVideo}
                     onEnded={onWordVideoEnded}
                     onError={() => setWordVideoError(true)}
-                    className="w-full max-h-[240px] object-contain block cursor-pointer"
+                    className="w-full max-h-[180px] sm:max-h-[240px] object-contain block cursor-pointer"
                   />
                   {!wordVideoPlaying && (
                     <button
@@ -918,9 +915,9 @@ const SignLanguageGame = () => {
                   )}
                 </>
               ) : (
-                <div className="min-h-[180px] flex flex-col items-center justify-center py-6">
-                  <div className="text-7xl mb-3 animate-bounce">👋</div>
-                  <p className="text-2xl font-black text-gray-700 mb-1">
+                <div className="min-h-[140px] sm:min-h-[180px] flex flex-col items-center justify-center py-4 sm:py-6">
+                  <div className="text-6xl sm:text-7xl mb-3 animate-bounce">👋</div>
+                  <p className="text-lg sm:text-2xl font-black text-gray-700 mb-1">
                     {currentQuestion.correct_order?.[activeWordVideoIdx]}
                   </p>
                 </div>
@@ -928,25 +925,25 @@ const SignLanguageGame = () => {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center justify-center gap-3 mb-5">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-5">
               <button
                 onClick={() => setWordVideoSpeed(0.5)}
-                className={`px-4 py-2 rounded-full font-bold text-sm transition-all border-2 ${
+                className={`px-3 sm:px-4 py-2 rounded-full font-bold text-xs sm:text-sm transition-all border-2 ${
                   wordVideoSpeed === 0.5
-                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-md'
-                    : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                    ? 'bg-blue-600 text-white border-blue-700 shadow-md'
+                    : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
                 }`}
               >🐢 Slow</button>
 
               <button
                 onClick={toggleWordVideo}
-                className="w-12 h-12 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white text-xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-4 border-white"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white text-lg sm:text-xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-4 border-white"
               >{wordVideoPlaying ? '⏸' : '▶️'}</button>
 
               <button
                 onClick={replayAllWords}
                 title="Replay from first word"
-                className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white text-base shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-2 border-white"
+                className="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-base shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-2 border-white"
               >🔄</button>
 
               <button
@@ -957,10 +954,10 @@ const SignLanguageGame = () => {
 
               <button
                 onClick={() => setWordVideoSpeed(1.0)}
-                className={`px-4 py-2 rounded-full font-bold text-sm transition-all border-2 ${
+                className={`px-3 sm:px-4 py-2 rounded-full font-bold text-xs sm:text-sm transition-all border-2 ${
                   wordVideoSpeed === 1.0
-                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-md'
-                    : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                    ? 'bg-blue-600 text-white border-blue-700 shadow-md'
+                    : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
                 }`}
               >🐰 Normal</button>
             </div>
@@ -969,24 +966,24 @@ const SignLanguageGame = () => {
         </div>
 
         {/* Answer Zone */}
-        <div className="bg-white rounded-[30px] shadow-xl p-8 mb-6 border-8 border-amber-200">
-          <h3 className="text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
-            <span className="text-3xl">✏️</span>
+        <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-8 mb-6 border-8 border-blue-200">
+          <h3 className="text-lg sm:text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
+            <span className="text-2xl sm:text-3xl">✏️</span>
             <span>{t.yourAnswer}</span>
-            <span className="text-sm text-gray-500 ml-auto">{selectedWords.length}/{currentQuestion.word_count}</span>
+            <span className="text-xs sm:text-sm text-gray-500 ml-auto">{selectedWords.length}/{currentQuestion.word_count}</span>
           </h3>
-          <div className="min-h-[120px] bg-gradient-to-r from-yellow-50 to-orange-50 rounded-[25px] p-6 border-4 border-dashed border-yellow-400 flex flex-wrap gap-3 items-center justify-center">
+          <div className="min-h-[100px] sm:min-h-[120px] bg-gradient-to-r from-blue-50 to-sky-50 rounded-[25px] p-4 sm:p-6 border-4 border-dashed border-blue-300 flex flex-wrap gap-2 sm:gap-3 items-center justify-center">
             {selectedWords.length === 0 ? (
-              <p className="text-gray-400 text-2xl font-bold">👇 {t.selectWords} 👇</p>
+              <p className="text-gray-400 text-lg sm:text-2xl font-bold">👇 {t.selectWords} 👇</p>
             ) : (
               selectedWords.map((word, index) => (
                 <button
                   key={index}
                   onClick={() => handleSelectedWordClick(word, index)}
-                  className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-[20px] text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-emerald-600"
+                  className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-[20px] text-lg sm:text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-emerald-600"
                   disabled={showResult || loading}
                 >
-                  {word}<span className="ml-2 text-sm opacity-75">({index + 1})</span>
+                  {word}<span className="ml-2 text-xs sm:text-sm opacity-75">({index + 1})</span>
                 </button>
               ))
             )}
@@ -994,18 +991,18 @@ const SignLanguageGame = () => {
         </div>
 
         {/* Word Bank */}
-        <div className="bg-white rounded-[30px] shadow-xl p-8 mb-6 border-8 border-amber-200">
-          <h3 className="text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
-            <span className="text-3xl">📝</span>
+        <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-8 mb-6 border-8 border-blue-200">
+          <h3 className="text-lg sm:text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
+            <span className="text-2xl sm:text-3xl">📝</span>
             <span>{t.words}</span>
-            <span className="text-sm text-gray-500 ml-auto">{shuffledWords.length} {t.words}</span>
+            <span className="text-xs sm:text-sm text-gray-500 ml-auto">{shuffledWords.length} {t.words}</span>
           </h3>
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-2 sm:gap-4 justify-center">
             {shuffledWords.map((word, index) => (
               <button
                 key={index}
                 onClick={() => handleWordClick(word, index)}
-              className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-8 py-4 rounded-[20px] text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-orange-600"
+              className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-[20px] text-lg sm:text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-blue-600"
                 disabled={showResult || loading}
               >
                 {word}
@@ -1016,47 +1013,47 @@ const SignLanguageGame = () => {
 
         {/* Result Messages */}
         {showResult && isCorrect && (
-          <div className="bg-gradient-to-r from-emerald-400 to-green-500 border-8 border-emerald-600 rounded-[30px] shadow-xl p-8 mb-6 text-center">
-            <div className="text-8xl mb-4 animate-bounce">🎉</div>
-            <h3 className="text-5xl font-black text-white mb-4">{t.excellent}</h3>
+          <div className="bg-gradient-to-r from-emerald-400 to-green-500 border-8 border-emerald-600 rounded-[30px] shadow-xl p-6 sm:p-8 mb-6 text-center">
+            <div className="text-6xl sm:text-8xl mb-4 animate-bounce">🎉</div>
+            <h3 className="text-3xl sm:text-5xl font-black text-white mb-4">{t.excellent}</h3>
           </div>
         )}
 
         {showResult && !isCorrect && !gameOver && (
-          <div className="bg-gradient-to-r from-red-400 to-orange-500 border-8 border-red-600 rounded-[30px] shadow-xl p-8 mb-6 text-center">
-            <div className="text-8xl mb-4 animate-bounce">💪</div>
-            <h3 className="text-5xl font-black text-white mb-4">{t.keepTrying}</h3>
-            <p className="text-white text-xl font-bold">{attempts}/{maxAttempts} {t.attempts}</p>
+          <div className="bg-gradient-to-r from-red-400 to-orange-500 border-8 border-red-600 rounded-[30px] shadow-xl p-6 sm:p-8 mb-6 text-center">
+            <div className="text-6xl sm:text-8xl mb-4 animate-bounce">💪</div>
+            <h3 className="text-3xl sm:text-5xl font-black text-white mb-4">{t.keepTrying}</h3>
+            <p className="text-white text-lg sm:text-xl font-bold">{attempts}/{maxAttempts} {t.attempts}</p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full">
           {(!showResult || (showResult && !isCorrect)) ? (
             <button
               onClick={checkAnswer}
               disabled={selectedWords.length !== currentQuestion.word_count || loading || showResult}
-              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-6 rounded-[25px] font-black text-2xl hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-8 border-emerald-700 flex items-center justify-center gap-3"
+              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-4 sm:border-6 border-emerald-700 flex items-center justify-center gap-2 sm:gap-3 whitespace-nowrap"
             >
-              <CheckCircle className="w-8 h-8" /><span>{t.checkAnswer}</span>
+              <CheckCircle className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" /><span>{t.checkAnswer}</span>
             </button>
           ) : (
             <button
               onClick={loadNextQuestion}
               disabled={!canAdvance || loading}
-              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-6 rounded-[25px] font-black text-2xl hover:scale-105 transition-transform shadow-lg border-8 border-amber-600 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg border-4 sm:border-6 border-blue-700 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               <span>{questionNumber < totalQuestions ? t.nextQuestion : t.finish}</span>
-              <ArrowRight className="w-8 h-8" />
+              <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" />
             </button>
           )}
 
           <button
             onClick={getHint}
             disabled={showResult || loading}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-6 rounded-[25px] font-black text-2xl hover:scale-105 transition-transform shadow-lg border-8 border-amber-700 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg border-4 sm:border-6 border-amber-600 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
-            <Lightbulb className="w-8 h-8" />
+            <Lightbulb className="w-5 sm:w-6 h-5 sm:h-6" />
           </button>
         </div>
       </div>

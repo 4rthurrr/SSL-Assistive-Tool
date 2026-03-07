@@ -22,6 +22,10 @@ pymongo>=4.5.0
 # Optional: For better MongoDB connection management
 dnspython>=2.3.0  # Required for MongoDB Atlas connection strings
 
+# NLP and Video Processing
+gensim>=4.3.0  # For word embeddings and text processing
+moviepy>=1.0.0  # For video clip manipulation and concatenation
+
 # If you're using additional libraries, add them here
 # requests==2.31.0
 # python-dotenv==1.0.0
