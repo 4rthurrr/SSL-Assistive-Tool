@@ -10,12 +10,13 @@
 }
 
 .kids-header {
-    background: white;
+    background: linear-gradient(135deg, #4DA6FF 0%, #38b8f5 60%, #a0d8ff 100%);
     border-radius: 16px;
-    padding: 10px;
+    padding: 12px 16px 16px;
     text-align: center;
     margin-bottom: 12px;
     position: relative;
+    box-shadow: 0 4px 18px rgba(77, 166, 255, 0.30);
 }
 
 .header-nav {
@@ -26,25 +27,46 @@
 }
 
 .nav-btn {
-    background: var(--primary, #4DA6FF);
+    background: rgba(255, 255, 255, 0.25);
     color: white;
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
+    border: 2px solid rgba(255, 255, 255, 0.55);
     transition: background 0.2s, transform 0.1s;
 }
 
 .nav-btn:hover {
-    background: #2B8FE8;
+    background: rgba(255, 255, 255, 0.50);
     transform: scale(1.05);
     color: white;
 }
 
 .kids-header h1 {
-    margin: 0;
-    color: var(--primary, #4DA6FF);
+    margin: 0 0 2px 0;
+    color: #fff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.20);
+    letter-spacing: 0.5px;
+}
+
+.kids-header p {
+    margin: 6px 0 0 0;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    font-family: 'Fredoka', sans-serif;
+    color: #fff !important;
+    background: linear-gradient(90deg, #1a5fd4 0%, #2196f3 100%) !important;
+    display: inline-block !important;
+    padding: 5px 22px !important;
+    border-radius: 30px !important;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 12px rgba(33, 150, 243, 0.45);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.30);
 }
 
 .main-container {

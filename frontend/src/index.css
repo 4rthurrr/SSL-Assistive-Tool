@@ -61,9 +61,15 @@ body {
 }
 
 .kids-header p {
-  font-size: 1.5rem;
-  color: var(--accent-color);
-  font-weight: bold;
+  font-size: 1.05rem;
+  color: #fff !important;
+  font-weight: 700;
+  background: linear-gradient(90deg, #1a5fd4 0%, #2196f3 100%) !important;
+  display: inline-block;
+  padding: 5px 22px;
+  border-radius: 30px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.30);
+  box-shadow: 0 2px 12px rgba(33,150,243,0.40);
 }
 
 /* --- Input Card --- */
