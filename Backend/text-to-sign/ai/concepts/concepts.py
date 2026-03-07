@@ -56,7 +56,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_BROWN": {'label': 'Brown', 'sinhala': 'දුඹුරු', 'synonyms': ['දුඹුරු']},
     "CONCEPT_BUS": {'label': 'Bus', 'sinhala': 'බස් එක', 'synonyms': ['බස් එක', 'බස්', 'බස් රථය']},
     "CONCEPT_BUS_STATION": {'label': 'Bus station', 'sinhala': 'බස් නැවතුම', 'synonyms': ['බස් නැවතුම', 'බස් ස්ටෑන්ඩ් එක']},
-    "CONCEPT_BUY": {'label': 'Buy', 'sinhala': 'Buy', 'synonyms': ['Buy', 'මිලදී ගන්නවා', 'මිලදී ගත්තා']},
+    "CONCEPT_BUY": {'label': 'Buy', 'sinhala': 'මිලදී ගන්නවා', 'synonyms': ['මිලදී ගන්නවා', 'මිලදී ගත්තා', 'Buy']},
     "CONCEPT_CAMERA": {'label': 'Camera', 'sinhala': ' කැමරාව', 'synonyms': [' කැමරාව', 'කැමරාව']},
     "CONCEPT_CAN": {'label': 'Can', 'sinhala': 'පුළුවන්', 'synonyms': ['පුළුවන්']},
     "CONCEPT_CANT": {'label': 'Cant', 'sinhala': 'බෑ', 'synonyms': ['බෑ', 'බැහැ']},
@@ -74,7 +74,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_CHILD": {'label': 'Child', 'sinhala': 'ළමයා', 'synonyms': ['ළමයා', 'බබා', 'දරුවා', 'පොඩ්ඩා']},
     "CONCEPT_CHILDREN": {'label': 'Children', 'sinhala': 'ළමයි', 'synonyms': ['ළමයි']},
     "CONCEPT_CHOICE": {'label': 'Choice', 'sinhala': 'තේරීම', 'synonyms': ['තේරීම']},
-    "CONCEPT_CHOOSE": {'label': 'Choose', 'sinhala': 'Choose', 'synonyms': ['Choose']},
+    "CONCEPT_CHOOSE": {'label': 'Choose', 'sinhala': 'තෝරනවා', 'synonyms': ['තෝරනවා', 'තෝරන්න', 'තෝරාගන්නවා', 'Choose']},
     "CONCEPT_CHURCH": {'label': 'Church', 'sinhala': 'පල්ලිය', 'synonyms': ['පල්ලිය', 'පල්ලි']},
     "CONCEPT_CLEARLY": {'label': 'Clearly', 'sinhala': 'පැහැදිලිව', 'synonyms': ['පැහැදිලිව']},
     "CONCEPT_CLICK": {'label': 'Click', 'sinhala': 'ක්ලික් කරනවා', 'synonyms': ['ක්ලික් කරනවා', 'ක්ලික් කරන්න', 'ක්ලික් කළා']},
@@ -161,7 +161,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_GREEN": {'label': 'Green', 'sinhala': 'කොළ', 'synonyms': ['කොළ']},
     "CONCEPT_GREY": {'label': 'Grey', 'sinhala': 'අළු', 'synonyms': ['අළු', 'Gray', 'අළු පාට']},
     "CONCEPT_GROUP": {'label': 'Group', 'sinhala': 'කණ්ඩායම', 'synonyms': ['කණ්ඩායම', 'Group']},
-    "CONCEPT_GUIDE": {'label': 'Guide', 'sinhala': 'Guide', 'synonyms': ['Guide']},
+    "CONCEPT_GUIDE": {'label': 'Guide', 'sinhala': 'ගයිඩ්', 'synonyms': ['ගයිඩ්', 'මාර්ගෝපදේශය', 'Guide']},
     "CONCEPT_GUN": {'label': 'Gun', 'sinhala': 'තුවක්කුව', 'synonyms': ['තුවක්කුව']},
     "CONCEPT_HAIR": {'label': 'Hair', 'sinhala': 'කොණ්ඩය', 'synonyms': ['කොණ්ඩය']},
     "CONCEPT_HAND": {'label': 'Hand', 'sinhala': 'අත', 'synonyms': ['අත']},
@@ -207,7 +207,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_LAUGH": {'label': 'Laugh', 'sinhala': 'හිනාවෙනවා', 'synonyms': ['හිනාවෙනවා', 'හිනා වුනා']},
     "CONCEPT_LEAD": {'label': 'Lead', 'sinhala': 'මඟ පෙන්වනවා', 'synonyms': ['මඟ පෙන්වනවා']},
     "CONCEPT_LEG": {'label': 'Leg', 'sinhala': 'කකුල', 'synonyms': ['කකුල']},
-    "CONCEPT_LESS": {'label': 'Less', 'sinhala': 'Less', 'synonyms': ['Less']},
+    "CONCEPT_LESS": {'label': 'Less', 'sinhala': 'අඩු', 'synonyms': ['අඩු', 'අඩුයි', 'Less']},
     "CONCEPT_LET": {'label': 'Let', 'sinhala': 'ඉඩ දෙන්න', 'synonyms': ['ඉඩ දෙන්න']},
     "CONCEPT_LIKE": {'label': 'Like', 'sinhala': 'කැමතියි', 'synonyms': ['කැමතියි', 'කැමති']},
     "CONCEPT_LION": {'label': 'Lion', 'sinhala': 'සිංහයා', 'synonyms': ['සිංහයා', 'සිංහයෝ']},
@@ -387,11 +387,12 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_UNDERSTAND": {'label': 'Understand', 'sinhala': 'තේරෙනවා', 'synonyms': ['තේරෙනවා', 'තේරුම් ගන්න', 'තේරුනා', 'තේරුණා']},
     "CONCEPT_UNTIL": {'label': 'Until', 'sinhala': 'වෙනකම්', 'synonyms': ['වෙනකම්', 'තුරු']},
     "CONCEPT_UP": {'label': 'Up', 'sinhala': 'උඩ', 'synonyms': ['උඩ', 'ඉහළ']},
+    "CONCEPT_SHE": {'label': 'She', 'sinhala': 'ඇය', 'synonyms': ['ඇය', 'ඇගේ', 'ඇයට']},
     "CONCEPT_US": {'label': 'Us', 'sinhala': 'අපි', 'synonyms': ['අපි', 'අපිට']},
     "CONCEPT_USE": {'label': 'Use', 'sinhala': 'පාවිච්චි කරනවා', 'synonyms': ['පාවිච්චි කරනවා', 'භාවිතා කරනවා', 'භාවිතා']},
     "CONCEPT_VAN": {'label': 'Van', 'sinhala': 'වෑන් එක', 'synonyms': ['වෑන් එක', 'වෑන්', 'වෑන් රථය']},
     "CONCEPT_VEHICLE": {'label': 'Vehicle', 'sinhala': 'වාහනය', 'synonyms': ['වාහනය', 'වාහනේ', 'වාහන']},
-    "CONCEPT_VISIT": {'label': 'Visit', 'sinhala': 'Visit', 'synonyms': ['Visit']},
+    "CONCEPT_VISIT": {'label': 'Visit', 'sinhala': 'හමු වෙනවා', 'synonyms': ['හමු වෙනවා', 'බලන්නවා', 'Visit']},
     "CONCEPT_WALK": {'label': 'Walk', 'sinhala': 'ඇවිදිනවා', 'synonyms': ['ඇවිදිනවා', 'ඇවිදින්න', 'ඇවිද්දා', 'ගමන් කරනවා']},
     "CONCEPT_WANT": {'label': 'Want', 'sinhala': 'ඕන', 'synonyms': ['ඕන', 'අවශ්\u200dයයි', 'ඕනේ']},
     "CONCEPT_WASH": {'label': 'Wash', 'sinhala': 'සෝදනවා', 'synonyms': ['සෝදනවා', 'සෝදන්න', 'සේදුවා']},
@@ -420,7 +421,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_YESTERDAY": {'label': 'Yesterday', 'sinhala': 'ඊයේ', 'synonyms': ['ඊයේ']},
     "CONCEPT_YOU": {'label': 'You', 'sinhala': 'ඔයා', 'synonyms': ['ඔයා', 'ඔබ', 'තමුසේ', 'ඔහේ']},
     "CONCEPT_YOU_ALL": {'label': 'You all', 'sinhala': 'ඔයාලා', 'synonyms': ['ඔයාලා', 'ඔබලා', 'ඔයාලාට']},
-    "CONCEPT_WE": {'label': 'We', 'sinhala': 'අපි', 'synonyms': ['අපි', 'අපිට', 'අපේ']},
+    "CONCEPT_WE": {'label': 'Us', 'sinhala': 'අපේ', 'synonyms': ['අපේ', 'අපිලා']},
     "CONCEPT_YOUNGER_BRO": {'label': 'Younger bro', 'sinhala': 'මල්ලි', 'synonyms': ['මල්ලි', 'මල්ලී', 'මල්ලියේ']},
     "CONCEPT_YOUNGER_SISTER": {'label': 'Younger sister', 'sinhala': 'නංගි', 'synonyms': ['නංගි', 'නංගී', 'නංගියේ', 'නංගා']},
 }
@@ -430,6 +431,7 @@ CONCEPT_DEFINITIONS = {
 CONCEPT_NORMALIZATION_MAP = {
     "CONCEPT_READ": "CONCEPT_STUDY",
     "CONCEPT_LOOK_READ": "CONCEPT_STUDY",
+    "CONCEPT_WE": "CONCEPT_US",       # No separate 'We' folder; SSl uses same sign as 'Us'
     "CONCEPT_WATCH": "CONCEPT_SEE", # Example if Watch video is missing
     # Add more mappings as verified against dataset
 }

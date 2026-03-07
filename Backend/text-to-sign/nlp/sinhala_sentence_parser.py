@@ -46,8 +46,8 @@ COORD_CONJUNCTIONS: set[str] = {"සහ", "හා", "ද", "ත්", "ඒ", "න
 # Sinhala surface forms are loaded automatically from CONCEPT_DEFINITIONS below.
 # To support a new person concept, add it to concepts.py and list its ID here.
 _PERSON_CONCEPT_IDS: frozenset = frozenset({
-    "CONCEPT_I", "CONCEPT_WE", "CONCEPT_YOU", "CONCEPT_YOU_ALL",
-    "CONCEPT_HE", "CONCEPT_SHE", "CONCEPT_THEY", "CONCEPT_US", "CONCEPT_MY",
+    "CONCEPT_I", "CONCEPT_WE", "CONCEPT_US", "CONCEPT_YOU", "CONCEPT_YOU_ALL",
+    "CONCEPT_HE", "CONCEPT_SHE", "CONCEPT_THEY", "CONCEPT_MY",
     "CONCEPT_MOTHER", "CONCEPT_FATHER",
     "CONCEPT_ELDER_BRO", "CONCEPT_ELDER_SISTER",
     "CONCEPT_YOUNGER_BRO", "CONCEPT_YOUNGER_SISTER",
