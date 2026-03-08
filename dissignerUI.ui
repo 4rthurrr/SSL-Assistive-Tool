@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1080</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Mute Student Training System</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+    /* --- Main Window Background --- */
+    QDialog {
+        background-color: #1e1e2e; /* Dark Blue/Grey */
+        color: #cdd6f4;
+        font-family: &quot;Segoe UI&quot;, sans-serif;
+    }
+
+    /* --- Video Feeds (The Labels) --- */
+    QLabel#Live_video, QLabel#practis_vid {
+        background-color: #11111b; 
+        border: 2px solid #45475a; 
+        border-radius: 12px;       
+    }
+
+    /* --- Topic Title --- */
+    QLabel#topic {
+        color: #89b4fa; /* Soft Blue */
+        font-weight: bold;
+    }
+
+    /* --- Main Button --- */
+    QPushButton {
+        background-color: #a6e3a1; /* Green Accent */
+        color: #1e1e2e;            /* Dark text */
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 14pt;
+        border: none;
+    }
+    QPushButton:hover {
+        background-color: #94e2d5; /* Teal on hover */
+    }
+    QPushButton:pressed {
+        background-color: #89b4fa; /* Blue on click */
+        padding-top: 2px;          
+    }
+
+    /* --- List Widget (The Selection List) --- */
+    QListWidget {
+        background-color: #181825;
+        border: 2px solid #313244;
+        border-radius: 10px;
+        color: #cdd6f4;
+        padding: 5px;
+        font-size: 12pt;
+        outline: 0; /* Removes dotted line on focus */
+    }
+    QListWidget::item {
+        padding: 8px;
+        border-radius: 5px;
+        margin-bottom: 2px;
+    }
+    QListWidget::item:hover {
+        background-color: #313244;
+    }
+    QListWidget::item:selected {
+        background-color: #89b4fa; /* Blue selection */
+        color: #1e1e2e;            /* Dark text on selection */
+        font-weight: bold;
+    }
+
+    /* --- Status Label --- */
+    QLabel#Display_status {
+        background-color: #313244;
+        color: #fab387; /* Peach/Orange text */
+        border-radius: 6px;
+        padding: 5px;
+        font-weight: bold;
+        qproperty-alignment: AlignCenter;
+    }
+   </string>
+  </property>
+  <widget class="QLabel" name="topic">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>30</y>
+     <width>1080</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Segoe UI</family>
+     <pointsize>24</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Mute Student Training System</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Live_video">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>150</y>
+     <width>480</width>
+     <height>270</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>camara_not_working.jpg</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="practis_vid">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>150</y>
+     <width>480</width>
+     <height>270</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>camara_not_working.jpg</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>500</y>
+     <width>161</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Start</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="letter_list">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>500</y>
+     <width>381</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Letter A</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Letter B</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Letter C</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Letter D</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Letter E</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Letter F</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_list_title">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>470</y>
+     <width>200</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string>color: #a6adc8; font-size: 11pt; font-weight: bold;</string>
+   </property>
+   <property name="text">
+    <string>Select Letter:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Display_status">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>500</y>
+     <width>381</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>System Ready...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_1">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>110</y>
+     <width>480</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string>color: #a6adc8; font-size: 14pt; font-weight: bold;</string>
+   </property>
+   <property name="text">
+    <string>Live Feed</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>110</y>
+     <width>480</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string>color: #a6adc8; font-size: 14pt; font-weight: bold;</string>
+   </property>
+   <property name="text">
+    <string>Practice Feed</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="stopBtn">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>610</y>
+     <width>161</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
