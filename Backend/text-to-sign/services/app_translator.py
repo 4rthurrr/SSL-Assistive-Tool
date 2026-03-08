@@ -23,10 +23,21 @@ from flask_cors import CORS
 from nlp_grammar import get_ssl_sequence, get_ssl_display_sequence, get_ssl_sequence_with_blocks
 from concepts import get_sinhala_display
 from video_manager import find_video_path
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+
+# moviepy import (supports both 1.x and 2.x API)
+try:
+    from moviepy import VideoFileClip, concatenate_videoclips
+    MOVIEPY_AVAILABLE = True
+except ImportError:
+    MOVIEPY_AVAILABLE = False
+    print(
+        "Warning: moviepy is not installed or misconfigured. "
+        "/translate endpoint will be disabled. "
+        "Install it with: python -m pip install moviepy"
+    )
+
 import uuid
 import shutil
-from avatar_engine import AvatarEngine
 try:
     from skeleton_generator import SkeletonGenerator
     from ai_avatar_engine import NeuralAvatarEngine
@@ -50,6 +61,14 @@ os.makedirs(AVATAR_DIR, exist_ok=True)
 
 @app.route('/translate', methods=['POST'])
 def translate():
+    if not MOVIEPY_AVAILABLE:
+        return jsonify({
+            "error": "dependency_missing",
+            "message": "moviepy is not installed in the backend environment. "
+                       "Please install it with 'python -m pip install moviepy' "
+                       "and restart the backend server."
+        }), 500
+
     try:
         data = request.json
         text = data.get('text', '')

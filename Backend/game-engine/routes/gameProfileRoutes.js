@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const GameProfile = require("../models/GameProfile");
 
+// RESEARCH CONTRIBUTION
+// Game-profile API exposing per-learner state used to personalize game difficulty
 // Get profile by userId
 router.get("/profile/:userId", async (req, res) => {
   try {
@@ -27,6 +29,8 @@ router.get("/profile/:userId", async (req, res) => {
   }
 });
 
+// RESEARCH CONTRIBUTION
+// Upsert profile including recommendedLevel used by adaptive game mode selection
 // Create or update profile
 router.post("/profile", async (req, res) => {
   try {
@@ -58,6 +62,8 @@ router.post("/profile", async (req, res) => {
   }
 });
 
+// MANUAL IMPLEMENTATION
+// Endpoint to adjust recommendedLevel based on external analytics or teacher input
 // Update recommended level
 router.patch("/profile/:userId/level", async (req, res) => {
   try {
