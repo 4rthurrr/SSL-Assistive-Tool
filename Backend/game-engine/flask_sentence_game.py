@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# SSL SENTENCE GAME API - FLASK BACKEND (v8 compatible)
+# SSL SENTENCE GAME API - FLASK BACKEND
 # ═══════════════════════════════════════════════════════════════════════════════
 
 import os
