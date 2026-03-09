@@ -566,7 +566,7 @@ QUESTION_SIGN = "CONCEPT_WHAT"   # fronted in yes/no questions
 
 
 # RESEARCH CONTRIBUTION
-# SSL SOV gloss generation respecting Sri Lankan Sign Language grammar
+# Full 6-stage Sinhala-to-SSL semantic NLP pipeline (rule-based, no external model)
 # Order: [TIME] → [SUBJECT] → [OBJECTS] → [VERB] → [NEGATION] → [QUESTION]
 # Tense injected only from explicit time adverb concepts — not from verb suffix metadata
 def generate_gloss(clause: SemanticClause) -> list[str]:
