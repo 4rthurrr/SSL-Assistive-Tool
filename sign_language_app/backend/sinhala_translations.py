@@ -509,6 +509,136 @@ SINHALA_TRANSLATIONS = {
     "Common/Some": "සමහර",
     "Common/More": "තවත්",
     "Common/Less": "අඩු",
+    
+    # ── Dataset-specific labels (class_labels_fixed.txt uses different categories) ──
+    # Adjectives
+    "Adjectives/Wrong": "වැරදි",
+    
+    # Adverbs
+    "Adverb/Again": "නැවත",
+    "Adverb/Also": "ද",
+    "Adverb/Can": "පුළුවන්",
+    
+    # Greetings
+    "Greetings/Alright": "හරි",
+    
+    # Nouns (many overlap with other categories under different prefixes)
+    "Nouns/Bag": "බෑගය",
+    "Nouns/Bed": "ඇඳ",
+    "Nouns/Book": "පොත",
+    "Nouns/Camera": "කැමරාව",
+    "Nouns/Card": "කාඩ්පත",
+    "Nouns/Cat": "බළලා",
+    "Nouns/Ceiling fan": "සිවිලිම් පංකාව",
+    "Nouns/Cell phone": "ජංගම දුරකථනය",
+    "Nouns/Children": "දරුවන්",
+    "Nouns/Choice": "තේරීම",
+    "Nouns/Clothing": "ඇඳුම්",
+    "Nouns/Computer": "පරිගණකය",
+    "Nouns/Crocodile": "කිඹුලා",
+    "Nouns/Door": "දොර",
+    "Nouns/Elephant": "ඇත්තා",
+    "Nouns/Face": "මුහුණ",
+    "Nouns/Fever": "උණ",
+    "Nouns/Food": "ආහාර",
+    "Nouns/Group": "කණ්ඩායම",
+    "Nouns/Gun": "තුවක්කුව",
+    "Nouns/Hat": "තොප්පිය",
+    "Nouns/He": "ඔහු",
+    "Nouns/I": "මම",
+    "Nouns/Internet": "අන්තර්ජාලය",
+    "Nouns/Key": "යතුර",
+    "Nouns/Laptop": "ලැප්ටොප්",
+    "Nouns/List": "ලැයිස්තුව",
+    "Nouns/Lock": "අගුල",
+    "Nouns/Middle": "මැද",
+    "Nouns/Money": "මුදල්",
+    "Nouns/My": "මගේ",
+    "Nouns/None": "කිසිවක් නැත",
+    "Nouns/Ok": "හරි",
+    "Nouns/Paint": "තීන්ත",
+    "Nouns/Pencil": "පැන්සල",
+    "Nouns/Pocket": "සාක්කුව",
+    "Nouns/Point": "ලක්ෂ්‍යය",
+    "Nouns/Problem": "ගැටලුව",
+    "Nouns/Radio": "රේඩියෝ",
+    "Nouns/Ring": "මුද්ද",
+    "Nouns/Shirt": "කමිසය",
+    "Nouns/Sign": "සලකුණ",
+    "Nouns/Skirt": "සාය",
+    "Nouns/Squirrel": "ලේනා",
+    "Nouns/Structure": "ව්‍යූහය",
+    "Nouns/Suit": "සූට්",
+    "Nouns/Table": "මේසය",
+    "Nouns/Technology": "තාක්ෂණය",
+    "Nouns/Telephone": "දුරකථනය",
+    "Nouns/Weather": "කාලගුණය",
+    "Nouns/Window": "ජනේලය",
+    "Nouns/You": "ඔබ",
+    
+    # People
+    "People/Bro": "සහෝදරයා",
+    "People/Child": "දරුවා",
+    "People/Elder bro": "අයියා",
+    "People/Elder sister": "අක්කා",
+    "People/Grand father": "සීයා",
+    "People/Mother": "මව",
+    "People/Player": "ක්‍රීඩකයා",
+    "People/Son": "පුතා",
+    "People/Us": "අපි",
+    "People/Younger bro": "මල්ලි",
+    "People/Younger sister": "නංගි",
+    
+    # Places
+    "Places/House": "නිවස",
+    "Places/Location": "ස්ථානය",
+    "Places/Road": "පාර",
+    
+    # Prepositions
+    "Preposition/In": "තුළ",
+    "Preposition/Inside": "ඇතුළත",
+    "Preposition/To": "වෙත",
+    "Preposition/Until": "තෙක්",
+    
+    # Days/Time overlap
+    "Days/Hour": "පැය",
+    "Days/Time": "කාලය",
+    "Days/Today": "අද",
+    "Days/Tomorrow": "හෙට",
+    "Days/Yesterday": "ඊයේ",
+    
+    # Adverb overlap
+    "Adverb/Here": "මෙහි",
+    "Adverb/Never": "කවදාවත් නැහැ",
+    
+    # Preposition overlap
+    "Preposition/After": "පසුව",
+    "Preposition/Near": "ළඟ",
+    "Preposition/Up": "ඉහළ",
+    
+    # Vehicles
+    "Vehicles/Boat": "බෝට්ටුව",
+    "Vehicles/Motorcycle": "යතුරු පැදිය",
+    "Vehicles/Plane": "ගුවන් යානය",
+    "Vehicles/Vehicle": "වාහනය",
+    
+    # Verbs
+    "Verbs/Allow": "ඉඩ දෙනවා",
+    "Verbs/Change": "වෙනස් කරනවා",
+    "Verbs/Choose": "තෝරනවා",
+    "Verbs/Copy": "පිටපත් කරනවා",
+    "Verbs/Cough": "කැස්සනවා",
+    "Verbs/Cut": "කපනවා",
+    "Verbs/Erase": "මකනවා",
+    "Verbs/Exchange": "හුවමාරු කරනවා",
+    "Verbs/Feel": "දැනෙනවා",
+    "Verbs/Fight": "සටන් කරනවා",
+    "Verbs/Follow": "අනුගමනය කරනවා",
+    "Verbs/Lead": "මෙහෙයවනවා",
+    "Verbs/Meet": "හමුවෙනවා",
+    "Verbs/Order": "ඇණවුම් කරනවා",
+    "Verbs/Pull": "ඇදගන්නවා",
+    "Verbs/Visit": "පිවිසෙනවා",
 }
 
 

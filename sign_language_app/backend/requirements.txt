@@ -11,9 +11,15 @@ numpy>=1.24.0
 # Request Validation
 pydantic>=2.0.0
 
-# HTTP Client (for API calls)
-httpx>=0.25.0
-
 # CORS support
 python-multipart>=0.0.6
+
+# Image generation (Google Gemini API)
+google-genai>=1.0.0
+
+# Environment variable loading
+python-dotenv>=1.0.0
+
+# Image processing
+Pillow>=10.0.0
 

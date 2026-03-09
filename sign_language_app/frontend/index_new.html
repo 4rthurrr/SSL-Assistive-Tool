@@ -9,335 +9,731 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        /* ── Reset & Tokens ──────────────────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #0a0f1e;
+            --surface:   #111827;
+            --card:      #1a2235;
+            --border:    rgba(255,255,255,0.07);
+            --accent:    #6366f1;
+            --accent2:   #10b981;
+            --warn:      #f59e0b;
+            --danger:    #ef4444;
+            --text:      #f1f5f9;
+            --muted:     #64748b;
+            --dimmed:    #94a3b8;
+            --sinhala:   #a78bfa;
+            --radius:    14px;
+            --gap:       18px;
         }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Top Bar ─────────────────────────────────────────────────── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topbar-brand .logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .topbar-brand h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+        .topbar-brand p {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+        .status-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            font-size: 0.72rem;
+            color: var(--dimmed);
+            white-space: nowrap;
+        }
+        .pill-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--warn);
+            flex-shrink: 0;
+        }
+        .pill-dot.ok  { background: var(--accent2); }
+        .pill-dot.err { background: var(--danger);  }
+
+        /* ── 3-Column Layout ─────────────────────────────────────────── */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1.05fr 1fr 1fr;
+            gap: var(--gap);
+            padding: var(--gap) 24px 24px;
+            flex: 1;
+        }
+        @media (max-width: 1100px) {
+            .workspace { grid-template-columns: 1fr 1fr; }
+            .col-image  { grid-column: 1 / -1; }
+        }
+        @media (max-width: 680px) {
+            .workspace { grid-template-columns: 1fr; padding: 12px; }
+            .col-image  { grid-column: 1; }
+        }
+
+        /* ── Card ────────────────────────────────────────────────────── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+        .card-header {
+            padding: 14px 18px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .subtitle { font-size: 1.1rem; opacity: 0.9; }
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            padding: 30px;
+        .card-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
         }
-        .video-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
+        .card-body {
+            padding: 16px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .video-container {
+
+        /* ── Camera ──────────────────────────────────────────────────── */
+        .video-wrap {
             position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
             background: #000;
             border-radius: 10px;
             overflow: hidden;
-            aspect-ratio: 4/3;
         }
-        video, canvas {
+        #webcam, #canvas {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            width: 100%; height: 100%;
             object-fit: cover;
         }
-        .overlay {
+        #overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
+            inset: 0;
+            background: rgba(10,15,30,0.82);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--dimmed);
         }
-        .overlay.hidden { display: none; }
-        .controls {
+        #overlay .overlay-icon { font-size: 2.4rem; }
+        #overlay.hidden { display: none; }
+
+        /* ── Quality bar ─────────────────────────────────────────────── */
+        .qual-row {
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-top: 20px;
+            font-size: 0.72rem;
+            color: var(--muted);
         }
-        button {
+        .qual-track {
             flex: 1;
-            padding: 15px;
+            height: 5px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        #qualityBar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent2);
+            border-radius: 99px;
+            transition: width 0.18s, background 0.3s;
+        }
+
+        /* ── Buttons ─────────────────────────────────────────────────── */
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-row.wrap { flex-wrap: wrap; }
+        .btn {
+            flex: 1;
+            padding: 10px 14px;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 9px;
+            font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: filter 0.2s, transform 0.15s;
+            white-space: nowrap;
         }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; filter: none !important; }
+        .btn:not(:disabled):hover { filter: brightness(1.12); transform: translateY(-1px); }
+        .btn:not(:disabled):active { transform: translateY(0); }
+        .btn-primary  { background: var(--accent);  color: #fff; }
+        .btn-neutral  { background: rgba(255,255,255,0.08); color: var(--dimmed); border: 1px solid var(--border); }
+        .btn-success  { background: var(--accent2); color: #fff; }
+        .btn-vote     { background: linear-gradient(135deg,#8b5cf6,#d946ef); color: #fff; }
+        .btn-auto     { background: #0891b2; color: #fff; }
+        .btn-auto.active { background: var(--danger); }
+        .btn-demo     { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #111; }
+        .btn-demo.active { background: linear-gradient(135deg,#f43f5e,#ec4899); color: #fff; animation: demoglow 1.5s infinite; }
+        @keyframes demoglow { 0%,100% { box-shadow: 0 0 8px rgba(244,63,94,0.4); } 50% { box-shadow: 0 0 18px rgba(244,63,94,0.75); } }
+
+        /* ── Vote Progress ───────────────────────────────────────────── */
+        .vote-progress {
+            display: none;
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 9px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            color: var(--warn);
+            text-align: center;
         }
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        .btn-primary:hover:not(:disabled) {
-            background: #5568d3;
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        .btn-success:hover:not(:disabled) {
-            background: #218838;
-        }
-        .results-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-        }
-        .status {
+        .vote-progress.active { display: block; }
+        .vote-dots {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
         }
-        .status-item {
+        .vote-round-dot {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(245,158,11,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700;
+            color: var(--warn);
+        }
+        .vote-round-dot.done  { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+        .vote-round-dot.active { background: var(--warn); animation: pulse 0.8s infinite; }
+
+        /* ── Auto indicator ──────────────────────────────────────────── */
+        .auto-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.25);
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: var(--accent2);
+        }
+        .auto-indicator.active { display: flex; }
+        .auto-pulse {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent2);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        /* ── Prediction / Results ────────────────────────────────────── */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            padding: 32px 0;
+            text-align: center;
+        }
+        .empty-state .empty-icon { font-size: 2.6rem; }
+
+        .pred-hero {
+            text-align: center;
+            padding: 20px 0 12px;
+        }
+        .pred-sinhala {
+            font-size: 3.4rem;
+            font-weight: 700;
+            color: var(--sinhala);
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            line-height: 1.2;
+        }
+        .pred-english {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 6px;
+            letter-spacing: -0.01em;
+        }
+        .pred-category {
+            font-size: 0.73rem;
+            color: var(--muted);
+            margin-top: 4px;
+            letter-spacing: 0.04em;
+        }
+
+        /* confidence badge */
+        .conf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .conf-high   { background: rgba(16,185,129,0.15); color: var(--accent2); border: 1px solid rgba(16,185,129,0.3); }
+        .conf-mid    { background: rgba(245,158,11,0.15); color: var(--warn);    border: 1px solid rgba(245,158,11,0.3); }
+        .conf-low    { background: rgba(239,68,68,0.15);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.3); }
+
+        /* progress bar */
+        .conf-bar-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .conf-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.5s ease;
+        }
+
+        /* top3 list */
+        .top3-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .top3-item {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 9px 12px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            cursor: default;
+            transition: background 0.15s;
         }
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ffc107;
+        .top3-item:first-child { border-color: rgba(99,102,241,0.35); background: rgba(99,102,241,0.06); }
+        .top3-item:hover { background: rgba(255,255,255,0.07); }
+        .top3-rank {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--muted);
+            width: 16px;
+            flex-shrink: 0;
         }
-        .status-dot.connected { background: #28a745; }
-        .status-dot.error { background: #dc3545; }
-        .prediction-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .prediction-main {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        .prediction-sinhala {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #764ba2;
-            margin-bottom: 5px;
-            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
-            line-height: 1.3;
-        }
-        .prediction-english {
-            font-size: 1.5rem;
-            color: #667eea;
-            margin-bottom: 10px;
+        .top3-texts { flex: 1; min-width: 0; }
+        .top3-si {
+            font-size: 1.15rem;
             font-weight: 600;
+            color: var(--sinhala);
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
         }
-        .prediction-category {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 10px;
-            font-style: italic;
+        .top3-en {
+            font-size: 0.78rem;
+            color: var(--dimmed);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .confidence {
-            font-size: 1.5rem;
-            color: #28a745;
+        .top3-conf {
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
         }
-        .top-predictions {
-            margin-top: 20px;
-        }
-        .pred-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 5px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        .pred-item-text {
+
+        /* ── History ─────────────────────────────────────────────────── */
+        .history-list {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
+            max-height: 160px;
+            overflow-y: auto;
+            padding-right: 2px;
         }
-        .pred-item-sinhala {
-            font-size: 1.5rem;
+        .history-list::-webkit-scrollbar { width: 4px; }
+        .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-badge {
+            padding: 2px 7px;
+            border-radius: 99px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .badge-high { background: rgba(16,185,129,0.15); color: var(--accent2); }
+        .badge-mid  { background: rgba(245,158,11,0.15);  color: var(--warn); }
+        .badge-low  { background: rgba(239,68,68,0.15);   color: var(--danger); }
+        .history-sign    { font-weight: 600; color: var(--text); flex: 1; }
+        .history-sinhala { color: var(--sinhala); font-family: 'Noto Sans Sinhala', sans-serif; font-size: 0.95rem; }
+
+        /* ── Image Panel ─────────────────────────────────────────────── */
+        .image-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            text-align: center;
+            padding: 28px 16px;
+        }
+        .image-empty .empty-icon { font-size: 2.8rem; }
+
+        #generatedImage {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
+        }
+        #imageResult { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .img-caption {
+            text-align: center;
+            padding: 10px 0 2px;
+        }
+        .img-caption-si {
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            font-size: 1.25rem;
             font-weight: 600;
-            color: #764ba2;
+            color: var(--sinhala);
+        }
+        .img-caption-hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ── Loading spinner ─────────────────────────────────────────── */
+        .spinner-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 32px 0;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+        .spinner-wrap.hidden { display: none; }
+        .spinner {
+            width: 38px; height: 38px;
+            border: 3px solid rgba(255,255,255,0.07);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Error toast ─────────────────────────────────────────────── */
+        .error-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 9px;
+            color: var(--danger);
+            font-size: 0.8rem;
+        }
+        .error-bar.hidden { display: none; }
+
+        /* ── Demo badge inline ───────────────────────────────────────── */
+        .demo-badge {
+            display: inline-block;
+            background: linear-gradient(135deg,#f43f5e,#ec4899);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 99px;
+            letter-spacing: 0.04em;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        /* section label */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--muted);
+            padding-bottom: 4px;
+        }
+
+        /* divider */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 2px 0;
+        }
+
+        /* ── JS-compat toggles (keep class names the JS expects) ─────── */
+        .loading         { display: none; }
+        .loading.active  { display: flex; }
+        .error-message   { display: none; }
+        .error-message.active { display: flex; align-items:center; gap:8px; padding:9px 14px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:9px; color:var(--danger); font-size:.8rem; }
+
+        /* ── Status dots (JS sets className directly) ───────────────────── */
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--warn);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .status-dot.connected { background: var(--accent2); }
+        .status-dot.error     { background: var(--danger);  }
+
+        /* ── Prediction items (JS generates these via innerHTML) ─────────── */
+        .pred-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            margin-bottom: 6px;
+        }
+        .pred-item:first-child { border-color: rgba(99,102,241,0.35); background: rgba(99,102,241,0.06); }
+        .pred-item-text { flex: 1; min-width: 0; }
+        .pred-item-sinhala {
+            font-size: 1.15rem; font-weight: 600;
+            color: var(--sinhala);
             font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
         }
-        .pred-item-english {
-            font-size: 1rem;
-            color: #667eea;
-            font-weight: 500;
-        }
-        .pred-item-confidence {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #28a745;
-        }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            display: none;
-        }
-        .loading.active { display: block; }
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        .error-message.active { display: block; }
-        
-        /* Image Generation Styles */
-        .image-section {
-            margin-top: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 15px;
-            border: 2px dashed #667eea;
-        }
-        .image-section h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        #imageResult {
-            margin-top: 15px;
-            animation: fadeIn 0.5s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .pred-item-english { font-size: .78rem; color: var(--dimmed); }
+        .pred-item-confidence { font-size: .9rem; font-weight: 700; flex-shrink: 0; }
+
+        /* Use JS-driven flex for imageSection and imageResult */
+        #imageSection[style*="display:block"]  { display: flex !important; }
+        #imageResult[style*="display:block"]   { display: flex !important; }
+        #imageSection[style*="display: block"] { display: flex !important; }
+        #imageResult[style*="display: block"]  { display: flex !important; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🤟 SSL Sign Language Recognition</h1>
-            <p class="subtitle">Real-time Sri Lankan Sign Language detection</p>
-        </header>
 
-        <div class="main-content">
-            <!-- Video Section -->
-            <div class="video-section">
-                <div class="video-container">
+    <!-- ── Top Bar ──────────────────────────────────────────────────── -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="logo">🤟</div>
+            <div>
+                <h1>SSL Sign Language</h1>
+                <p>Sri Lankan Sign Language Recognition</p>
+            </div>
+        </div>
+        <div class="status-pills">
+            <div class="pill">
+                <span class="status-dot" id="serverDot"></span>
+                <span>Server: <strong id="serverStatus">Checking…</strong></span>
+            </div>
+            <div class="pill">
+                <span class="status-dot" id="mediapipeDot"></span>
+                <span>MediaPipe: <strong id="mediapipeStatus">Init…</strong></span>
+            </div>
+            <div class="pill">
+                <span class="status-dot" id="handDot"></span>
+                <span>Tracking: <strong id="handStatus">—</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── 3-Column Workspace ────────────────────────────────────────── -->
+    <div class="workspace">
+
+        <!-- Column 1 — Camera -->
+        <div class="card col-camera">
+            <div class="card-header">
+                <span class="card-title">📷 Camera</span>
+            </div>
+            <div class="card-body">
+
+                <div class="video-wrap">
                     <video id="webcam" autoplay playsinline></video>
                     <canvas id="canvas"></canvas>
-                    <div id="overlay" class="overlay">
+                    <div id="overlay">
+                        <span class="overlay-icon">📷</span>
                         <span>Click "Start Camera" to begin</span>
                     </div>
                 </div>
 
-                <div class="controls">
-                    <button id="startBtn" class="btn-primary">📷 Start Camera</button>
-                    <button id="stopBtn" class="btn-secondary" disabled>⏹️ Stop</button>
-                    <button id="recordBtn" class="btn-success" disabled>🎬 Record & Predict</button>
+                <div class="qual-row">
+                    <span>Quality</span>
+                    <div class="qual-track"><div id="qualityBar"></div></div>
+                    <span id="qualityLabel">—</span>
                 </div>
 
-                <div class="status">
-                    <div class="status-item">
-                        <span class="status-dot" id="serverDot"></span>
-                        <span>Server: <span id="serverStatus">Checking...</span></span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-dot" id="mediapipeDot"></span>
-                        <span>MediaPipe: <span id="mediapipeStatus">Initializing...</span></span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-dot" id="handDot"></span>
-                        <span>Tracking: <span id="handStatus">Not detected</span></span>
+                <!-- Primary controls -->
+                <div class="btn-row">
+                    <button id="startBtn"  class="btn btn-primary">📷 Start</button>
+                    <button id="stopBtn"   class="btn btn-neutral" disabled>⏹ Stop</button>
+                    <button id="recordBtn" class="btn btn-success" disabled>🎬 Record</button>
+                </div>
+
+                <!-- Advanced controls -->
+                <div class="btn-row wrap">
+                    <button id="voteBtn" class="btn btn-vote" disabled>🗳️ 3× Vote</button>
+                    <button id="autoBtn" class="btn btn-auto" disabled>⚡ Auto</button>
+                    <button id="demoBtn" class="btn btn-demo">🎯 Demo: OFF</button>
+                </div>
+
+                <!-- Vote progress -->
+                <div class="vote-progress" id="voteProgress">
+                    <span id="voteProgressText">Collecting round 1 / 3…</span>
+                    <div class="vote-dots">
+                        <div class="vote-round-dot" id="dot1">1</div>
+                        <div class="vote-round-dot" id="dot2">2</div>
+                        <div class="vote-round-dot" id="dot3">3</div>
                     </div>
                 </div>
+
+                <!-- Auto indicator -->
+                <div class="auto-indicator" id="autoIndicator">
+                    <div class="auto-pulse"></div>
+                    <span>Auto-predicting… hold sign steady</span>
+                </div>
+
             </div>
+        </div>
 
-            <!-- Results Section -->
-            <div class="results-section">
-                <h2>Prediction Results</h2>
-                
-                <div class="error-message" id="errorMessage"></div>
-                
-                <div class="loading" id="loading">
+        <!-- Column 2 — Results -->
+        <div class="card col-results">
+            <div class="card-header">
+                <span class="card-title">📊 Results</span>
+            </div>
+            <div class="card-body" style="gap:10px;">
+
+                <!-- Loading spinner (JS adds/removes .active) -->
+                <div class="loading" id="loading" style="flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:28px 0; color:var(--muted); font-size:.82rem;">
                     <div class="spinner"></div>
-                    <p>Analyzing sign...</p>
+                    <span>Analysing sign…</span>
                 </div>
 
-                <div id="results" style="display: none;">
-                    <div class="prediction-card">
-                        <div class="prediction-sinhala" id="mainSinhala">-</div>
-                        <div class="prediction-english" id="mainEnglish">-</div>
-                        <div class="prediction-category" id="mainCategory">-</div>
-                        <div class="confidence">Confidence: <span id="mainConfidence">-</span></div>
+                <!-- Error bar (JS adds/removes .active) -->
+                <div class="error-message" id="errorMessage"></div>
+
+                <!-- Prediction (JS sets style.display='block' to reveal) -->
+                <div id="results" style="display:none;">
+                    <div class="pred-hero">
+                        <div class="pred-sinhala" id="mainSinhala">—</div>
+                        <div class="pred-english"  id="mainEnglish">—</div>
+                        <div class="pred-category" id="mainCategory">—</div>
+                        <span class="conf-badge conf-high" id="mainConfidence">—</span>
                     </div>
 
-                    <div class="top-predictions">
-                        <h3>Top 3 Predictions:</h3>
-                        <div id="topPredictions"></div>
-                    </div>
+                    <div class="divider" style="margin:8px 0;"></div>
+                    <div class="section-label">Top Predictions</div>
+                    <div class="top3-list" id="topPredictions"></div>
 
-                    <!-- Image Generation Section -->
-                    <div class="image-section" id="imageSection" style="margin-top: 30px; display: none;">
-                        <h3>🎨 Visual Learning</h3>
-                        <button id="generateImageBtn" class="btn-primary" style="width: 100%; margin-bottom: 15px;">
-                            Generate Image for Learning
-                        </button>
-                        <div id="imageResult" style="display: none;">
-                            <img id="generatedImage" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);" alt="Generated educational image"/>
-                            <p style="text-align: center; margin-top: 10px; color: #666; font-style: italic;">
-                                This image helps connect the sign with the word!
-                            </p>
+                    <div class="divider" style="margin:8px 0;"></div>
+                    <div class="section-label">Recent History</div>
+                    <div class="pred-history" id="predHistory" style="display:none;">
+                        <div class="history-list" id="historyList"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Column 3 — Visual Learning -->
+        <div class="card col-image">
+            <div class="card-header">
+                <span class="card-title">🎨 Visual Learning</span>
+            </div>
+            <div class="card-body" style="gap:12px;">
+
+                <!-- Image section — JS sets style.display='block' -->
+                <div id="imageSection" style="display:none; flex-direction:column; gap:12px;">
+                    <button id="generateImageBtn" class="btn btn-primary" style="width:100%;">
+                        ✨ Generate Visual Aid
+                    </button>
+                    <div id="imageResult" style="display:none; flex-direction:column; gap:8px;">
+                        <img id="generatedImage" alt="Visual learning aid" />
+                        <div class="img-caption">
+                            <div class="img-caption-si" id="imageCaptionSinhala"></div>
+                            <div class="img-caption-hint">This image connects the sign with the word</div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+
+    </div><!-- /workspace -->
 
     <!-- MediaPipe CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
@@ -345,47 +741,78 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
 
     <script>
-        console.log('🚀 Fresh App Loading...');
+        console.log('🚀 SSL App v2 Loading...');
 
-        // Configuration
+        // ─── Configuration ────────────────────────────────────────────────
         const API_URL = window.location.origin;
-        const SEQUENCE_LENGTH = 50;
-        const FRAME_INTERVAL = 50; // 20 FPS (faster collection for Holistic)
-        const RECORDING_DURATION = 5000; // 5 seconds max
+        const SEQUENCE_LENGTH   = 50;
+        const FRAME_INTERVAL    = 50;        // 20 FPS
+        const RECORDING_DURATION= 4000;      // 4 s single-shot (was 5 s)
+        const VOTE_ROUND_DURATION= 3000;     // 3 s per round in voting mode
+        const VOTE_ROUNDS       = 3;
+        const AUTO_SLIDE_STEP   = 15;        // Slide window by 15 frames in auto-mode
+        const QUALITY_THRESHOLD = 0.45;      // Min avg visibility to count a frame
+        const ANCHOR_VIS_THRESH = 0.3;       // Min visibility for normalization anchors (shoulders+hips)
+        const AUTO_MIN_CONFIDENCE = 25;      // Discard auto predictions below this %
+        const AUTO_BUFFER_SIZE  = 4;         // Rolling vote buffer for auto-predict temporal smoothing
 
-        // State
+        // ─── Demo Mode Config ─────────────────────────────────────────────
+        const DEMO_BUFFER_SIZE  = 5;     // Rolling window: vote across last N results
+        const DEMO_TEMP         = 0.5;   // Temperature for confidence sharpening (0.5 = square+renorm)
+        const DEMO_HIGH_THRESH  = 50;    // Confidence % shown as green in demo mode (vs 70 normally)
+        const DEMO_MID_THRESH   = 32;    // Confidence % shown as orange in demo mode (vs 50 normally)
+
+        // ─── State ────────────────────────────────────────────────────────
         let camera = null;
         let holistic = null;
         let isCapturing = false;
         let isRecording = false;
+        let isAutoPredict = false;
+        let isVoting = false;
+        let isDemoMode = false;
+        let demoPredBuffer = [];     // Rolling buffer for demo temporal smoothing
+        let autoPredBuffer = [];     // Rolling buffer for auto-predict temporal smoothing
         let collectedFrames = [];
+        let autoBuffer = [];         // Sliding window buffer for auto-predict
         let mediapipeReady = false;
+        let predictionHistory = [];  // Last 8 predictions for history panel
+        let currentQuality = 0;      // Live landmark quality 0-1
 
-        // DOM Elements
+        // ─── DOM refs ─────────────────────────────────────────────────────
         const elements = {
-            webcam: document.getElementById('webcam'),
-            canvas: document.getElementById('canvas'),
-            overlay: document.getElementById('overlay'),
-            startBtn: document.getElementById('startBtn'),
-            stopBtn: document.getElementById('stopBtn'),
-            recordBtn: document.getElementById('recordBtn'),
-            serverDot: document.getElementById('serverDot'),
-            serverStatus: document.getElementById('serverStatus'),
-            mediapipeDot: document.getElementById('mediapipeDot'),
+            webcam:          document.getElementById('webcam'),
+            canvas:          document.getElementById('canvas'),
+            overlay:         document.getElementById('overlay'),
+            startBtn:        document.getElementById('startBtn'),
+            stopBtn:         document.getElementById('stopBtn'),
+            recordBtn:       document.getElementById('recordBtn'),
+            voteBtn:         document.getElementById('voteBtn'),
+            autoBtn:         document.getElementById('autoBtn'),
+            serverDot:       document.getElementById('serverDot'),
+            serverStatus:    document.getElementById('serverStatus'),
+            mediapipeDot:    document.getElementById('mediapipeDot'),
             mediapipeStatus: document.getElementById('mediapipeStatus'),
-            handDot: document.getElementById('handDot'),
-            handStatus: document.getElementById('handStatus'),
-            loading: document.getElementById('loading'),
-            errorMessage: document.getElementById('errorMessage'),
-            results: document.getElementById('results'),
-            mainSinhala: document.getElementById('mainSinhala'),
-            mainEnglish: document.getElementById('mainEnglish'),
-            mainCategory: document.getElementById('mainCategory'),
-            mainConfidence: document.getElementById('mainConfidence'),
-            topPredictions: document.getElementById('topPredictions')
+            handDot:         document.getElementById('handDot'),
+            handStatus:      document.getElementById('handStatus'),
+            loading:         document.getElementById('loading'),
+            errorMessage:    document.getElementById('errorMessage'),
+            results:         document.getElementById('results'),
+            mainSinhala:     document.getElementById('mainSinhala'),
+            mainEnglish:     document.getElementById('mainEnglish'),
+            mainCategory:    document.getElementById('mainCategory'),
+            mainConfidence:  document.getElementById('mainConfidence'),
+            topPredictions:  document.getElementById('topPredictions'),
+            voteProgress:    document.getElementById('voteProgress'),
+            voteProgressText:document.getElementById('voteProgressText'),
+            autoIndicator:   document.getElementById('autoIndicator'),
+            qualityBar:      document.getElementById('qualityBar'),
+            qualityLabel:    document.getElementById('qualityLabel'),
+            predHistory:     document.getElementById('predHistory'),
+            historyList:     document.getElementById('historyList'),
+            demoBtn:         document.getElementById('demoBtn'),
         };
 
-        // Initialize on page load
+        // ─── Init ─────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
             console.log('✅ DOM Ready');
             initializeApp();
@@ -395,12 +822,16 @@
             elements.startBtn.addEventListener('click', startCamera);
             elements.stopBtn.addEventListener('click', stopCamera);
             elements.recordBtn.addEventListener('click', startRecording);
+            elements.voteBtn.addEventListener('click', startVoting);
+            elements.autoBtn.addEventListener('click', toggleAutoPredict);
+            elements.demoBtn.addEventListener('click', toggleDemoMode);
 
             await initializeMediaPipe();
             checkServer();
             setInterval(checkServer, 5000);
         }
 
+        // ─── MediaPipe ────────────────────────────────────────────────────
         async function initializeMediaPipe() {
             try {
                 console.log('⏳ Initializing MediaPipe Holistic...');
@@ -411,46 +842,42 @@
                 });
 
                 holistic.setOptions({
-                    modelComplexity: 0,  // FASTER: Use lite model (0 = fastest, 1 = balanced, 2 = accurate)
-                    smoothLandmarks: false,  // FASTER: Disable smoothing for speed
-                    enableSegmentation: false,  // Already disabled
+                    modelComplexity: 1,          // IMPROVED: Full model for better accuracy
+                    smoothLandmarks: true,        // IMPROVED: Smooth out jitter
+                    enableSegmentation: false,
                     smoothSegmentation: false,
-                    refineFaceLandmarks: false,  // Already disabled
-                    minDetectionConfidence: 0.3,  // FASTER: Lower threshold
-                    minTrackingConfidence: 0.3   // FASTER: Lower threshold
+                    refineFaceLandmarks: false,
+                    minDetectionConfidence: 0.5,  // IMPROVED: Higher quality threshold
+                    minTrackingConfidence: 0.5    // IMPROVED: Higher quality threshold
                 });
 
                 holistic.onResults(onHolisticResults);
 
                 mediapipeReady = true;
                 updateMediaPipeStatus('ready');
-                console.log('✅ MediaPipe Holistic Ready');
+                console.log('✅ MediaPipe Holistic Ready (complexity=1, smooth=true)');
             } catch (error) {
                 console.error('❌ MediaPipe Error:', error);
                 updateMediaPipeStatus('error');
             }
         }
 
+        // ─── Server ───────────────────────────────────────────────────────
         async function checkServer() {
             try {
                 const response = await fetch(`${API_URL}/`);
                 const data = await response.json();
-                if (data.status === 'running') {
-                    updateServerStatus('connected');
-                }
-            } catch (error) {
-                updateServerStatus('error');
-            }
+                if (data.status === 'running') updateServerStatus('connected');
+            } catch { updateServerStatus('error'); }
         }
 
+        // ─── Camera ───────────────────────────────────────────────────────
         async function startCamera() {
             try {
                 console.log('📷 Starting camera...');
                 showOverlay('Starting camera...');
 
-                if (!mediapipeReady) {
-                    throw new Error('MediaPipe not ready');
-                }
+                if (!mediapipeReady) throw new Error('MediaPipe not ready');
 
                 camera = new Camera(elements.webcam, {
                     onFrame: async () => {
@@ -458,8 +885,8 @@
                             await holistic.send({ image: elements.webcam });
                         }
                     },
-                    width: 480,  // FASTER: Reduced resolution (was 640)
-                    height: 360  // FASTER: Reduced resolution (was 480)
+                    width: 480,
+                    height: 360
                 });
 
                 await camera.start();
@@ -475,46 +902,72 @@
         }
 
         function stopCamera() {
-            if (camera) {
-                camera.stop();
-                camera = null;
-            }
-            isCapturing = false;
-            isRecording = false;
+            if (camera) { camera.stop(); camera = null; }
+            isCapturing  = false;
+            isRecording  = false;
+            isAutoPredict = false;
+            isVoting     = false;
             collectedFrames = [];
+            autoBuffer = [];
+            elements.autoBtn.classList.remove('active');
+            elements.autoIndicator.classList.remove('active');
+            elements.voteProgress.classList.remove('active');
             showOverlay('Click "Start Camera" to begin');
             updateButtons();
             console.log('⏹️ Camera stopped');
         }
 
+        // ─── Frame quality helper ─────────────────────────────────────────
+        /**
+         * Returns a 0-1 quality score for a pose results object.
+         * Uses average visibility of key upper-body landmarks.
+         */
+        function computeFrameQuality(poseLandmarks) {
+            if (!poseLandmarks) return 0;
+            // Key landmarks: nose(0), shoulders(11,12), elbows(13,14), wrists(15,16), hips(23,24)
+            const keyIdxs = [0, 11, 12, 13, 14, 15, 16, 23, 24];
+            let sum = 0;
+            for (const i of keyIdxs) {
+                sum += (poseLandmarks[i] && poseLandmarks[i].visibility !== undefined)
+                    ? poseLandmarks[i].visibility : 0;
+            }
+            return sum / keyIdxs.length;
+        }
+
+        /**
+         * Check that the 4 normalization anchor landmarks (shoulders + hips)
+         * have adequate visibility. Bad anchors → bad normalization → bad prediction.
+         */
+        function checkAnchorVisibility(poseLandmarks) {
+            if (!poseLandmarks) return false;
+            const anchors = [11, 12, 23, 24]; // L shoulder, R shoulder, L hip, R hip
+            for (const i of anchors) {
+                const vis = poseLandmarks[i]?.visibility ?? 0;
+                if (vis < ANCHOR_VIS_THRESH) return false;
+            }
+            return true;
+        }
+
+        // ─── Holistic result handler ───────────────────────────────────────
         function onHolisticResults(results) {
             const ctx = elements.canvas.getContext('2d');
             ctx.save();
             ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
-            
-            elements.canvas.width = results.image.width;
+            elements.canvas.width  = results.image.width;
             elements.canvas.height = results.image.height;
-
-            // Draw image first
             ctx.drawImage(results.image, 0, 0, elements.canvas.width, elements.canvas.height);
 
-            // Draw all landmarks for visualization
             let hasLandmarks = false;
-            
-            // Draw face landmarks (if available)
+
             if (results.faceLandmarks) {
                 drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION, { color: '#C0C0C070', lineWidth: 1 });
                 hasLandmarks = true;
             }
-            
-            // Draw pose landmarks
             if (results.poseLandmarks) {
                 drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#00FF00', lineWidth: 4 });
                 drawLandmarks(ctx, results.poseLandmarks, { color: '#FF0000', lineWidth: 2, radius: 4 });
                 hasLandmarks = true;
             }
-            
-            // Draw hand landmarks
             if (results.leftHandLandmarks) {
                 drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS, { color: '#CC0000', lineWidth: 3 });
                 drawLandmarks(ctx, results.leftHandLandmarks, { color: '#00FF00', lineWidth: 2, radius: 3 });
@@ -525,197 +978,213 @@
                 drawLandmarks(ctx, results.rightHandLandmarks, { color: '#FF0000', lineWidth: 2, radius: 3 });
                 hasLandmarks = true;
             }
-            
-            // Update status
+
+            // Landmark quality indicator (live)
+            const quality = computeFrameQuality(results.poseLandmarks);
+            currentQuality = quality;
+            updateQualityBar(quality);
+
             if (hasLandmarks) {
                 const parts = [];
-                if (results.poseLandmarks) parts.push('pose');
-                if (results.leftHandLandmarks) parts.push('left hand');
-                if (results.rightHandLandmarks) parts.push('right hand');
-                if (results.faceLandmarks) parts.push('face');
+                if (results.poseLandmarks)      parts.push('pose');
+                if (results.leftHandLandmarks)  parts.push('L-hand');
+                if (results.rightHandLandmarks) parts.push('R-hand');
                 updateHandStatus(`detected (${parts.join(', ')})`);
             } else {
                 updateHandStatus('not-detected');
             }
 
-            // Collect frames during recording
+            // ── Frame collection (single-shot recording) ─────
             if (isRecording && results.poseLandmarks) {
-                // Collect RAW pose landmarks (33 × 4 = 132 features).
-                // Normalization (body-center + shoulder-scale) is applied in
-                // normalizeFrame() before the sequence is sent to the backend.
-
-                const frameFeatures = [];
-
-                // Extract all 33 pose landmarks with raw MediaPipe values
-                for (let i = 0; i < 33; i++) {
-                    if (results.poseLandmarks[i]) {
-                        const x = results.poseLandmarks[i].x;
-                        const y = results.poseLandmarks[i].y;
-                        const z = results.poseLandmarks[i].z || 0;
-                        const visibility = results.poseLandmarks[i].visibility !== undefined 
-                            ? results.poseLandmarks[i].visibility 
-                            : 1.0;
-                        
-                        frameFeatures.push(x, y, z, visibility);
-                        
-                        // Debug first frame's first landmark
-                        if (collectedFrames.length === 0 && i === 0) {
-                            console.log(`🎯 RAW COORDINATES CHECK - Nose (landmark 0):`);
-                            console.log(`   x=${x.toFixed(6)}, y=${y.toFixed(6)}, z=${z.toFixed(6)}, vis=${visibility.toFixed(6)}`);
-                            console.log(`   ✅ CORRECT: x should be 0.4-0.5 (NOT negative, NOT >1)`);
-                            console.log(`   ✅ CORRECT: y should be 0.3-0.4`);
-                            console.log(`   ✅ CORRECT: z should be -0.4 to -1.4 (negative)`);
-                        }
-                        
-                        // Debug hip landmarks
-                        if (collectedFrames.length === 0 && (i === 23 || i === 24)) {
-                            const side = i === 23 ? 'LEFT' : 'RIGHT';
-                            console.log(`   Hip ${side} (landmark ${i}): x=${x.toFixed(3)}, y=${y.toFixed(3)}, z=${z.toFixed(3)}`);
-                        }
-                    } else {
-                        // Pad missing landmarks with zeros
-                        frameFeatures.push(0, 0, 0, 0);
-                    }
-                }
-                
-                // Now we have exactly 132 features (33 landmarks × 4 values) - perfect match!
-                collectedFrames.push(frameFeatures);
-                
-                // Debug log on first frame
-                if (collectedFrames.length === 1) {
-                    console.log('📊 First frame captured:');
-                    console.log('   Total features:', frameFeatures.length);
-                    console.log('   Format: 33 pose landmarks × 4 values (raw, will be normalized before sending)');
-                    console.log('   Sample (first 12 - nose x,y,z,vis + left-eye-inner x,y,z,vis):', frameFeatures.slice(0, 12).map(v => v.toFixed(3)));
+                const frame = extractPoseFrame(results.poseLandmarks);
+                // Quality-gate: only store frames with good overall quality AND good anchor visibility
+                if (quality >= QUALITY_THRESHOLD && checkAnchorVisibility(results.poseLandmarks)) {
+                    collectedFrames.push(frame);
                 }
             }
-            
+
+            // ── Auto-predict sliding window ───────────────────
+            if (isAutoPredict && results.poseLandmarks && quality >= QUALITY_THRESHOLD && checkAnchorVisibility(results.poseLandmarks)) {
+                const frame = extractPoseFrame(results.poseLandmarks);
+                autoBuffer.push(frame);
+
+                if (autoBuffer.length >= SEQUENCE_LENGTH) {
+                    const seq = autoBuffer.slice(0, SEQUENCE_LENGTH);
+                    autoBuffer.splice(0, AUTO_SLIDE_STEP); // slide window
+                    // Fire-and-forget prediction (don't await to keep UI smooth)
+                    sendPrediction(seq, true).catch(console.error);
+                }
+            }
+
             ctx.restore();
         }
 
-        function updateHandStatus(status) {
-            if (status === 'detected') {
-                elements.handDot.className = 'status-dot connected';
-                elements.handStatus.textContent = 'Detected ✓';
-            } else {
-                elements.handDot.className = 'status-dot';
-                elements.handStatus.textContent = 'Not detected';
+        /**
+         * Extract 132 raw pose features from a MediaPipe poseLandmarks array.
+         */
+        function extractPoseFrame(poseLandmarks) {
+            const frame = [];
+            for (let i = 0; i < 33; i++) {
+                if (poseLandmarks[i]) {
+                    frame.push(
+                        poseLandmarks[i].x,
+                        poseLandmarks[i].y,
+                        poseLandmarks[i].z || 0,
+                        poseLandmarks[i].visibility !== undefined ? poseLandmarks[i].visibility : 1.0
+                    );
+                } else {
+                    frame.push(0, 0, 0, 0);
+                }
             }
+            return frame;
         }
 
+        // ─── Single-shot Recording ────────────────────────────────────────
         async function startRecording() {
-            if (!isCapturing || isRecording) return;
+            if (!isCapturing || isRecording || isVoting) return;
 
             isRecording = true;
             collectedFrames = [];
-            elements.recordBtn.disabled = true;
-            console.log('🎬 Recording started...');
+            updateButtons();
+            console.log('🎬 Recording started (4 s, quality-gated)...');
 
-            setTimeout(async () => {
-                isRecording = false;
-                elements.recordBtn.disabled = false;
-                console.log(`✅ Collected ${collectedFrames.length} frames`);
-                
-                // Debug: Show sample of collected data
-                if (collectedFrames.length > 0) {
-                    console.log('📊 Sample frame (first):', collectedFrames[0].slice(0, 8));
-                    console.log('   Features per frame:', collectedFrames[0].length);
-                }
+            await delay(RECORDING_DURATION);
 
-                if (collectedFrames.length >= SEQUENCE_LENGTH) {
-                    await sendPrediction(collectedFrames.slice(0, SEQUENCE_LENGTH));
-                } else if (collectedFrames.length >= 20) {
-                    // INTERPOLATE: If we have at least 20 frames, interpolate to 50
-                    console.log('⚠️ Interpolating frames...');
-                    const interpolated = interpolateFrames(collectedFrames, SEQUENCE_LENGTH);
-                    await sendPrediction(interpolated);
-                } else {
-                    showError(`Only collected ${collectedFrames.length} frames. Need at least 20 (got ${collectedFrames.length}).`);
-                }
-            }, RECORDING_DURATION);
+            isRecording = false;
+            updateButtons();
+            console.log(`✅ Collected ${collectedFrames.length} quality frames`);
+
+            if (collectedFrames.length >= SEQUENCE_LENGTH) {
+                await sendPrediction(collectedFrames.slice(0, SEQUENCE_LENGTH));
+            } else if (collectedFrames.length >= 20) {
+                console.log('⚠️ Interpolating frames...');
+                await sendPrediction(interpolateFrames(collectedFrames, SEQUENCE_LENGTH));
+            } else {
+                showError(`Only ${collectedFrames.length} quality frames captured. Move closer to the camera or improve lighting.`);
+            }
         }
 
+        // ─── 3× Voting Mode ───────────────────────────────────────────────
+        async function startVoting() {
+            if (!isCapturing || isVoting || isRecording) return;
+
+            isVoting = true;
+            updateButtons();
+            elements.voteProgress.classList.add('active');
+            hideError();
+
+            const allTop3s = [];
+            const dots = [
+                document.getElementById('dot1'),
+                document.getElementById('dot2'),
+                document.getElementById('dot3'),
+            ];
+            dots.forEach(d => { d.className = 'vote-round-dot'; });
+
+            for (let round = 0; round < VOTE_ROUNDS; round++) {
+                dots[round].classList.add('active');
+                elements.voteProgressText.textContent = `🎬 Round ${round + 1}/${VOTE_ROUNDS} — hold your sign...`;
+                collectedFrames = [];
+                isRecording = true;
+
+                await delay(VOTE_ROUND_DURATION);
+
+                isRecording = false;
+                dots[round].className = 'vote-round-dot done';
+
+                if (collectedFrames.length >= 20) {
+                    const seq = collectedFrames.length >= SEQUENCE_LENGTH
+                        ? collectedFrames.slice(0, SEQUENCE_LENGTH)
+                        : interpolateFrames(collectedFrames, SEQUENCE_LENGTH);
+
+                    elements.voteProgressText.textContent = `⏳ Predicting round ${round + 1}...`;
+                    const result = await fetchSinglePrediction(seq);
+                    if (result) {
+                        allTop3s.push(result.top_3);
+                        elements.voteProgressText.textContent = `✅ Round ${round + 1}: ${result.english || result.prediction} (${result.confidence.toFixed(0)}%)`;
+                    }
+                } else {
+                    elements.voteProgressText.textContent = `⚠️ Round ${round + 1} skipped — too few frames`;
+                }
+
+                if (round < VOTE_ROUNDS - 1) await delay(400);
+            }
+
+            isVoting = false;
+            elements.voteProgress.classList.remove('active');
+            updateButtons();
+
+            if (allTop3s.length === 0) {
+                showError('No predictions collected — check camera and lighting.');
+                return;
+            }
+
+            // ── Client-side soft voting ──────────────────────────────────
+            // Sum confidences per sign across all rounds, then re-rank.
+            const scoreMap = {};
+            const metaMap  = {};
+            for (const top3 of allTop3s) {
+                for (const p of top3) {
+                    scoreMap[p.sign] = (scoreMap[p.sign] || 0) + p.confidence;
+                    metaMap[p.sign]  = p; // keep metadata for the sign
+                }
+            }
+            const sorted = Object.entries(scoreMap).sort(([,a],[,b]) => b - a);
+            const topSign = sorted[0][0];
+            const avgConf = sorted[0][1] / allTop3s.length;
+            const top3Final = sorted.slice(0, 3).map(([sign, sumConf]) => ({
+                ...metaMap[sign],
+                confidence: parseFloat((sumConf / allTop3s.length).toFixed(2))
+            }));
+
+            displayResults({
+                prediction: topSign,
+                confidence: parseFloat(avgConf.toFixed(2)),
+                top_3:      top3Final,
+                sinhala:    metaMap[topSign].sinhala,
+                english:    metaMap[topSign].english
+            }, false, true);
+            elements.results.style.display = 'block';
+        }
+
+        // ─── Auto-Predict Toggle ──────────────────────────────────────────
+        function toggleAutoPredict() {
+            if (isRecording || isVoting) return;
+
+            isAutoPredict = !isAutoPredict;
+            autoBuffer = [];
+            autoPredBuffer = []; // Reset temporal smoothing buffer
+            elements.autoBtn.classList.toggle('active', isAutoPredict);
+            elements.autoIndicator.classList.toggle('active', isAutoPredict);
+            elements.autoBtn.textContent = isAutoPredict ? '⏹ Stop Auto' : '⚡ Auto Predict';
+            console.log(`Auto-predict: ${isAutoPredict ? 'ON' : 'OFF'}`);
+        }
+
+        // ─── Frame interpolation ──────────────────────────────────────────
         function interpolateFrames(frames, targetLength) {
-            // Simple linear interpolation to reach target length
             const result = [];
             const ratio = (frames.length - 1) / (targetLength - 1);
-            
             for (let i = 0; i < targetLength; i++) {
-                const pos = i * ratio;
+                const pos  = i * ratio;
                 const idx1 = Math.floor(pos);
                 const idx2 = Math.min(idx1 + 1, frames.length - 1);
-                const t = pos - idx1;
-                
-                // Interpolate between frames
-                const frame1 = frames[idx1];
-                const frame2 = frames[idx2];
-                const interpolated = frame1.map((val, j) => 
-                    val * (1 - t) + frame2[j] * t
-                );
-                
-                result.push(interpolated);
+                const t    = pos - idx1;
+                result.push(frames[idx1].map((v, j) => v * (1 - t) + frames[idx2][j] * t));
             }
-            
             console.log(`📈 Interpolated ${frames.length} → ${result.length} frames`);
             return result;
         }
 
-        /**
-         * Normalize one frame's 132 features using body-center + shoulder-scale normalization.
-         * This MUST match the normalize_sequence() logic in retrain_fixed.py exactly.
-         *
-         * Format: [x0,y0,z0,vis0, x1,y1,z1,vis1, ... x32,y32,z32,vis32]
-         * Reference landmarks:
-         *   left shoulder  = 11  → base index 44
-         *   right shoulder = 12  → base index 48
-         *   left hip       = 23  → base index 92
-         *   right hip      = 24  → base index 96
-         */
-        function normalizeFrame(frame) {
-            const f = frame.slice(); // copy so we don't mutate original
-
-            const ls_x = f[11 * 4 + 0], ls_y = f[11 * 4 + 1];
-            const rs_x = f[12 * 4 + 0], rs_y = f[12 * 4 + 1];
-            const lh_x = f[23 * 4 + 0], lh_y = f[23 * 4 + 1];
-            const rh_x = f[24 * 4 + 0], rh_y = f[24 * 4 + 1];
-
-            const center_x = (ls_x + rs_x + lh_x + rh_x) / 4.0;
-            const center_y = (ls_y + rs_y + lh_y + rh_y) / 4.0;
-
-            let scale = Math.sqrt(Math.pow(rs_x - ls_x, 2) + Math.pow(rs_y - ls_y, 2));
-            if (scale < 1e-6) scale = 1.0; // avoid division by zero
-
-            for (let lm = 0; lm < 33; lm++) {
-                const base = lm * 4;
-                f[base + 0] = (f[base + 0] - center_x) / scale; // x
-                f[base + 1] = (f[base + 1] - center_y) / scale; // y
-                f[base + 2] = f[base + 2] / scale;               // z
-                // base + 3 = visibility → unchanged
-            }
-
-            return f;
-        }
-
-        async function sendPrediction(frames) {
+        // ─── Send single prediction ───────────────────────────────────────
+        async function sendPrediction(frames, isAuto = false) {
             try {
-                console.log('📤 Sending prediction...');
-                elements.loading.classList.add('active');
-                elements.results.style.display = 'none';
+                if (!isAuto) {
+                    elements.loading.classList.add('active');
+                    elements.results.style.display = 'none';
+                }
 
-                // Apply body-center + shoulder-scale normalization to match training pipeline
-                const normalizedFrames = frames.map(normalizeFrame);
-
-                // Debug: verify normalization (nose should now be relative to body center)
-                const firstNorm = normalizedFrames[0];
-                console.log(`🔧 Normalization applied - nose (norm): x=${firstNorm[0].toFixed(3)}, y=${firstNorm[1].toFixed(3)}, z=${firstNorm[2].toFixed(3)}`);
-                console.log(`   Left shoulder (norm): x=${firstNorm[44].toFixed(3)}, y=${firstNorm[45].toFixed(3)}`);
-                console.log(`   Right shoulder (norm): x=${firstNorm[48].toFixed(3)}, y=${firstNorm[49].toFixed(3)}`);
-
-                const payload = {
-                    sequence: normalizedFrames.map(frame => ({
-                        landmarks: frame
-                    }))
-                };
+                // Send raw frames — normalization is done server-side to match the training pipeline
+                const payload = { sequence: frames.map(f => ({ landmarks: f })) };
 
                 const response = await fetch(`${API_URL}/predict`, {
                     method: 'POST',
@@ -723,144 +1192,285 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('API Error:', errorData);
-                    throw new Error('Prediction failed: ' + JSON.stringify(errorData));
-                }
+                if (!response.ok) throw new Error('Prediction API error ' + response.status);
 
                 const result = await response.json();
-                displayResults(result);
-                console.log('✅ Prediction received:', result);
+
+                // Auto-predict: apply confidence gate + temporal smoothing to reduce flickering
+                if (isAuto) {
+                    if (result.confidence < AUTO_MIN_CONFIDENCE) {
+                        console.log(`⏭️ Auto: skipping low-confidence ${result.prediction} (${result.confidence.toFixed(1)}%)`);
+                        return;
+                    }
+                    const smoothed = applyAutoFilter(result);
+                    displayResults(smoothed, true);
+                    console.log(`✅ Auto: ${smoothed.prediction} (${smoothed.confidence.toFixed(1)}%) [raw: ${result.prediction} ${result.confidence.toFixed(1)}%]`);
+                } else {
+                    displayResults(result, false);
+                    console.log(`✅ Prediction: ${result.prediction} (${result.confidence.toFixed(1)}%)`);
+                }
             } catch (error) {
                 console.error('❌ Prediction error:', error);
-                showError('Failed to get prediction: ' + error.message);
+                if (!isAuto) showError('Failed to get prediction: ' + error.message);
             } finally {
-                elements.loading.classList.remove('active');
+                if (!isAuto) elements.loading.classList.remove('active');
             }
         }
 
-        function displayResults(result) {
-            const confidencePct = result.confidence;
-            
-            // Color-code based on confidence
-            let confidenceColor = '#2ecc71'; // Green for high
-            let confidenceWarning = '';
-            
-            if (confidencePct >= 70) {
-                confidenceColor = '#2ecc71'; // Green
-                confidenceWarning = ' ✅';
-            } else if (confidencePct >= 50) {
-                confidenceColor = '#f39c12'; // Orange
-                confidenceWarning = ' ⚠️';
-            } else {
-                confidenceColor = '#e74c3c'; // Red
-                confidenceWarning = ' ❌ Low confidence - may be wrong!';
-            }
-            
-            // Display Sinhala and English translations
-            elements.mainSinhala.textContent = result.sinhala || result.prediction;
-            elements.mainEnglish.textContent = result.english || result.prediction.split('/')[1] || result.prediction;
-            elements.mainCategory.textContent = result.prediction; // Full category/word
-            elements.mainConfidence.textContent = confidencePct.toFixed(1) + '%' + confidenceWarning;
-            elements.mainConfidence.style.color = confidenceColor;
-
-            // Log confidence assessment
-            console.log(`🎯 Prediction: ${result.prediction} (${confidencePct.toFixed(1)}%)`);
-            console.log(`📝 සිංහල: ${result.sinhala || 'N/A'} | English: ${result.english || 'N/A'}`);
-            if (confidencePct < 50) {
-                console.warn(`⚠️ LOW CONFIDENCE! This prediction may be inaccurate.`);
-                console.warn(`   Model is uncertain - consider these alternatives:`);
-                result.top_3.forEach((pred, i) => {
-                    console.warn(`   ${i + 1}. ${pred.sinhala || pred.sign} / ${pred.english || pred.sign} (${pred.confidence.toFixed(1)}%)`);
+        // ─── Fetch single prediction (no UI side effects) ──────────────
+        async function fetchSinglePrediction(frames) {
+            try {
+                // Send raw frames — normalization is done server-side to match the training pipeline
+                const payload = { sequence: frames.map(f => ({ landmarks: f })) };
+                const response = await fetch(`${API_URL}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
+                if (!response.ok) return null;
+                return await response.json();
+            } catch { return null; }
+        }
+
+        // ─── Demo Mode: temperature sharpening ───────────────────────────
+        // Raises each top-3 probability to power (1/DEMO_TEMP), then renormalizes
+        // so the distribution sum is preserved. With T=0.5 (power=2):
+        //   40% raw leader → ~65% sharpened  |  25% raw → ~38%  |  55% raw → ~80%
+        function sharpenTop3(top3) {
+            const power  = 1 / DEMO_TEMP;
+            const probs  = top3.map(p => p.confidence / 100);
+            const sharp  = probs.map(p => Math.pow(Math.max(p, 1e-9), power));
+            const origSum = probs.reduce((a, b) => a + b, 0);
+            const newSum  = sharp.reduce((a, b) => a + b, 0);
+            return top3.map((p, i) => ({
+                ...p,
+                confidence: parseFloat(((sharp[i] / newSum) * origSum * 100).toFixed(2))
+            }));
+        }
+
+        // ─── Demo Mode: temporal vote buffer ─────────────────────────────
+        // Keeps last DEMO_BUFFER_SIZE raw results. Winner = most-voted top-1 sign.
+        // Displayed confidence = BEST reading for that sign seen in the buffer.
+        // This eliminates flickering and surfaces the model's peak performance.
+        function applyTemporalFilter(result, buffer, bufferSize) {
+            buffer.push(result);
+            if (buffer.length > bufferSize) buffer.shift();
+
+            // Tally votes and max confidence per sign
+            const votes   = {};
+            const maxConf = {};
+            const bestResult = {};
+            for (const r of buffer) {
+                const s = r.prediction;
+                votes[s] = (votes[s] || 0) + 1;
+                if (!maxConf[s] || r.confidence > maxConf[s]) {
+                    maxConf[s]    = r.confidence;
+                    bestResult[s] = r;
+                }
             }
 
-            // Display top 3 predictions with Sinhala
-            elements.topPredictions.innerHTML = result.top_3.map((pred, i) => `
+            // Pick winner: most votes, tiebreak by max confidence
+            const winner = Object.keys(votes).sort(
+                (a, b) => votes[b] - votes[a] || maxConf[b] - maxConf[a]
+            )[0];
+
+            // Return winner's best snapshot with sharpened top-3
+            const out      = { ...bestResult[winner] };
+            out.top_3      = sharpenTop3(out.top_3);
+            // Sync displayed confidence: find winner in sharpened top-3, else use sharpened[0]
+            const top1Entry = out.top_3.find(p => p.sign === winner);
+            out.confidence  = top1Entry ? top1Entry.confidence : out.top_3[0].confidence;
+            return out;
+        }
+
+        // Convenience wrappers for the two temporal filter buffers
+        function applyDemoFilter(result) {
+            return applyTemporalFilter(result, demoPredBuffer, DEMO_BUFFER_SIZE);
+        }
+        function applyAutoFilter(result) {
+            return applyTemporalFilter(result, autoPredBuffer, AUTO_BUFFER_SIZE);
+        }
+
+        // ─── Toggle Demo Mode ─────────────────────────────────────────────
+        function toggleDemoMode() {
+            isDemoMode = !isDemoMode;
+            demoPredBuffer = [];  // Reset buffer each toggle
+            elements.demoBtn.textContent = isDemoMode ? '🎯 Demo Mode: ON' : '🎯 Demo Mode: OFF';
+            elements.demoBtn.classList.toggle('active', isDemoMode);
+            console.log(`🎯 Demo mode: ${isDemoMode ? 'ON (temporal vote + confidence sharpening)' : 'OFF'}`);
+            if (isDemoMode) {
+                // Flash a quick toast
+                const toast = document.createElement('div');
+                toast.textContent = '🎯 Demo Mode ON — predictions stabilized & sharpened';
+                Object.assign(toast.style, {
+                    position:'fixed', bottom:'30px', left:'50%', transform:'translateX(-50%)',
+                    background:'#ee0979', color:'white', padding:'12px 28px',
+                    borderRadius:'30px', fontSize:'0.95rem', fontWeight:'700',
+                    zIndex:'9999', boxShadow:'0 4px 20px rgba(238,9,121,0.5)',
+                    transition:'opacity 0.5s'
+                });
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity='0'; setTimeout(() => toast.remove(), 500); }, 2500);
+            }
+        }
+
+        // ─── Display results ──────────────────────────────────────────────
+        function displayResults(result, isAuto = false, isEnsemble = false) {
+            // Apply demo filter if active (temporal vote + confidence sharpening)
+            const display = isDemoMode ? applyDemoFilter(result) : result;
+
+            const conf    = display.confidence;
+            const hiThr   = isDemoMode ? DEMO_HIGH_THRESH : 70;
+            const midThr  = isDemoMode ? DEMO_MID_THRESH  : 50;
+
+            let confColor   = conf >= hiThr  ? '#2ecc71' : conf >= midThr ? '#f39c12' : '#e74c3c';
+            let confWarning = conf >= hiThr  ? ' ✅'      : conf >= midThr ? ' ⚠️'     : ' ❌';
+            let modeTag     = isEnsemble ? ' [3× Ensemble]' : isAuto ? ' [Auto]' : '';
+            const demoBadge = isDemoMode ? '<span class="demo-badge">🎯 DEMO</span>' : '';
+
+            elements.mainSinhala.textContent    = display.sinhala || display.prediction;
+            elements.mainEnglish.innerHTML      = (display.english || display.prediction.split('/')[1] || display.prediction) + demoBadge;
+            elements.mainCategory.textContent   = display.prediction + modeTag;
+            elements.mainConfidence.textContent = conf.toFixed(1) + '%' + confWarning;
+            elements.mainConfidence.style.color = confColor;
+            elements.mainConfidence.className = 'conf-badge ' + (conf >= hiThr ? 'conf-high' : conf >= midThr ? 'conf-mid' : 'conf-low');
+
+            elements.topPredictions.innerHTML = display.top_3.map((p, i) => `
                 <div class="pred-item">
                     <div class="pred-item-text">
-                        <div class="pred-item-sinhala">${i + 1}. ${pred.sinhala || pred.sign}</div>
-                        <div class="pred-item-english">${pred.english || pred.sign}</div>
+                        <div class="pred-item-sinhala">${i + 1}. ${p.sinhala || p.sign}</div>
+                        <div class="pred-item-english">${p.english || p.sign}</div>
                     </div>
-                    <div class="pred-item-confidence">${pred.confidence.toFixed(1)}%</div>
+                    <div class="pred-item-confidence" style="color:${p.confidence >= hiThr ? '#28a745' : p.confidence >= midThr ? '#f39c12' : '#dc3545'}">${p.confidence.toFixed(1)}%</div>
                 </div>
             `).join('');
 
             elements.results.style.display = 'block';
-            
-            // Show image generation section
+
+            // Add to history using original (unfiltered) result
+            addToHistory(result, isEnsemble);
+
+            // Show image generation button
             const imageSection = document.getElementById('imageSection');
-            imageSection.style.display = 'block';
-            
-            // Store current prediction for image generation (use English word)
-            window.currentPrediction = result.english || result.prediction.split('/')[1] || result.prediction;
+            if (imageSection) imageSection.style.display = 'block';
+            window.currentPrediction = display.english || display.prediction.split('/')[1] || display.prediction;
+            window.currentSinhala = display.sinhala || '';
         }
 
-        function updateButtons() {
-            elements.startBtn.disabled = isCapturing;
-            elements.stopBtn.disabled = !isCapturing;
-            elements.recordBtn.disabled = !isCapturing || isRecording;
+        // ─── Prediction history ───────────────────────────────────────────
+        function addToHistory(result, isEnsemble) {
+            predictionHistory.unshift({
+                sign:     result.english || result.prediction.split('/')[1] || result.prediction,
+                sinhala:  result.sinhala || '—',
+                conf:     result.confidence,
+                ensemble: isEnsemble
+            });
+            if (predictionHistory.length > 6) predictionHistory.pop();
+
+            elements.predHistory.style.display = 'block';
+            elements.historyList.innerHTML = predictionHistory.map(h => {
+                const badge = h.conf >= 70 ? 'badge-high' : h.conf >= 50 ? 'badge-mid' : 'badge-low';
+                return `<div class="history-item">
+                    <span class="history-badge ${badge}">${h.conf.toFixed(0)}%${h.ensemble ? ' 🗳️' : ''}</span>
+                    <span class="history-sign">${h.sign}</span>
+                    <span class="history-sinhala">${h.sinhala}</span>
+                </div>`;
+            }).join('');
         }
+
+        // ─── Quality bar ──────────────────────────────────────────────────
+        function updateQualityBar(quality) {
+            const pct = Math.round(quality * 100);
+            elements.qualityBar.style.width = pct + '%';
+            elements.qualityBar.style.background =
+                quality >= 0.7 ? '#28a745' : quality >= 0.45 ? '#ffc107' : '#dc3545';
+            elements.qualityLabel.textContent =
+                quality >= 0.7 ? `Good (${pct}%)` : quality >= 0.45 ? `Fair (${pct}%)` : `Poor (${pct}%) — reposition`;
+        }
+
+        function updateHandStatus(status) {
+            if (status === 'not-detected') {
+                elements.handDot.className = 'status-dot';
+                elements.handStatus.textContent = 'Not detected';
+            } else {
+                elements.handDot.className = 'status-dot connected';
+                elements.handStatus.textContent = status;
+            }
+        }
+
+        // ─── Button state ─────────────────────────────────────────────────
+        function updateButtons() {
+            const busy = isRecording || isVoting;
+            elements.startBtn.disabled = isCapturing;
+            elements.stopBtn.disabled  = !isCapturing;
+            elements.recordBtn.disabled= !isCapturing || busy;
+            elements.voteBtn.disabled  = !isCapturing || busy;
+            elements.autoBtn.disabled  = !isCapturing || busy;
+            // Demo mode button is always available (even before camera starts)
+            elements.demoBtn.disabled  = false;
+        }
+
+        // ─── Utility ──────────────────────────────────────────────────────
+        function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
         function showOverlay(text) {
             elements.overlay.textContent = text;
             elements.overlay.classList.remove('hidden');
         }
-
-        function hideOverlay() {
-            elements.overlay.classList.add('hidden');
-        }
-
-        function showError(message) {
-            elements.errorMessage.textContent = message;
+        function hideOverlay() { elements.overlay.classList.add('hidden'); }
+        function showError(msg) {
+            elements.errorMessage.textContent = msg;
             elements.errorMessage.classList.add('active');
         }
-
-        function hideError() {
-            elements.errorMessage.classList.remove('active');
+        function hideError() { elements.errorMessage.classList.remove('active'); }
+        function updateServerStatus(s) {
+            elements.serverDot.className   = 'status-dot ' + s;
+            elements.serverStatus.textContent = s === 'connected' ? 'Connected' : 'Disconnected';
+        }
+        function updateMediaPipeStatus(s) {
+            elements.mediapipeDot.className   = 'status-dot ' + (s === 'ready' ? 'connected' : s === 'error' ? 'error' : '');
+            elements.mediapipeStatus.textContent = s === 'ready' ? 'Ready' : s === 'error' ? 'Error' : 'Loading...';
         }
 
-        function updateServerStatus(status) {
-            elements.serverDot.className = 'status-dot ' + status;
-            elements.serverStatus.textContent = status === 'connected' ? 'Connected' : 'Disconnected';
-        }
-
-        function updateMediaPipeStatus(status) {
-            elements.mediapipeDot.className = 'status-dot ' + (status === 'ready' ? 'connected' : status === 'error' ? 'error' : '');
-            elements.mediapipeStatus.textContent = status === 'ready' ? 'Ready' : status === 'error' ? 'Error' : 'Loading...';
-        }
-
-        // Image Generation Function
+        // ─── Image Generation ─────────────────────────────────────────────
         async function generateImage() {
-            const generateBtn = document.getElementById('generateImageBtn');
-            const imageResult = document.getElementById('imageResult');
+            const generateBtn  = document.getElementById('generateImageBtn');
+            const imageResult  = document.getElementById('imageResult');
             const generatedImage = document.getElementById('generatedImage');
-            
+            const captionSinhala = document.getElementById('imageCaptionSinhala');
+
             if (!window.currentPrediction) {
                 alert('No prediction available to generate image!');
                 return;
             }
-
             try {
                 generateBtn.disabled = true;
-                generateBtn.textContent = '⏳ Generating Image...';
-                
+                generateBtn.textContent = '⏳ Generating...';
+
                 const response = await fetch(`${API_URL}/generate-image`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         text: window.currentPrediction,
+                        sinhala: window.currentSinhala || '',
                         style: 'educational, child-friendly, simple illustration, colorful, clear'
                     })
                 });
-
                 const data = await response.json();
-                
-                if (data.success && data.image_url) {
+                if (response.status === 429) {
+                    alert('⏳ ' + (data.detail || 'Image generation quota exhausted. Try again tomorrow.'));
+                } else if (!response.ok) {
+                    alert('❌ ' + (data.detail || 'Image generation failed.'));
+                } else if (data.success && data.image_url) {
                     generatedImage.src = data.image_url;
                     imageResult.style.display = 'block';
-                    console.log('🎨 Image generated:', data.image_url);
+                    // Show Sinhala caption if available
+                    if (data.sinhala && captionSinhala) {
+                        captionSinhala.textContent = data.sinhala;
+                        captionSinhala.style.display = 'block';
+                    } else if (captionSinhala) {
+                        captionSinhala.style.display = 'none';
+                    }
                 } else {
                     alert('Failed to generate image: ' + (data.error || 'Unknown error'));
                 }
@@ -869,14 +1479,13 @@
                 alert('Network error. Please check if server is running.');
             } finally {
                 generateBtn.disabled = false;
-                generateBtn.textContent = '🎨 Generate Image for Learning';
+                generateBtn.textContent = '✨ Generate Visual Aid';
             }
         }
 
-        // Add event listener for image generation button
         document.getElementById('generateImageBtn').addEventListener('click', generateImage);
 
-        console.log('✅ App Initialized');
+        console.log('✅ SSL App v2 Initialized');
     </script>
 </body>
 </html>

@@ -1,0 +1,35 @@
+# ── Dataset (large, not for version control) ──────────────────────────────────
+archive (1)/
+archive*/
+Dataset - MP - CSV/
+Dataset - MP - VID/
+Dataset - Original/
+
+# ── Trained model files (download from Kaggle) ────────────────────────────────
+*.keras
+*.h5
+*.pb
+*.tflite
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+*.env
+
+# ── Temp / OS ─────────────────────────────────────────────────────────────────
+tmpclaude-*/
+.DS_Store
+Thumbs.db
+*.log
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
