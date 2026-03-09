@@ -28,23 +28,23 @@ export default function Login() {
     }
 
     setIsLoading(true);
-    
+
     try {
       const res = await fetch("http://localhost:5000/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      
+
       const data = await res.json();
-      
+
       if (data.success) {
         // Store JWT token
         localStorage.setItem('token', data.token);
-        
+
         // Store user data
         localStorage.setItem('user', JSON.stringify(data.user));
-        
+
         // Always navigate to home page after login
         showVisualFeedback('success', `Welcome ${data.user.name}!`);
 
@@ -99,9 +99,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-300 via-blue-400 to-yellow-300 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-100 to-yellow-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm transform hover:scale-102 transition-transform duration-200">
-        
+
         <div className="text-center mb-8">
           <div className="text-5xl mb-3 animate-bounce">
             👋
@@ -113,11 +113,10 @@ export default function Login() {
         </div>
 
         {feedback.message && (
-          <div className={`mb-4 p-3 rounded-xl text-center font-semibold text-base animate-pulse ${
-            feedback.type === 'success' 
-              ? 'bg-green-100 text-green-800 border-2 border-green-300' 
+          <div className={`mb-4 p-3 rounded-xl text-center font-semibold text-base animate-pulse ${feedback.type === 'success'
+              ? 'bg-green-100 text-green-800 border-2 border-green-300'
               : 'bg-red-100 text-red-800 border-2 border-red-300'
-          }`}>
+            }`}>
             <div className="text-xl mb-1">
               {feedback.type === 'success' ? '✅' : '❌'}
             </div>
@@ -126,7 +125,7 @@ export default function Login() {
         )}
 
         <div className="space-y-4">
-          
+
           <div className="space-y-2">
             <label className="flex items-center text-lg font-semibold text-gray-700">
               <span className="text-2xl mr-2">📧</span>
@@ -181,11 +180,10 @@ export default function Login() {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className={`w-full py-3 px-5 rounded-xl text-lg font-bold text-white transition-all duration-200 transform hover:scale-102 ${
-              isLoading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 shadow'
-            }`}
+            className={`w-full py-3 px-5 rounded-xl text-lg font-bold text-gray-800 transition-all duration-200 transform hover:scale-102 ${isLoading
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-sky-100 to-blue-200 hover:from-sky-200 hover:to-blue-300 border border-sky-300 shadow'
+              }`}
           >
             {isLoading ? (
               <div className="flex items-center justify-center text-sm">
@@ -220,23 +218,23 @@ export default function Login() {
           </button>
         </div>
 
-        <div className="mt-6 p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl border border-sky-100">
+        <div className="mt-6 p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl border border-sky-200">
           <div className="text-center">
             <div className="text-2xl mb-2">💡</div>
-            <p className="text-sm text-sky-800 font-medium">
+            <p className="text-sm text-sky-900 font-bold">
               Smart Learning Path:
             </p>
-            <div className="mt-2 space-y-1 text-xs text-gray-600">
+            <div className="mt-2 space-y-1 text-xs text-gray-700">
               <div className="flex items-center justify-center">
-                <span className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2">1️⃣</span>
+                <span className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center mr-2 text-green-900 font-bold">1️⃣</span>
                 <span>First time? Take a quick quiz</span>
               </div>
               <div className="flex items-center justify-center">
-                <span className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2">2️⃣</span>
+                <span className="w-6 h-6 bg-blue-200 rounded-full flex items-center justify-center mr-2 text-blue-900 font-bold">2️⃣</span>
                 <span>Get personalized level recommendation</span>
               </div>
               <div className="flex items-center justify-center">
-                <span className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center mr-2">3️⃣</span>
+                <span className="w-6 h-6 bg-yellow-200 rounded-full flex items-center justify-center mr-2 text-yellow-900 font-bold">3️⃣</span>
                 <span>Start playing at your own pace!</span>
               </div>
             </div>
@@ -245,8 +243,8 @@ export default function Login() {
 
         <div className="flex justify-center mt-6 space-x-2">
           <div className="w-3 h-3 bg-sky-400 rounded-full animate-pulse"></div>
-          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
         </div>
       </div>
     </div>

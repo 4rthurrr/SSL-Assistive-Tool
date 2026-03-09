@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { 
-  Star, Clock, Trophy, Sparkles, ChevronRight, Play, Award, 
+import {
+  Star, Clock, Trophy, Sparkles, ChevronRight, Play, Award,
   Brain, TrendingUp, BarChart, User, LogOut
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ export default function GameSelection() {
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUserData(parsedUser);
-      
+
       // Show analytics button if user has taken quiz
       if (parsedUser.hasTakenQuiz) {
         setShowAnalyticsBtn(true);
@@ -59,11 +59,11 @@ export default function GameSelection() {
   // Get quiz score display
   const getQuizScoreDisplay = () => {
     if (!userData.hasTakenQuiz || !showQuizScore) return null;
-    
+
     const score = userData.quizScore || 0;
     const total = userData.quizTotal || 0;
     const percentage = userData.quizPercentage || 0;
-    
+
     // Grade 1 students have auto-quiz with 0/0
     if (total === 0 && userData.grade === '1') {
       return (
@@ -76,7 +76,7 @@ export default function GameSelection() {
         </div>
       );
     }
-    
+
     return (
       <div className="flex items-center gap-3 px-4 py-2 bg-yellow-50 rounded-lg border border-yellow-200">
         <Trophy className="w-5 h-5 text-yellow-600" />
@@ -145,7 +145,7 @@ export default function GameSelection() {
                   <p className="text-xs text-gray-600">Minutes</p>
                 </div>
               </div>
-              
+
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
@@ -185,7 +185,7 @@ export default function GameSelection() {
       )}
 
       {/* Progress Card - Now Clickable */}
-      <button 
+      <button
         onClick={() => navigate('/ai-analytics')}
         className="w-full bg-white rounded-xl shadow-md p-3 mb-3 text-left hover:shadow-lg transition-shadow duration-200 hover:scale-[1.01] active:scale-[0.98]"
       >
@@ -200,7 +200,7 @@ export default function GameSelection() {
             <ChevronRight className="w-4 h-4" />
           </div>
         </div>
-        
+
         <div className="space-y-2 mb-3">
           <div>
             <div className="flex justify-between text-sm mb-2">
@@ -216,7 +216,7 @@ export default function GameSelection() {
               />
             </div>
           </div>
-          
+
           {/* Additional progress metrics */}
           <div className="grid grid-cols-2 gap-2">
             <div className="text-center bg-sky-50 rounded-lg p-2">
@@ -233,7 +233,7 @@ export default function GameSelection() {
             </div>
           </div>
         </div>
-        
+
         {/* Quick Stats */}
         <div className="flex items-center justify-between text-xs md:text-sm text-gray-500 pt-4 border-t border-gray-100">
           <div className="flex items-center gap-1">
@@ -249,13 +249,13 @@ export default function GameSelection() {
       {/* Game Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <button
-          onClick={() => navigate("/game/puzzle", { 
-            state: { 
+          onClick={() => navigate("/game/puzzle", {
+            state: {
               userId: userData.userId || userData._id,
               recommendedLevel: userData.recommendedLevel,
               userName: userData.name,
               userGrade: userData.grade
-            } 
+            }
           })}
           className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-md p-4 md:p-6 text-white transform hover:scale-102 transition-all duration-200 relative"
         >
@@ -268,10 +268,10 @@ export default function GameSelection() {
             <Sparkles className="w-10 h-10 md:w-12 md:h-12" />
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-1">
+          <h3 className="text-xl md:text-2xl font-bold mb-1 text-black">
             සංඥා විදු ප්‍රහේලිකා
           </h3>
-          <p className="text-blue-100 text-sm md:text-base">
+          <p className="text-black text-sm md:text-base">
             Find hidden words from sign videos
           </p>
         </button>
@@ -318,7 +318,7 @@ export default function GameSelection() {
                 <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
-            
+
             {/* Mini Preview */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
               <div className="bg-white/10 rounded-lg p-2 text-center">

@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# SSL SENTENCE GAME API - FLASK BACKEND (v8 compatible)
+# SSL SENTENCE GAME API - FLASK BACKEND
 # ═══════════════════════════════════════════════════════════════════════════════
 
 import os
@@ -99,6 +99,8 @@ print(f"🖥 Device: {device}")
 # ========================
 # MODEL DEFINITIONS (must match training)
 # ========================
+# RESEARCH CONTRIBUTION
+# Custom hierarchical word-level LSTM with attention and shared embedding head for SSL sentence ordering
 class WordLSTM(nn.Module):
     def __init__(self, input_dim, hidden, n_cls, n_layers=3, dropout=0.3):
         super().__init__()
@@ -170,6 +172,8 @@ class SentenceOrderingModel(nn.Module):
 # ========================
 # SSL GRAMMAR ENGINE (from v8)
 # ========================
+# RESEARCH CONTRIBUTION
+# Custom Sinhala → SSL grammar tagging and SOV reordering engine for educational sentence game
 class SSLGrammar:
     """SSL grammar rules with SOV order (matches v8)"""
     
@@ -228,6 +232,8 @@ class SSLGrammar:
     QUESTION_PARTS = {"ද"}
     QUESTION_WORDS = {"මොකද", "කොහෙද", "කවදාද", "ඇයි"}
 
+    # MANUAL IMPLEMENTATION
+    # Rule-based Sinhala word categorization to drive SSL-specific word ordering
     def tag(self, word):
         """Classify word by grammatical role"""
         if word in self.TIME_WORDS: return "TIME"
@@ -241,6 +247,8 @@ class SSLGrammar:
         if word in self.OBJECTS: return "OBJ"
         return "OBJ"  # Default
 
+    # RESEARCH CONTRIBUTION
+    # Deterministic TIME → SUBJ → ADJ → DAT → OBJ → WH → VERB → STATE → Q ordering for game feedback
     def order(self, words):
         """Return words in correct SSL order: TIME → SUBJ → ADJ → DAT → OBJ → WH → VERB → STATE → Q"""
         buckets = defaultdict(list)
@@ -260,6 +268,8 @@ class SSLGrammar:
         
         return ordered if ordered else words
 
+    # MANUAL IMPLEMENTATION
+    # Rich answer validation with per-position diagnostics, score and motivational emoji feedback
     def validate(self, user_order, correct_order):
         """Validate user's answer against correct order"""
         matched = sum(a == b for a, b in zip(user_order, correct_order))
@@ -289,6 +299,8 @@ class SSLGrammar:
 # ========================
 # LOAD METADATA AND MODELS
 # ========================
+# RESEARCH CONTRIBUTION
+# Robust metadata loader that supports multiple JSON schemas and auto-fallback for classroom demos
 def load_metadata():
     """Load metadata from pickle file"""
     metadata_path = os.path.join(Config.MODEL_DIR, "metadata.pkl")
@@ -470,6 +482,8 @@ grammar = SSLGrammar()
 # ========================
 # DATASET WORD-VIDEO MAPPING
 # ========================
+# RESEARCH CONTRIBUTION
+# Hand-crafted mapping from Sinhala lexical items to structured sign-language video folders
 DATASET_BASE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Dataset - Original")
 
 # Maps each Sinhala game word -> (category_folder, english_word_folder)
@@ -561,6 +575,8 @@ SINHALA_TO_DATASET = {
 }
 
 
+# MANUAL IMPLEMENTATION
+# Look up dataset location and construct stable word-level video URLs used by the frontend player
 def resolve_word_video_url(sinhala_word):
     """Return /api/word-video/<cat>/<word> URL for a sinhala word, or None."""
     entry = SINHALA_TO_DATASET.get(sinhala_word)
@@ -577,6 +593,8 @@ def resolve_word_video_url(sinhala_word):
     return None
 
 
+# RESEARCH CONTRIBUTION
+# On-the-fly generation of text-based sentence videos for consistent gameplay even without pre-rendered media
 def generate_sentence_videos():
     """Generate placeholder videos for sentences if they don't exist"""
     if not os.path.exists(Config.VIDEO_OUT):
@@ -628,6 +646,8 @@ def generate_sentence_videos():
 
 
 # Generate videos in background
+# CUSTOM OPTIMIZATION
+# Run sentence video generation on a background thread to avoid blocking API startup
 def background_video_generation():
     time.sleep(2)  # Wait for server to start
     generate_sentence_videos()
@@ -639,6 +659,8 @@ video_thread.start()
 # ========================
 # GAME SESSION MANAGER
 # ========================
+# RESEARCH CONTRIBUTION
+# Server-side per-user game session model with attempts, scores, and star rating for serious-game tracking
 class GameSession:
     """Manages a player's game session"""
     
@@ -713,6 +735,8 @@ class GameEngine:
             self.sessions[user_id] = GameSession(user_id)
         return self.sessions[user_id]
     
+    # MANUAL IMPLEMENTATION
+    # Derive level metadata and availability from sentence corpus for dynamic frontend map
     def get_available_levels(self):
         """Return metadata for all levels"""
         levels = {}
@@ -728,6 +752,8 @@ class GameEngine:
             }
         return levels
     
+    # RESEARCH CONTRIBUTION
+    # Custom question generation: sentence sampling, distractors, and word-level video linking
     def get_level_questions(self, level_id, count=Config.QUESTIONS_PER_LEVEL):
         """Get random questions for a level"""
         if level_id not in self.sentence_data:
@@ -783,6 +809,8 @@ class GameEngine:
         
         return questions
     
+    # MANUAL IMPLEMENTATION
+    # Initialize a new level session with reset attempts and progress for a given learner
     def start_level(self, user_id, level_id):
         """Start a level for a user"""
         session = self.get_or_create_session(user_id)
@@ -816,6 +844,8 @@ class GameEngine:
             "first_question": first_question
         }
     
+    # MANUAL IMPLEMENTATION
+    # Track and expose current question along with live session metrics to the frontend
     def get_current_question(self, user_id):
         """Get current question for user"""
         session = self.get_or_create_session(user_id)
@@ -842,6 +872,8 @@ class GameEngine:
             "level_complete": session.level_complete
         }
     
+    # RESEARCH CONTRIBUTION
+    # Core game rule engine: checks ordering, updates score, manages attempts, and computes stars
     def check_answer(self, user_id, user_order):
         """Check user's answer and update session"""
         session = self.get_or_create_session(user_id)
@@ -905,6 +937,8 @@ class GameEngine:
                 "total_questions": len(session.questions)
             }
     
+    # RESEARCH CONTRIBUTION
+    # Progressive hint strategy that reveals structure over multiple attempts to support learning
     def get_hint(self, user_id):
         """Get hint for current question"""
         session = self.get_or_create_session(user_id)
@@ -951,6 +985,8 @@ class GameEngine:
                 "correct_order": correct_order
             }
     
+    # MANUAL IMPLEMENTATION
+    # Aggregate session analytics for UI dashboards and research logging
     def get_session_info(self, user_id):
         """Get current session info"""
         session = self.get_or_create_session(user_id)
@@ -970,6 +1006,8 @@ class GameEngine:
             "stars_earned": session.stars_earned
         }
     
+    # CUSTOM OPTIMIZATION
+    # In-memory session garbage collection to prevent unbounded growth on long-running servers
     def cleanup_old_sessions(self, max_age_hours=24):
         """Remove sessions older than max_age_hours"""
         now = datetime.now()
@@ -1176,6 +1214,8 @@ def get_leaderboard():
 
 
 @app.route('/api/word-video/<cat>/<word>/<filename>', methods=['GET'])
+# RESEARCH CONTRIBUTION
+# Custom partial-content video streaming for per-word SSL clips used in the sentence game
 def serve_word_video(cat, word, filename):
     """Serve a single word sign-language video from Dataset - Original."""
     from flask import Response
@@ -1221,6 +1261,8 @@ def serve_word_video(cat, word, filename):
 
 
 @app.route('/api/video/<level_id>/<int:sent_idx>', methods=['GET'])
+# CUSTOM OPTIMIZATION
+# Range-enabled streaming of generated sentence videos for smooth playback on low-bandwidth devices
 def serve_sentence_video_by_index(level_id, sent_idx):
     """Serve sentence video by level id and sentence index with range request support"""
     try:
@@ -1265,6 +1307,8 @@ def serve_sentence_video_by_index(level_id, sent_idx):
         return jsonify({'error': 'Video serving error'}), 500
 
 @app.route('/api/sentence-video/<path:filename>', methods=['GET'])
+# MANUAL IMPLEMENTATION
+# Legacy compatibility endpoint preserved for older clients while new index-based API is used by the game
 def serve_sentence_video(filename):
     """Legacy: serve sentence video file by filename (kept for compatibility)"""
     try:
@@ -1328,6 +1372,8 @@ def cleanup_sessions():
 # ========================
 # PERIODIC CLEANUP
 # ========================
+# CUSTOM OPTIMIZATION
+# Background thread that periodically purges inactive game sessions from memory
 def periodic_cleanup():
     """Run cleanup every hour"""
     while True:

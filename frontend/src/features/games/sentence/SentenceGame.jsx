@@ -24,6 +24,8 @@ const SignLanguageGame = () => {
   const autoAdvanceTimer = useRef(null);
   const wordVideoRef = useRef(null);
 
+  // RESEARCH CONTRIBUTION
+  // Word-by-word sign video controller that synchronizes Dataset - Original clips with grammar questions
   // ── Word-video sequential player state ────────────────────
   const [activeWordVideoIdx, setActiveWordVideoIdx] = useState(0);
   const [wordVideoPlaying, setWordVideoPlaying] = useState(false);
@@ -116,6 +118,8 @@ const SignLanguageGame = () => {
     setActiveWordVideoIdx(next);
   };
 
+  // RESEARCH CONTRIBUTION
+  // Bilingual (EN/SI) copy tuned for sign-language pedagogy and research user studies
   const translations = {
     en: {
       title: 'Sign Language Adventure',
@@ -205,6 +209,8 @@ const SignLanguageGame = () => {
 
   const t = translations[language];
 
+  // MANUAL IMPLEMENTATION
+  // Pedagogical metadata describing difficulty, theming, and story for each level
   const levelConfig = {
     level_1: {
       name: language === 'en' ? 'Beginner' : 'මූලික',
@@ -259,6 +265,8 @@ const SignLanguageGame = () => {
     }
   };
 
+  // RESEARCH CONTRIBUTION
+  // Resilient level-start flow with /current-question fallback to handle backend edge cases
   // ── FIXED startLevel: if API fails or returns no question,
   //    fetch /current-question as a fallback before giving up ──────────
   const startLevel = async (level) => {
@@ -336,6 +344,8 @@ const SignLanguageGame = () => {
     }
   };
 
+  // MANUAL IMPLEMENTATION
+  // Advance game state while preserving score, stars, and completion flags from backend responses
   const loadNextQuestion = async () => {
     if (autoAdvanceTimer.current) {
       clearTimeout(autoAdvanceTimer.current);
@@ -382,6 +392,8 @@ const SignLanguageGame = () => {
     }
   };
 
+  // RESEARCH CONTRIBUTION
+  // Tap-based word selection UX that models drag-and-drop ordering for touchscreen learners
   const handleWordClick = (word, idx) => {
     if (!showResult && !gameOver && !showLevelComplete && !loading) {
       setSelectedWords(prev => [...prev, word]);
@@ -402,6 +414,8 @@ const SignLanguageGame = () => {
     }
   };
 
+  // RESEARCH CONTRIBUTION
+  // Tight integration with Flask game API: submits ordering, animates feedback, and controls auto-advance
   const checkAnswer = async () => {
     if (!currentQuestion || selectedWords.length !== currentQuestion.word_count) return;
 
@@ -456,6 +470,8 @@ const SignLanguageGame = () => {
     }
   };
 
+  // RESEARCH CONTRIBUTION
+  // Frontend hook into progressive hint system, including temporal UX (auto-hide) and haptics
   const getHint = async () => {
     if (showResult || gameOver || showLevelComplete || loading) return;
     try {
@@ -507,6 +523,8 @@ const SignLanguageGame = () => {
 
   const toggleLanguage = () => setLanguage(l => l === 'en' ? 'si' : 'en');
 
+  // CUSTOM OPTIMIZATION
+  // Lightweight haptic feedback abstraction to reinforce success, errors, and hints without audio
   const vibrate = (type = 'default') => {
     if (!soundOn || !navigator.vibrate) return;
     switch (type) {
@@ -688,6 +706,8 @@ const SignLanguageGame = () => {
   }
 
   // ── Level Map Screen ────────────────────────────────────────────────
+  // RESEARCH CONTRIBUTION
+  // Level map dashboard summarizing stars, total points, and visual difficulty progression
   if (gameState === 'map') {
     const levelOrder = ['level_1', 'level_2', 'level_3'];
     return (
@@ -965,6 +985,8 @@ const SignLanguageGame = () => {
           </div>
         </div>
 
+        {/* RESEARCH CONTRIBUTION
+            Answer Zone: structured word ordering workspace that mirrors SSL sentence structure */}
         {/* Answer Zone */}
         <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-8 mb-6 border-8 border-blue-200">
           <h3 className="text-lg sm:text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
@@ -990,6 +1012,8 @@ const SignLanguageGame = () => {
           </div>
         </div>
 
+        {/* RESEARCH CONTRIBUTION
+            Word Bank: adaptive pool of shuffled tokens including distractors for higher cognitive load */}
         {/* Word Bank */}
         <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-8 mb-6 border-8 border-blue-200">
           <h3 className="text-lg sm:text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">

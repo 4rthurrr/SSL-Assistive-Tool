@@ -9,13 +9,13 @@ const GameUserForm = () => {
   const location = useLocation();
   const [step, setStep] = useState('loading');
   const [userData, setUserData] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     user_type: 'student',
     grade: '2'
   });
-  
+
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState([]);
@@ -34,16 +34,16 @@ const GameUserForm = () => {
   // Helper function to make authenticated API calls
   const authenticatedFetch = async (url, options = {}) => {
     const token = getAuthToken();
-    
+
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     return fetch(url, {
       ...options,
       headers
@@ -84,14 +84,14 @@ const GameUserForm = () => {
     if (storedUser && storedUser._id) {
       try {
         const response = await authenticatedFetch(`${API_URL}/user/quiz-status`);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log("Quiz status response:", data);
-        
+
         if (data.success) {
           if (data.hasTakenQuiz || storedUser.hasTakenQuiz) {
             const gameUser = {
@@ -100,12 +100,12 @@ const GameUserForm = () => {
               recommendedLevel: data.recommendedLevel || storedUser.recommendedLevel || 'basic',
               name: data.name || storedUser.name
             };
-            
+
             setUserData(gameUser);
             localStorage.setItem('gameUser', JSON.stringify(gameUser));
             localStorage.setItem('user', JSON.stringify(gameUser));
             if (gameUser._id) localStorage.setItem('gameUserId', gameUser._id);
-            
+
             setStep('goToGames');
             setTimeout(() => {
               navigate('/gameselection');
@@ -120,7 +120,7 @@ const GameUserForm = () => {
                 grade: storedUser.grade || '2'
               }));
             }
-            
+
             setUserData(storedUser);
             setStep('quizIntro');
             return;
@@ -139,7 +139,7 @@ const GameUserForm = () => {
         }
       } catch (error) {
         console.error('Error checking user status:', error);
-        
+
         if (storedUser.hasTakenQuiz) {
           console.log("Using localStorage data due to API error");
           setUserData(storedUser);
@@ -188,15 +188,15 @@ const GameUserForm = () => {
           hasTakenQuiz: data.user.hasTakenQuiz || false,
           recommendedLevel: data.user.recommendedLevel || 'basic'
         };
-        
+
         setUserData(user);
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('gameUser', JSON.stringify(user));
         if (data.user._id) localStorage.setItem('gameUserId', data.user._id);
-        
+
         if (formData.grade === '1') {
           console.log('Grade 1 student detected - skipping quiz, setting basic level');
-          
+
           const saveResponse = await authenticatedFetch(`${API_URL}/quiz/submit`, {
             method: 'POST',
             body: JSON.stringify({
@@ -207,19 +207,19 @@ const GameUserForm = () => {
               quizPercentage: 0
             })
           });
-          
+
           const saveData = await saveResponse.json();
           console.log("Grade 1 auto-quiz response:", saveData);
-          
+
           const updatedUser = {
             ...user,
             hasTakenQuiz: true,
             recommendedLevel: 'basic'
           };
-          
+
           localStorage.setItem('user', JSON.stringify(updatedUser));
           localStorage.setItem('gameUser', JSON.stringify(updatedUser));
-          
+
           setTimeout(() => {
             navigate('/gameselection');
           }, 800);
@@ -246,13 +246,13 @@ const GameUserForm = () => {
     try {
       setLoading(true);
       console.log(`Loading quiz for grade: ${formData.grade}`);
-      
+
       // Use authenticatedFetch to include JWT token
       const response = await authenticatedFetch(`${API_URL}/questions/quiz/${formData.grade}`);
       const data = await response.json();
-      
+
       console.log("Quiz data response:", data);
-      
+
       if (data.success && data.questions && data.questions.length > 0) {
         setQuestions(data.questions);
         setCurrentQuestion(0);
@@ -275,10 +275,10 @@ const GameUserForm = () => {
       id: currentQ.id,
       selectedAnswer: selectedAnswer
     };
-    
+
     const newAnswers = [...quizAnswers, newAnswer];
     setQuizAnswers(newAnswers);
-    
+
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -289,22 +289,22 @@ const GameUserForm = () => {
   const submitQuiz = async (answers) => {
     try {
       setLoading(true);
-      
+
       const validateResponse = await authenticatedFetch(`${API_URL}/questions/validate`, {
         method: 'POST',
         body: JSON.stringify({ answers })
       });
-      
+
       const validateData = await validateResponse.json();
-      
+
       if (validateData.success) {
         const { correct, total, percentage } = validateData.summary;
-        
+
         let recommendedLevel = 'basic';
         let reason = '';
-        
+
         const grade = parseInt(formData.grade);
-        
+
         if (grade === 2 || grade === 3) {
           recommendedLevel = percentage === 100 ? 'easy' : 'basic';
           reason = percentage === 100 ? 'Perfect score! Easy level' : 'Starting with basics';
@@ -320,7 +320,7 @@ const GameUserForm = () => {
             reason = 'Building foundation with basic level';
           }
         }
-        
+
         const saveResponse = await authenticatedFetch(`${API_URL}/quiz/submit`, {
           method: 'POST',
           body: JSON.stringify({
@@ -331,10 +331,10 @@ const GameUserForm = () => {
             quizPercentage: percentage
           })
         });
-        
+
         const saveData = await saveResponse.json();
         console.log("Quiz save response:", saveData);
-        
+
         const updatedUser = {
           ...userData,
           hasTakenQuiz: true,
@@ -343,12 +343,12 @@ const GameUserForm = () => {
           quizTotal: total,
           quizPercentage: percentage
         };
-        
+
         localStorage.setItem('user', JSON.stringify(updatedUser));
         localStorage.setItem('gameUser', JSON.stringify(updatedUser));
         if (updatedUser._id) localStorage.setItem('gameUserId', updatedUser._id);
         setUserData(updatedUser);
-        
+
         setQuizResult({
           score: correct,
           total: total,
@@ -359,7 +359,7 @@ const GameUserForm = () => {
           },
           detailedResults: validateData.results
         });
-        
+
         setStep('recommendation');
       }
     } catch (error) {
@@ -423,10 +423,10 @@ const GameUserForm = () => {
 
   if (step === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-xl text-white">Checking your status...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-800">Checking your status...</p>
         </div>
       </div>
     );
@@ -434,12 +434,12 @@ const GameUserForm = () => {
 
   if (step === 'goToGames') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
           <Gamepad2 className="w-20 h-20 text-green-600 mx-auto mb-4 animate-bounce" />
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Welcome back, {userData?.name}!</h2>
           <p className="text-xl text-gray-600 mb-6">Redirecting you to games...</p>
-          
+
           <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-6">
             <Award className="w-12 h-12 text-green-600 mx-auto mb-3" />
             <h3 className="text-xl font-bold text-gray-800 mb-2">Your Current Level</h3>
@@ -451,11 +451,11 @@ const GameUserForm = () => {
 
           <button
             onClick={goDirectToGames}
-            className="bg-gradient-to-r from-green-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition mb-4"
+            className="bg-gradient-to-r from-green-100 to-blue-200 text-gray-800 border border-green-300 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition mb-4"
           >
             Go to Games Now 🎮
           </button>
-          
+
           <button
             onClick={() => {
               localStorage.removeItem('user');
@@ -468,7 +468,7 @@ const GameUserForm = () => {
           >
             Start Over (Clear My Progress)
           </button>
-          
+
           <p className="text-sm text-gray-500 mt-4">
             You will be automatically redirected in a few seconds...
           </p>
@@ -479,21 +479,21 @@ const GameUserForm = () => {
 
   if (step === 'register') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
           <div className="text-center mb-6">
             <User className="w-16 h-16 text-sky-600 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-gray-800">සින්හල සංඥා භාෂා</h1>
+            <h1 className="text-3xl font-bold text-gray-800">සිංහල සංඥා භාෂා</h1>
             <p className="text-gray-600 mt-2">Sinhala Sign Language Learning</p>
           </div>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">නම / Name</label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your name"
               />
@@ -503,7 +503,7 @@ const GameUserForm = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">පරිශීලක වර්ගය / User Type</label>
               <select
                 value={formData.user_type}
-                onChange={(e) => setFormData({...formData, user_type: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, user_type: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="student">Student / ශිෂ්‍යයා</option>
@@ -516,7 +516,7 @@ const GameUserForm = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">ශ්‍රේණිය / Grade</label>
                 <select
                   value={formData.grade}
-                  onChange={(e) => setFormData({...formData, grade: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="1">Grade 1</option>
@@ -531,7 +531,7 @@ const GameUserForm = () => {
             <button
               onClick={handleRegister}
               disabled={!formData.name || loading}
-              className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-sky-100 to-blue-200 text-gray-800 border border-sky-300 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ආරම්භ කරන්න / Start
             </button>
@@ -543,13 +543,13 @@ const GameUserForm = () => {
 
   if (step === 'quizIntro') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
           <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
-          
+
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Welcome, {formData.name}!</h2>
           <p className="text-gray-600 mb-6">Let's start with a short quiz to determine your appropriate learning level.</p>
-          
+
           <div className="bg-blue-50 rounded-xl p-4 mb-6">
             <p className="font-medium text-blue-800">📝 You'll answer 3 questions</p>
             <p className="text-sm text-blue-600">Based on your score, we'll recommend the best starting level for you</p>
@@ -557,7 +557,7 @@ const GameUserForm = () => {
 
           <button
             onClick={startQuiz}
-            className="w-full bg-gradient-to-r from-green-500 to-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition"
+            className="w-full bg-gradient-to-r from-green-100 to-blue-200 text-gray-800 border border-green-300 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition"
           >
             Start Quiz 🚀
           </button>
@@ -574,12 +574,12 @@ const GameUserForm = () => {
         </div>
       );
     }
-    
+
     const question = questions[currentQuestion];
     const videoKey = question.visualType === 'video' ? getVideoKey(question.videoUrl) : null;
-    
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
@@ -593,11 +593,10 @@ const GameUserForm = () => {
                   {questions.map((_, i) => (
                     <div
                       key={i}
-                      className={`w-3 h-3 rounded-full ${
-                        i < currentQuestion ? 'bg-green-500' :
-                        i === currentQuestion ? 'bg-blue-500' :
-                        'bg-gray-300'
-                      }`}
+                      className={`w-3 h-3 rounded-full ${i < currentQuestion ? 'bg-green-500' :
+                          i === currentQuestion ? 'bg-blue-500' :
+                            'bg-gray-300'
+                        }`}
                     />
                   ))}
                 </div>
@@ -606,8 +605,8 @@ const GameUserForm = () => {
 
             {question.visualType === 'image' && question.imageUrl && (
               <div className="mb-4 flex justify-center">
-                <img 
-                  src={question.imageUrl} 
+                <img
+                  src={question.imageUrl}
                   alt={question.imageDescription}
                   className="max-w-full h-48 object-contain rounded-lg shadow-md"
                   onError={(e) => {
@@ -617,11 +616,11 @@ const GameUserForm = () => {
                 />
               </div>
             )}
-            
+
             {question.visualType === 'video' && videoKey && (
               <div className="mb-4">
                 <div className="flex justify-center">
-                  <video 
+                  <video
                     key={videoKey}
                     src={`http://localhost:5001/api/videos/${videoKey}`}
                     controls
@@ -663,14 +662,14 @@ const GameUserForm = () => {
 
   if (step === 'recommendation' && quizResult) {
     const { score, total, percentage, recommendation } = quizResult;
-    
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center">
           <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
-          
+
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Quiz Complete!</h2>
-          
+
           <div className="bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl p-6 mb-6">
             <div className="text-5xl font-bold text-blue-600 mb-2">{score}/{total}</div>
             <div className="text-xl text-gray-700">{percentage.toFixed(0)}% Correct</div>
@@ -687,7 +686,7 @@ const GameUserForm = () => {
 
           <button
             onClick={goToGameSelection}
-            className="bg-gradient-to-r from-green-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition"
+            className="bg-gradient-to-r from-green-100 to-blue-200 text-gray-800 border border-green-300 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition"
           >
             Continue to Games 🎮
           </button>

@@ -1,6 +1,6 @@
 import mediapipe as mp
 import numpy as np
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 import cv2
 import os
 import math
