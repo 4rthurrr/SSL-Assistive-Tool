@@ -26,15 +26,21 @@ from video_manager import find_video_path
 
 # moviepy import (supports both 1.x and 2.x API)
 try:
+    # moviepy 2.x
     from moviepy import VideoFileClip, concatenate_videoclips
     MOVIEPY_AVAILABLE = True
 except ImportError:
-    MOVIEPY_AVAILABLE = False
-    print(
-        "Warning: moviepy is not installed or misconfigured. "
-        "/translate endpoint will be disabled. "
-        "Install it with: python -m pip install moviepy"
-    )
+    try:
+        # moviepy 1.x
+        from moviepy.editor import VideoFileClip, concatenate_videoclips
+        MOVIEPY_AVAILABLE = True
+    except ImportError:
+        MOVIEPY_AVAILABLE = False
+        print(
+            "Warning: moviepy is not installed or misconfigured. "
+            "/translate endpoint will be disabled. "
+            "Install it with: python -m pip install moviepy"
+        )
 
 import uuid
 import shutil
