@@ -9,7 +9,6 @@ import SinhalaWordPuzzle from "./features/games/puzzle/SinhalaWordPuzzle";
 import AIAnalyticsDashboard from './features/analytics/components/AIAnalyticsDashboard';
 import SentenceGame from './features/games/sentence/SentenceGame';
 import SSLTranslator from './features/translator/components/SSLTranslator';
-import LipReading from './features/translator/components/LipReading';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import "./shared/styles/App.css";
 
@@ -68,7 +67,7 @@ function Navbar() {
       <div style={{ display: "flex", gap: "10px", alignItems: "center", zIndex: 1 }}>
         <NavLink to="/" label="🏠 Home" />
         <NavLink to="/ssl-translator" label="✨ Translator" locked={!isLoggedIn} />
-        <NavLink to="/lip-reading" label="👄 Lip Reading" locked={!isLoggedIn} />
+        <NavLink to="https://www.youtube.com/" label="👄 Lip Reading" external />
         <NavLink to={user?.hasTakenQuiz ? "/gameselection" : "/game-register"} label="🎮 Games" locked={!isLoggedIn} />
 
         {isLoggedIn ? (
@@ -101,7 +100,7 @@ function Navbar() {
   );
 }
 
-function NavLink({ to, label, locked, highlight }) {
+function NavLink({ to, label, locked, highlight, external }) {
   if (locked) {
     return (
       <Link to="/login" title="Login required" style={{
@@ -114,6 +113,22 @@ function NavLink({ to, label, locked, highlight }) {
       </Link>
     );
   }
+
+  if (external) {
+    return (
+      <a href={to} target="_blank" rel="noopener noreferrer" style={{
+        textDecoration: "none", fontWeight: 700,
+        fontSize: ".92rem", padding: "6px 16px", borderRadius: "20px",
+        background: highlight ? "#FFD93D" : "rgba(255,255,255,.50)",
+        color: highlight ? "#111827" : "#111827",
+        border: "2px solid rgba(255,255,255,.70)",
+        transition: "background .2s, transform .15s"
+      }}>
+        {label}
+      </a>
+    );
+  }
+
   return (
     <Link to={to} style={{
       textDecoration: "none", fontWeight: 700,
@@ -142,9 +157,6 @@ function App() {
           {/* ── Protected routes ── */}
           <Route path="/ssl-translator" element={
             <ProtectedRoute><SSLTranslator /></ProtectedRoute>
-          } />
-          <Route path="/lip-reading" element={
-            <ProtectedRoute><LipReading /></ProtectedRoute>
           } />
           <Route path="/game-register" element={
             <ProtectedRoute><GameUserForm /></ProtectedRoute>
@@ -197,15 +209,17 @@ const HomePage = () => {
       shadow: "rgba(76,175,80,.25)",
     },
     {
-      to: "/lip-reading",
+      to: "https://www.youtube.com/",
       icon: "👄",
       title: "Lip Reading",
       titleSi: "තොල් කියවීම",
-      desc: "Practice visual speech understanding with guided lip-reading lessons",
-      btnLabel: "Start Practice",
-      color: "#FF7A59",
-      gradient: "linear-gradient(135deg,#FF7A59,#F24E1E)",
-      shadow: "rgba(242,78,30,.28)",
+      desc: "Test navigation flow by opening YouTube Home from this tile",
+      btnLabel: "Open YouTube",
+      color: "#FF6B6B",
+      gradient: "linear-gradient(135deg,#FF6B6B,#E63946)",
+      shadow: "rgba(230,57,70,.25)",
+      public: true,
+      external: true,
     },
     {
       to: "/translate",
@@ -316,8 +330,9 @@ const HomePage = () => {
         justifyContent: "center", zIndex: 1
       }}>
         {protectedCards.map(({ to, icon, title, titleSi, desc, btnLabel,
-          color, gradient, shadow, public: isPublic }) => {
+          color, gradient, shadow, public: isPublic, external }) => {
           const locked = !isLoggedIn && !isPublic;
+          const isExternal = !!external;
           return (
             <div key={to} style={{ position: "relative" }}>
               {locked && (
@@ -338,7 +353,7 @@ const HomePage = () => {
                   </Link>
                 </div>
               )}
-              <Link to={locked ? "/login" : to} style={{
+              <Link to={locked ? "/login" : to} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} style={{
                 background: "#fff", borderRadius: "28px",
                 boxShadow: `0 8px 30px ${shadow}`,
                 border: `3px solid ${color}22`,
