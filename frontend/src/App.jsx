@@ -9,6 +9,7 @@ import SinhalaWordPuzzle from "./features/games/puzzle/SinhalaWordPuzzle";
 import AIAnalyticsDashboard from './features/analytics/components/AIAnalyticsDashboard';
 import SentenceGame from './features/games/sentence/SentenceGame';
 import SSLTranslator from './features/translator/components/SSLTranslator';
+import LipReading from './features/translator/components/LipReading';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import "./shared/styles/App.css";
 
@@ -67,6 +68,7 @@ function Navbar() {
       <div style={{ display: "flex", gap: "10px", alignItems: "center", zIndex: 1 }}>
         <NavLink to="/" label="🏠 Home" />
         <NavLink to="/ssl-translator" label="✨ Translator" locked={!isLoggedIn} />
+        <NavLink to="/lip-reading" label="👄 Lip Reading" locked={!isLoggedIn} />
         <NavLink to={user?.hasTakenQuiz ? "/gameselection" : "/game-register"} label="🎮 Games" locked={!isLoggedIn} />
 
         {isLoggedIn ? (
@@ -141,6 +143,9 @@ function App() {
           <Route path="/ssl-translator" element={
             <ProtectedRoute><SSLTranslator /></ProtectedRoute>
           } />
+          <Route path="/lip-reading" element={
+            <ProtectedRoute><LipReading /></ProtectedRoute>
+          } />
           <Route path="/game-register" element={
             <ProtectedRoute><GameUserForm /></ProtectedRoute>
           } />
@@ -190,6 +195,17 @@ const HomePage = () => {
       color: "#4CAF50",
       gradient: "linear-gradient(135deg,#4CAF50,#388E3C)",
       shadow: "rgba(76,175,80,.25)",
+    },
+    {
+      to: "/lip-reading",
+      icon: "👄",
+      title: "Lip Reading",
+      titleSi: "තොල් කියවීම",
+      desc: "Practice visual speech understanding with guided lip-reading lessons",
+      btnLabel: "Start Practice",
+      color: "#FF7A59",
+      gradient: "linear-gradient(135deg,#FF7A59,#F24E1E)",
+      shadow: "rgba(242,78,30,.28)",
     },
     {
       to: "/translate",
