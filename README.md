@@ -39,6 +39,7 @@ npm install
 npm start
 ```
 
+
 You should see health and API URLs in the terminal after startup.
 
 ### 2. Start the Flask AI service
