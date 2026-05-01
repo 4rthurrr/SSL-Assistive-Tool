@@ -63,7 +63,7 @@ function Navbar() {
         textDecoration: "none", display: "flex", alignItems: "center", gap: "8px",
         textShadow: "1px 2px 5px rgba(255,255,255,.50)", zIndex: 1
       }}>
-        🤟 සංඥා භාෂා
+        🤟 SignBridge
       </Link>
 
       <div style={{ display: "flex", gap: "10px", alignItems: "center", zIndex: 1 }}>

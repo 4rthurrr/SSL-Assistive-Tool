@@ -118,11 +118,7 @@ function App() {
   return (
     <div className="kids-app">
       <header className="kids-header">
-        <div className="header-nav">
-          <Link to="/" className="nav-btn">🏠 Home</Link>
-          <Link to="/game-register" className="nav-btn">🎮 Games</Link>
-        </div>
-        <h1>🦁 Sign Language Buddy 🐘</h1>
+        <h1>🦁 SignBridge </h1>
         <p>සිංහලෙන් කියන්න, අපි Sign කරලා පෙන්වන්නම් 🤟</p>
       </header>
 
