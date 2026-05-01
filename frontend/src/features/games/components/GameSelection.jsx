@@ -246,7 +246,7 @@ export default function GameSelection() {
         </div>
       </button>
 
-      {/* Game Selection */}
+      {/* Game Selection game selection buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <button
           onClick={() => navigate("/game/puzzle", {
@@ -268,10 +268,10 @@ export default function GameSelection() {
             <Sparkles className="w-10 h-10 md:w-12 md:h-12" />
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-1 text-black">
+          <h3 className="text-xl md:text-2xl font-bold mb-1 text-white">
             සංඥා විදු ප්‍රහේලිකා
           </h3>
-          <p className="text-black text-sm md:text-base">
+          <p className="text-white text-sm md:text-base">
             Find hidden words from sign videos
           </p>
         </button>
@@ -287,7 +287,7 @@ export default function GameSelection() {
           <h3 className="text-xl md:text-2xl font-bold mb-1">
             සංඥා වාක්‍ය හුරු ක්‍රීඩා
           </h3>
-          <p className="text-green-100 text-sm md:text-base">
+          <p className="text-white-700 text-sm md:text-base">
             Sign Sentence Familiarity Game
           </p>
         </button>

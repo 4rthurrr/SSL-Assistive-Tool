@@ -155,7 +155,7 @@ class StruggleDetector:
 struggle_detector = StruggleDetector()
 
 # ========================
-# AI HINTS - IMPROVED GEMINI HINT GENERATION
+# AI HINTS - FULLY CORRECTED
 # ========================
 ai_hint_cache = {}
 
@@ -165,13 +165,13 @@ def _anonymize_user(user_id: str) -> str:
     except Exception:
         return 'anon'
 
-def generate_ai_hint(user_id, sinhala_word, english_word, attempt_count, recent_attempts, level='basic'):
-    """Generate a short, clue-style hint using Gemini API"""
-    cache_key = f"{user_id}:{sinhala_word}:{attempt_count}:{level}"
+def generate_ai_hint(user_id, sinhala_word, english_word, attempt_count, recent_attempts, level='basic', language='english'):
+    """Generate a short, clue-style hint using Gemini API in the user's preferred language"""
+    cache_key = f"{user_id}:{sinhala_word}:{attempt_count}:{level}:{language}"
     
     # Check cache first
     if cache_key in ai_hint_cache:
-        print(f"📦 Using cached hint for {sinhala_word}")
+        print(f"📦 Using cached hint for {sinhala_word} in {language}")
         return {
             'cached': True, 
             'hint': ai_hint_cache[cache_key],
@@ -181,29 +181,43 @@ def generate_ai_hint(user_id, sinhala_word, english_word, attempt_count, recent_
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
         print("⚠️ GEMINI_API_KEY not set")
-        return {
-            'cached': False, 
-            'hint': None, 
-            'error': 'API key not configured'
-        }
+        if language == 'sinhala':
+            return get_sinhala_fallback_hint(sinhala_word, english_word)
+        else:
+            return get_english_fallback_hint(sinhala_word, english_word)
 
     try:
-        # Initialize Gemini client
         client = genai.Client(api_key=api_key)
         
-        # Build prompt for clue-style hint (exactly like your example)
-        prompt = f"""Secret word: "{sinhala_word}" (which means "{english_word}" in English)
+        # STRONGER PROMPT FOR SINHALA - FORCE SINHALA OUTPUT
+        if language == 'sinhala':
+            prompt = f"""IMPORTANT: You MUST respond in SINHALA language only. Do NOT use English.
+
+Secret word: "{sinhala_word}" (English meaning: "{english_word}")
+
+Give one short clue in SINHALA language without saying the word.
+Max 8 words in SINHALA.
+
+Output format (use SINHALA):
+🔎 ඉඟිය: [your Sinhala clue here]
+
+Example of correct SINHALA response:
+🔎 ඉඟිය: 🐕 බුරන පක්ෂපාතී සුරතලා
+
+Now provide your SINHALA clue:"""
+        else:
+            prompt = f"""Secret word: "{sinhala_word}" (which means "{english_word}" in English)
 Give one short clue without saying the word.
 Max 8 words.
 
 Output format:
 🔎 Hint: [your clue here]"""
 
-        print(f"🤔 Generating hint for: {sinhala_word} ({english_word})")
+        print(f"🤔 Generating {language} hint for: {sinhala_word} ({english_word})")
         
         # Call Gemini API
         response = client.models.generate_content(
-            model="gemini-2.0-flash",  # Higher free-tier quota than 2.5-flash
+            model="gemini-2.0-flash",
             contents=prompt
         )
         
@@ -213,23 +227,38 @@ Output format:
         else:
             hint_text = str(response).strip()
         
-        # Clean up the hint - remove the "🔎 Hint:" prefix if present
-        if hint_text.startswith('🔎 Hint:'):
-            hint_text = hint_text.replace('🔎 Hint:', '').strip()
-        elif hint_text.startswith('Hint:'):
-            hint_text = hint_text.replace('Hint:', '').strip()
+        print(f"Raw API response: {hint_text}")  # Debug log
+        
+        # Clean up the hint based on language
+        if language == 'sinhala':
+            # Remove any English prefixes that might appear
+            hint_text = hint_text.replace('Hint:', '').replace('🔎 Hint:', '').replace('Hint', '')
+            if hint_text.startswith('🔎 ඉඟිය:'):
+                hint_text = hint_text.replace('🔎 ඉඟිය:', '').strip()
+            elif hint_text.startswith('ඉඟිය:'):
+                hint_text = hint_text.replace('ඉඟිය:', '').strip()
+            
+            # Ensure we have Sinhala text (not empty)
+            if not hint_text or len(hint_text.strip()) < 2:
+                hint_text = f"'{english_word}' යන ඉංග්‍රීසි වචනයේ සිංහල අර්ථය"
+            
+            formatted_hint = f"🔎 ඉඟිය: {hint_text}"
+        else:
+            if hint_text.startswith('🔎 Hint:'):
+                hint_text = hint_text.replace('🔎 Hint:', '').strip()
+            elif hint_text.startswith('Hint:'):
+                hint_text = hint_text.replace('Hint:', '').strip()
+            formatted_hint = f"🔎 Hint: {hint_text}"
         
         # Ensure it's short
         words = hint_text.split()
         if len(words) > 8:
             hint_text = ' '.join(words[:8]) + '...'
-        
-        # Format with emoji
-        formatted_hint = f"🔎 Hint: {hint_text}"
+            formatted_hint = f"🔎 {'ඉඟිය:' if language == 'sinhala' else 'Hint:'} {hint_text}"
         
         # Cache the hint
         ai_hint_cache[cache_key] = formatted_hint
-        print(f"✅ Generated hint: {formatted_hint}")
+        print(f"✅ Generated {language} hint: {formatted_hint}")
         
         return {
             'cached': False, 
@@ -240,44 +269,223 @@ Output format:
     except Exception as e:
         print(f"⚠️ AI hint generation failed: {e}")
         
-        # Fallback hints based on word characteristics
-        fallback_hints = {
-            # Common Sinhala words with simple clues
-            'අම්මා': '🔎 Hint: 👩 The person who takes care of you',
-            'තාත්තා': '🔎 Hint: 👨 The head of the family',
-            'බල්ලා': '🔎 Hint: 🐕 A loyal pet that barks',
-            'පූසා': '🔎 Hint: 🐈 A furry pet that meows',
-            'ගස': '🔎 Hint: 🌳 Gives us shade and fruit',
-            'මල': '🔎 Hint: 🌸 Beautiful and fragrant',
-            'වතුර': '🔎 Hint: 💧 Clear liquid we drink',
-            'කිරි': '🔎 Hint: 🥛 White drink from cows',
-            'පාන්': '🔎 Hint: 🍞 Common breakfast food',
-            'බත්': '🔎 Hint: 🍚 Staple food in Sri Lanka',
-            'හිරු': '🔎 Hint: ☀️ Gives us light during the day',
-            'සඳ': '🔎 Hint: 🌙 Seen in the night sky',
-            'තරු': '🔎 Hint: ⭐ Twinkle in the night sky',
-            'මුහුද': '🔎 Hint: 🌊 Large body of salt water',
-            'ගඟ': '🔎 Hint: 💧 Flowing water body',
-            'කුරුල්ලා': '🔎 Hint: 🐦 Animal that can fly',
-            'මාළුවා': '🔎 Hint: 🐟 Lives in water',
-            'අලියා': '🔎 Hint: 🐘 Large animal with trunk',
-            'සිංහයා': '🔎 Hint: 🦁 King of the jungle',
-            'පුස්තකාලය': '🔎 Hint: 📚 Place with many books'
-        }
+        # FALLBACK HINTS BASED ON LANGUAGE
+        if language == 'sinhala':
+            return get_sinhala_fallback_hint(sinhala_word, english_word)
+        else:
+            return get_english_fallback_hint(sinhala_word, english_word)
+
+def get_sinhala_fallback_hint(sinhala_word, english_word):
+    """Get Sinhala fallback hint"""
+    sinhala_fallback_hints = {
+        # Family
+        'අම්මා': '🔎 ඉඟිය: 👩 ඔබව රැකබලා ගන්නා පුද්ගලයා',
+        'තාත්තා': '🔎 ඉඟිය: 👨 පවුලේ ප්‍රධානියා',
+        'අක්කා': '🔎 ඉඟිය: 👧 ඔබට වඩා වැඩිමල් ගැහැණු සහෝදරිය',
+        'මල්ලි': '🔎 ඉඟිය: 👦 ඔබට වඩා බාල පිරිමි සහෝදරයා',
+        'නංගි': '🔎 ඉඟිය: 👧 ඔබට වඩා බාල ගැහැණු සහෝදරිය',
+        'සීයා': '🔎 ඉඟිය: 👴 ඔබේ පියාගේ හෝ මවගේ පියා',
+        'ආච්චි': '🔎 ඉඟිය: 👵 ඔබේ පියාගේ හෝ මවගේ මව',
         
-        if sinhala_word in fallback_hints:
-            return {
-                'cached': False, 
-                'hint': fallback_hints[sinhala_word],
-                'hint_type': 'fallback'
-            }
+        # Animals
+        'බල්ලා': '🔎 ඉඟිය: 🐕 බුරන පක්ෂපාතී සුරතලා',
+        'පූසා': '🔎 ඉඟිය: 🐈 මියවන ලොම් සහිත සුරතලා',
+        'අලියා': '🔎 ඉඟිය: 🐘 පුළුල් කණ සහ දිගු නාසයක් ඇති විශාල සත්වයා',
+        'සිංහයා': '🔎 ඉඟිය: 🦁 වනාන්තරයේ රජු',
+        'කුරුල්ලා': '🔎 ඉඟිය: 🐦 අහසේ පියාසර කරන සත්වයා',
+        'මාළුවා': '🔎 ඉඟිය: 🐟 ජලයේ ජීවත් වන සත්වයා',
+        'හරකා': '🔎 ඉඟිය: 🐂 කිරි දෙන ගෘහාශ්‍රිත සත්වයා',
+        'කිඹුලා': '🔎 ඉඟිය: 🐊 දිය යට සැඟවී සිටින විශාල උරගයා',
+        'මොණරා': '🔎 ඉඟිය: 🦚 වර්ණවත් වලිගයක් ඇති පක්ෂියා',
+        'හාවා': '🔎 ඉඟිය: 🐇 දිගු කන් ඇති ඉක්මන් සත්වයා',
         
-        # Generic fallback
+        # Nature
+        'ගස': '🔎 ඉඟිය: 🌳 සෙවන සහ පලතුරු ලබා දෙයි',
+        'මල': '🔎 ඉඟිය: 🌸 සුවඳවත් හා ලස්සනයි',
+        'වතුර': '🔎 ඉඟිය: 💧 පානය කරන පැහැදිලි දියර',
+        'ගඟ': '🔎 ඉඟිය: 💧 ගලා යන ජල කඳ',
+        'මුහුද': '🔎 ඉඟිය: 🌊 විශාල ලුණු වතුර කඳ',
+        'හිරු': '🔎 ඉඟිය: ☀️ දිවා කාලයේ ආලෝකය ලබා දෙයි',
+        'සඳ': '🔎 ඉඟිය: 🌙 රාත්‍රී අහසේ දිස්වේ',
+        'තරු': '🔎 ඉඟිය: ⭐ රාත්‍රී අහසේ බබළයි',
+        'වැස්ස': '🔎 ඉඟිය: ☔ අහසින් වැටෙන ජල බිඳු',
+        'ගල්': '🔎 ඉඟිය: 🪨 දැඩි ස්වාභාවික ද්‍රව්‍යය',
+        
+        # Food
+        'බත්': '🔎 ඉඟිය: 🍚 ශ්‍රී ලාංකිකයන්ගේ ප්‍රධාන ආහාරය',
+        'පාන්': '🔎 ඉඟිය: 🍞 පිටිවලින් සාදන උදෑසන ආහාරය',
+        'කිරි': '🔎 ඉඟිය: 🥛 එළදෙනගෙන් ලැබෙන සුදු පානය',
+        'යුගුර්ට්': '🔎 ඉඟිය: 🥄 කිරි වලින් සාදන ලද ඇඹුල් රසැති ආහාරය',
+        'කැවිලි': '🔎 ඉඟිය: 🍪 රසකැවිලි උත්සව වලදී හදනවා',
+        'කොස්': '🔎 ඉඟිය: 🥥 රළු පිටත කබලක් ඇති ගෙඩියක්',
+        
+        # Body Parts
+        'අත': '🔎 ඉඟිය: 🖐️ ලියන්නට හා අල්ලන්නට භාවිතා කරයි',
+        'කකුල': '🔎 ඉඟිය: 🦵 ඇවිදීමට භාවිතා කරයි',
+        'නාසය': '🔎 ඉඟිය: 👃 සුවඳ දැනීමට භාවිතා කරයි',
+        'කන': '🔎 ඉඟිය: 👂 ශබ්ද ඇසීමට භාවිතා කරයි',
+        'ඇස': '🔎 ඉඟිය: 👁️ බැලීමට භාවිතා කරයි',
+        'මුඛය': '🔎 ඉඟිය: 👄 කතා කිරීමට හා කෑමට භාවිතා කරයි',
+        'හිස': '🔎 ඉඟිය: 🗣️ මොළය ඇති තැන',
+        
+        # Objects
+        'පොත': '🔎 ඉඟිය: 📖 කියවීම සඳහා පිටු ඇත',
+        'පුස්තකාලය': '🔎 ඉඟිය: 📚 බොහෝ පොත් ඇති ස්ථානය',
+        'බෑගය': '🔎 ඉඟිය: 🎒 දේවල් රැගෙන යන බහාලුම',
+        'පැන්සල': '🔎 ඉඟිය: ✏️ ලිවීමට භාවිතා කරන මෙවලම',
+        'පාට පැන්සල': '🔎 ඉඟිය: 🖍️ වර්ණ ගැන්වීමට භාවිතා කරයි',
+        'මකනය': '🔎 ඉඟිය: 🧽 පැන්සල් සලකුණු මකයි',
+        'පාලකයා': '🔎 ඉඟිය: 📏 දිග මැනීමට භාවිතා කරයි',
+        'අගුල': '🔎 ඉඟිය: 🔒 දොර වසා තබයි',
+        'යතුර': '🔎 ඉඟිය: 🔑 අගුල විවෘත කරයි',
+        
+        # Places
+        'පාසල': '🔎 ඉඟිය: 🏫 ළමයින් ඉගෙන ගන්නා ස්ථානය',
+        'රෝහල': '🔎 ඉඟිය: 🏥 රෝගීන්ට ප්‍රතිකාර කරන ස්ථානය',
+        'බැංකුව': '🔎 ඉඟිය: 🏦 මුදල් තබා ගන්නා ස්ථානය',
+        'ගෙදර': '🔎 ඉඟිය: 🏠 ඔබ ජීවත් වන ස්ථානය',
+        'සාප්පුව': '🔎 ඉඟිය: 🏪 භාණ්ඩ මිලදී ගන්නා ස්ථානය',
+        'උද්‍යානය': '🔎 ඉඟිය: 🌳 ගස් හා මල් ඇති ස්ථානය',
+        
+        # Numbers 1-10
+        'එක': '🔎 ඉඟිය: 1️⃣ අංක එක',
+        'දෙක': '🔎 ඉඟිය: 2️⃣ අංක දෙක',
+        'තුන': '🔎 ඉඟිය: 3️⃣ අංක තුන',
+        'හතර': '🔎 ඉඟිය: 4️⃣ අංක හතර',
+        'පහ': '🔎 ඉඟිය: 5️⃣ අංක පහ',
+        'හය': '🔎 ඉඟිය: 6️⃣ අංක හය',
+        'හත': '🔎 ඉඟිය: 7️⃣ අංක හත',
+        'අට': '🔎 ඉඟිය: 8️⃣ අංක අට',
+        'නවය': '🔎 ඉඟිය: 9️⃣ අංක නවය',
+        'දහය': '🔎 ඉඟිය: 🔟 අංක දහය',
+        
+        # Feelings
+        'සතුටුයි': '🔎 ඉඟිය: 😊 හොඳ හැඟීමක්',
+        'දුකයි': '🔎 ඉඟිය: 😢 කඳුළු සලන හැඟීම',
+        'කෝපයි': '🔎 ඉඟිය: 😠 තදින් දැනෙන හැඟීම',
+        'බයයි': '🔎 ඉඟිය: 😨 භයානක හැඟීමක්',
+    }
+    
+    # Check for specific fallback
+    if sinhala_word in sinhala_fallback_hints:
         return {
             'cached': False, 
-            'hint': f"🔎 Hint: This word is about {english_word.lower()}",
-            'hint_type': 'generic'
+            'hint': sinhala_fallback_hints[sinhala_word],
+            'hint_type': 'fallback'
         }
+    
+    # Generic Sinhala fallback
+    return {
+        'cached': False, 
+        'hint': f"🔎 ඉඟිය: '{english_word}' යන ඉංග්‍රීසි වචනයේ සිංහල අර්ථය '{sinhala_word}' වේ",
+        'hint_type': 'generic'
+    }
+
+def get_english_fallback_hint(sinhala_word, english_word):
+    """Get English fallback hint"""
+    english_fallback_hints = {
+        # Family
+        'අම්මා': '🔎 Hint: 👩 The person who takes care of you',
+        'තාත්තා': '🔎 Hint: 👨 The head of the family',
+        'අක්කා': '🔎 Hint: 👧 Older female sibling',
+        'මල්ලි': '🔎 Hint: 👦 Younger male sibling',
+        'නංගි': '🔎 Hint: 👧 Younger female sibling',
+        'සීයා': '🔎 Hint: 👴 Your parent\'s father',
+        'ආච්චි': '🔎 Hint: 👵 Your parent\'s mother',
+        
+        # Animals
+        'බල්ලා': '🔎 Hint: 🐕 A loyal pet that barks',
+        'පූසා': '🔎 Hint: 🐈 A furry pet that meows',
+        'අලියා': '🔎 Hint: 🐘 Large animal with a trunk',
+        'සිංහයා': '🔎 Hint: 🦁 King of the jungle',
+        'කුරුල්ලා': '🔎 Hint: 🐦 Animal that can fly',
+        'මාළුවා': '🔎 Hint: 🐟 Lives in water',
+        'හරකා': '🔎 Hint: 🐂 Domestic animal that gives milk',
+        'කිඹුලා': '🔎 Hint: 🐊 Large reptile that hides underwater',
+        'මොණරා': '🔎 Hint: 🦚 Bird with colorful tail',
+        'හාවා': '🔎 Hint: 🐇 Fast animal with long ears',
+        
+        # Nature
+        'ගස': '🔎 Hint: 🌳 Gives us shade and fruit',
+        'මල': '🔎 Hint: 🌸 Beautiful and fragrant',
+        'වතුර': '🔎 Hint: 💧 Clear liquid we drink',
+        'ගඟ': '🔎 Hint: 💧 Flowing water body',
+        'මුහුද': '🔎 Hint: 🌊 Large body of salt water',
+        'හිරු': '🔎 Hint: ☀️ Gives us light during the day',
+        'සඳ': '🔎 Hint: 🌙 Seen in the night sky',
+        'තරු': '🔎 Hint: ⭐ Twinkle in the night sky',
+        'වැස්ස': '🔎 Hint: ☔ Water drops falling from sky',
+        'ගල්': '🔎 Hint: 🪨 Hard natural material',
+        
+        # Food
+        'බත්': '🔎 Hint: 🍚 Staple food in Sri Lanka',
+        'පාන්': '🔎 Hint: 🍞 Common breakfast food',
+        'කිරි': '🔎 Hint: 🥛 White drink from cows',
+        'යුගුර්ට්': '🔎 Hint: 🥄 Sour food made from milk',
+        'කැවිලි': '🔎 Hint: 🍪 Sweet treat made during festivals',
+        'කොස්': '🔎 Hint: 🥥 Fruit with rough outer shell',
+        
+        # Body Parts
+        'අත': '🔎 Hint: 🖐️ Used for writing and holding',
+        'කකුල': '🔎 Hint: 🦵 Used for walking',
+        'නාසය': '🔎 Hint: 👃 Used for smelling',
+        'කන': '🔎 Hint: 👂 Used for hearing sounds',
+        'ඇස': '🔎 Hint: 👁️ Used for seeing',
+        'මුඛය': '🔎 Hint: 👄 Used for speaking and eating',
+        'හිස': '🔎 Hint: 🗣️ Where the brain is',
+        
+        # Objects
+        'පොත': '🔎 Hint: 📖 Has pages for reading',
+        'පුස්තකාලය': '🔎 Hint: 📚 Place with many books',
+        'බෑගය': '🔎 Hint: 🎒 Container for carrying things',
+        'පැන්සල': '🔎 Hint: ✏️ Tool used for writing',
+        'පාට පැන්සල': '🔎 Hint: 🖍️ Used for coloring',
+        'මකනය': '🔎 Hint: 🧽 Erases pencil marks',
+        'පාලකයා': '🔎 Hint: 📏 Used to measure length',
+        'අගුල': '🔎 Hint: 🔒 Keeps the door closed',
+        'යතුර': '🔎 Hint: 🔑 Opens the lock',
+        
+        # Places
+        'පාසල': '🔎 Hint: 🏫 Place where children learn',
+        'රෝහල': '🔎 Hint: 🏥 Place that treats sick people',
+        'බැංකුව': '🔎 Hint: 🏦 Place where money is kept',
+        'ගෙදර': '🔎 Hint: 🏠 Place where you live',
+        'සාප්පුව': '🔎 Hint: 🏪 Place to buy things',
+        'උද්‍යානය': '🔎 Hint: 🌳 Place with trees and flowers',
+        
+        # Numbers 1-10
+        'එක': '🔎 Hint: 1️⃣ One',
+        'දෙක': '🔎 Hint: 2️⃣ Two',
+        'තුන': '🔎 Hint: 3️⃣ Three',
+        'හතර': '🔎 Hint: 4️⃣ Four',
+        'පහ': '🔎 Hint: 5️⃣ Five',
+        'හය': '🔎 Hint: 6️⃣ Six',
+        'හත': '🔎 Hint: 7️⃣ Seven',
+        'අට': '🔎 Hint: 8️⃣ Eight',
+        'නවය': '🔎 Hint: 9️⃣ Nine',
+        'දහය': '🔎 Hint: 🔟 Ten',
+        
+        # Feelings
+        'සතුටුයි': '🔎 Hint: 😊 A good feeling',
+        'දුකයි': '🔎 Hint: 😢 A feeling that brings tears',
+        'කෝපයි': '🔎 Hint: 😠 An intense feeling',
+        'බයයි': '🔎 Hint: 😨 A scary feeling',
+    }
+    
+    # Check for specific fallback
+    if sinhala_word in english_fallback_hints:
+        return {
+            'cached': False, 
+            'hint': english_fallback_hints[sinhala_word],
+            'hint_type': 'fallback'
+        }
+    
+    # Generic English fallback with better hint
+    return {
+        'cached': False, 
+        'hint': f"🔎 Hint: This word '{english_word}' has {len(sinhala_word)} characters in Sinhala",
+        'hint_type': 'generic'
+    }
 
 # ========================
 # MODEL
@@ -442,6 +650,10 @@ def record_attempt():
         level = data.get('level', 'basic')
         correct = data.get('correct', False)
         time_taken = data.get('time_taken', 0)
+        language = data.get('language', 'english')  # Get language preference
+        
+        # Debug log
+        print(f"🔍 Attempt - Word: {word}, Language: {language}, Correct: {correct}")
         
         # Save to MongoDB
         attempt_doc = {
@@ -454,7 +666,8 @@ def record_attempt():
             'correct': bool(correct),
             'confidence': data.get('confidence'),
             'timeTaken': float(time_taken),
-            'sessionId': data.get('session_id')
+            'sessionId': data.get('session_id'),
+            'language': language
         }
         
         saved = False
@@ -481,18 +694,20 @@ def record_attempt():
         # Generate AI hint if attempt count >= 2 and not correct
         ai_hint_result = None
         if not correct and attempt_count >= 2:
-            print(f"🎯 Generating hint for {word} (attempt #{attempt_count})")
+            print(f"🎯 Generating {language} hint for {word} (attempt #{attempt_count})")
             recent = recent_attempts[-6:]
             english_word = label_to_english.get(word, '')
             
             ai_hint_result = generate_ai_hint(
                 user_id, 
-                word,  # Sinhala word
-                english_word,  # English translation
+                word,
+                english_word,
                 attempt_count, 
                 recent, 
-                level
+                level,
+                language
             )
+            print(f"📝 Hint generated: {ai_hint_result.get('hint')}")
         
         # Prepare response
         response_data = {
@@ -523,8 +738,11 @@ def get_hint_direct():
     try:
         data = request.json
         user_id = data.get('user_id', 'default')
-        word = data.get('word')  # Sinhala word
+        word = data.get('word')
         level = data.get('level', 'basic')
+        language = data.get('language', 'english')
+        
+        print(f"🎯 Direct hint request - Word: {word}, Language: {language}")
         
         if not word:
             return jsonify({'success': False, 'error': 'Word is required'}), 400
@@ -539,7 +757,8 @@ def get_hint_direct():
             english_word,
             attempt_count + 1,
             recent,
-            level
+            level,
+            language
         )
         
         return jsonify({
@@ -547,13 +766,14 @@ def get_hint_direct():
             'word': word,
             'english': english_word,
             'hint': ai_hint_result.get('hint'),
-            'hint_type': ai_hint_result.get('hint_type')
+            'hint_type': ai_hint_result.get('hint_type'),
+            'language': language
         })
         
     except Exception as e:
         print(f"❌ Error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
+    
 @app.route('/api/ai/progress-report', methods=['POST', 'OPTIONS'])
 def get_progress_report():
     if request.method == 'OPTIONS':
@@ -661,4 +881,4 @@ if __name__ == "__main__":
     if mongodb_manager and hasattr(mongodb_manager, 'disconnect'):
         atexit.register(mongodb_manager.disconnect)
     
-    app.run(host="0.0.0.0", port=5001, debug=False)
+    app.run(host="0.0.0.0", port=5001, debug=True)

@@ -2,9 +2,8 @@
 import { useNavigate } from 'react-router-dom';
 import { 
   Play, Trophy, Heart, Lightbulb, RefreshCw, Home, 
-  Sparkles, Target, Award, ChevronRight, TrendingUp,
-  Volume2, VolumeX, Eye, HelpCircle, Star, Music,
-  Check, X, SkipForward, Globe, Languages
+  Target, HelpCircle, Star,
+  Volume2, VolumeX, Check, X, SkipForward, Globe
 } from 'lucide-react';
 
 const API_URL = 'http://localhost:5001/api';
@@ -21,7 +20,6 @@ const SinhalaWordPuzzleGame = () => {
   const [round, setRound] = useState(0);
   const [totalRounds] = useState(10);
   const [soundOn, setSoundOn] = useState(true);
-  const [vibrationOn, setVibrationOn] = useState(true);
   const [language, setLanguage] = useState('english');
   
   // Puzzle State
@@ -29,7 +27,6 @@ const SinhalaWordPuzzleGame = () => {
   const [grid, setGrid] = useState([]);
   const [selectedCells, setSelectedCells] = useState([]);
   const [feedback, setFeedback] = useState(null);
-  const [showVideo, setShowVideo] = useState(true);
   const [aiHints, setAiHints] = useState([]);
   const [showHintPanel, setShowHintPanel] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
@@ -38,7 +35,6 @@ const SinhalaWordPuzzleGame = () => {
   // Attempt tracking
   const [attempts, setAttempts] = useState(0);
   const [wrongAttempts, setWrongAttempts] = useState(0);
-  const [gameOverDueToAttempts, setGameOverDueToAttempts] = useState(false);
 
   // User tracking
   const getStoredUserId = () => {
@@ -77,7 +73,7 @@ const SinhalaWordPuzzleGame = () => {
       myProfile: 'මගේ විස්තර',
       achievements: 'සම්භාවනා',
       signVideo: 'සංඥා වීඩියෝව',
-      secretWord: 'ගුප්ත වචනය',
+      secretWord: 'රහස් වචනය',
       wordHas: 'මෙම වචනයේ අකුරු',
       selectConnected: 'සම්බන්ධ අකුරු තෝරන්න',
       attempts: 'උත්සාහ',
@@ -88,9 +84,9 @@ const SinhalaWordPuzzleGame = () => {
       clear: 'මකන්න',
       checkAnswer: 'පිළිතුර පරීක්ෂා කරන්න',
       nextWord: 'ඊළඟ වචනයට',
-      findSecretWord: 'ගුප්ත වචනය සොයන්න',
+      findSecretWord: 'රහස් වචනය සොයන්න',
       instructions: '🎯 උපදෙස්: වීඩියෝව නරඹා, පෙළෙහි සඟවා ඇති වචනය සොයන්න. අසල්වැසි කොටුවල අකුරු තෝරන්න (තිරස්, සිරස් හෝ විකර්ණ).',
-      secretWordText: 'ගුප්ත වචනය',
+      secretWordText: 'රහස් වචනය',
       selectedLetters: 'තෝරාගත් අකුරු',
       note: '💡 සටහන: අකුරු අනුපිළිවෙලට තෝරන්න (1, 2, 3...)',
       aiHint: 'AI සහායක උපදෙස්',
@@ -176,12 +172,8 @@ const SinhalaWordPuzzleGame = () => {
       description: 'පිල්ලම් නැති සරල වචන',
       descriptionE: 'Simple words without vowel signs',
       gridSize: 6,
-      bgGradient: 'from-emerald-100 to-green-200',
-      textColor: 'text-emerald-800',
-      borderColor: 'border-emerald-300',
       icon: '🌱',
       difficulty: 1,
-      color: 'bg-gradient-to-r from-emerald-100 to-green-200'
     },
     easy: {
       name: language === 'sinhala' ? 'පහසු' : 'EASY',
@@ -189,12 +181,8 @@ const SinhalaWordPuzzleGame = () => {
       description: 'සරල වචන (2-3 අකුරු)',
       descriptionE: 'Simple words (2-3 letters)',
       gridSize: 7,
-      bgGradient: 'from-sky-100 to-blue-200',
-      textColor: 'text-blue-800',
-      borderColor: 'border-sky-300',
       icon: '🔍',
       difficulty: 2,
-      color: 'bg-gradient-to-r from-sky-100 to-blue-200'
     },
     medium: {
       name: language === 'sinhala' ? 'මධ්‍යම' : 'MEDIUM',
@@ -202,12 +190,8 @@ const SinhalaWordPuzzleGame = () => {
       description: 'මධ්‍යම වචන (4-6 අකුරු)',
       descriptionE: 'Medium words (4-6 letters)',
       gridSize: 8,
-      bgGradient: 'from-indigo-100 to-blue-200',
-      textColor: 'text-indigo-800',
-      borderColor: 'border-indigo-300',
       icon: '🏃',
       difficulty: 3,
-      color: 'bg-gradient-to-r from-indigo-100 to-blue-200'
     },
     hard: {
       name: language === 'sinhala' ? 'දුෂ්කර' : 'HARD',
@@ -215,12 +199,8 @@ const SinhalaWordPuzzleGame = () => {
       description: 'දුෂ්කර වචන (7+ අකුරු)',
       descriptionE: 'Hard words (7+ letters)',
       gridSize: 10,
-      bgGradient: 'from-amber-100 to-yellow-200',
-      textColor: 'text-amber-800',
-      borderColor: 'border-yellow-300',
       icon: '🏆',
       difficulty: 4,
-      color: 'bg-gradient-to-r from-amber-100 to-yellow-200'
     }
   };
 
@@ -236,7 +216,7 @@ const SinhalaWordPuzzleGame = () => {
   };
 
   const vibrate = () => {
-    if (vibrationOn && navigator.vibrate) {
+    if (navigator.vibrate) {
       navigator.vibrate(50);
     }
   };
@@ -263,11 +243,9 @@ const SinhalaWordPuzzleGame = () => {
     setShowHintPanel(false);
     setShowInstructions(false);
     
-    // Reset attempt tracking
     setAttempts(0);
     setWrongAttempts(0);
     setShowWordAfterFail(false);
-    setGameOverDueToAttempts(false);
   };
 
   const getRandomLetter = () => {
@@ -323,11 +301,9 @@ const SinhalaWordPuzzleGame = () => {
         setShowHintPanel(false);
         setAttemptStartTime(Date.now());
         
-        // Reset attempt tracking for new word
         setAttempts(0);
         setWrongAttempts(0);
         setShowWordAfterFail(false);
-        setGameOverDueToAttempts(false);
         setAiHints([]);
       }
     } catch (error) {
@@ -353,7 +329,7 @@ const SinhalaWordPuzzleGame = () => {
 
   const isValidPath = () => {
     if (selectedCells.length < 2) return true;
-    
+    //check adjacency for all selected cells
     for (let i = 1; i < selectedCells.length; i++) {
       if (!areAdjacent(selectedCells[i - 1], selectedCells[i])) {
         return false;
@@ -373,69 +349,64 @@ const SinhalaWordPuzzleGame = () => {
     }
   };
 
-  const recordAttempt = async (correct) => {
-    try {
-      const timeTaken = attemptStartTime ? (Date.now() - attemptStartTime) / 1000 : 0;
-      
-      const response = await fetch(`${API_URL}/attempt`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          word: puzzle.word,
-          level: level,
-          correct: correct,
-          time_taken: timeTaken
-        })
+const recordAttempt = async (correct) => {
+  try {
+    const timeTaken = attemptStartTime ? (Date.now() - attemptStartTime) / 1000 : 0;
+    
+    const response = await fetch(`${API_URL}/attempt`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        word: puzzle.word,
+        level: level,
+        correct: correct,
+        time_taken: timeTaken,
+        language: language  // ← ADD THIS LINE (use the language state variable)
+      })
+    });
+    
+    const data = await response.json();
+    console.log('Attempt response:', data);
+    
+    setAttempts(data.attempt_number || attempts + 1);
+    
+    if (!correct) {
+      setWrongAttempts(data.wrong_attempts || wrongAttempts + 1);
+    }
+    
+    if (data.game_over) {
+      setShowWordAfterFail(true);
+      setFeedback({ 
+        type: 'info', 
+        message: language === 'sinhala'
+          ? `${t.tooManyAttempts} ${puzzle.word} (${puzzle.english})`
+          : `${t.tooManyAttempts} ${puzzle.word} (${puzzle.english})`
       });
       
-      const data = await response.json();
-      console.log('Attempt response:', data);
-      
-      // Update attempts count
-      setAttempts(data.attempt_number || attempts + 1);
-      
-      if (!correct) {
-        setWrongAttempts(data.wrong_attempts || wrongAttempts + 1);
-      }
-      
-      // Check if game over due to too many wrong attempts
-      if (data.game_over) {
-        setGameOverDueToAttempts(true);
-        setShowWordAfterFail(true);
-        setFeedback({ 
-          type: 'info', 
-          message: language === 'sinhala'
-            ? `${t.tooManyAttempts} ${puzzle.word} (${puzzle.english})`
-            : `${t.tooManyAttempts} ${puzzle.word} (${puzzle.english})`
-        });
-        
-        // Move to next word after delay
-        setTimeout(() => {
-          const nextRound = round + 1;
-          if (nextRound >= totalRounds) {
-            setGameState('gameover');
-          } else {
-            setRound(nextRound);
-            setPuzzle(null);
-            setShowWordAfterFail(false);
-            setGameOverDueToAttempts(false);
-          }
-        }, 3000);
-        return data;
-      }
-      
-      // Show hint if provided (attempts >= 2)
-      if (data.hint) {
-        setAiHints([data.hint]);
-        setShowHintPanel(true);
-      }
-      
+      setTimeout(() => {
+        const nextRound = round + 1;
+        if (nextRound >= totalRounds) {
+          setGameState('gameover');
+        } else {
+          setRound(nextRound);
+          setPuzzle(null);
+          setShowWordAfterFail(false);
+        }
+      }, 3000);
       return data;
-    } catch (error) {
-      console.error('Error recording attempt:', error);
     }
-  };
+    
+    if (data.hint) {
+      setAiHints([data.hint]);
+      setShowHintPanel(true);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error recording attempt:', error);
+  }
+};
 
   const checkAnswer = async () => {
     vibrate();
@@ -455,14 +426,15 @@ const SinhalaWordPuzzleGame = () => {
       const [r, c] = key.split('-').map(Number);
       return grid[r][c].letter;
     });
+//the number of selected letters matches puzzle.syllables.length, and very selected letter exactly equals the corresponding puzzle.syllables[i].
 
+// This ensures that the player has selected the correct letters in the correct order to form the target word.
     const isCorrect = 
       selectedLetters.length === puzzle.syllables.length &&
       selectedLetters.every((letter, i) => letter === puzzle.syllables[i]);
 
     const attemptData = await recordAttempt(isCorrect);
     
-    // If game over triggered, return early
     if (attemptData?.game_over) {
       return;
     }
@@ -492,12 +464,10 @@ const SinhalaWordPuzzleGame = () => {
       });
       triggerShake();
       
-      // Show hints when attempts >= 2
       if (attempts + 1 >= 2) {
         setShowHintPanel(true);
       }
       
-      // Reduce lives
       const newLives = lives - 1;
       setLives(newLives);
       
@@ -512,10 +482,43 @@ const SinhalaWordPuzzleGame = () => {
     }
   };
 
-  const useHint = () => {
-    vibrate();
-    if (hintsRemaining > 0 && puzzle) {
+  const useHint = async () => {
+  vibrate();
+  if (hintsRemaining > 0 && puzzle) {
+    // Try to get AI hint from backend
+    try {
+      const response = await fetch(`${API_URL}/ai/hint`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+    user_id: userId,
+    word: puzzle.word,
+    level: level,
+    language: language   // ← ADD LANGUAGE HERE TOO
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.hint) {
+        setAiHints([data.hint]);
+      } else {
+        // Fallback to local hints
+        setAiHints([
+          language === 'sinhala' 
+            ? `💡 පළමු අකුර: "${puzzle.syllables[0]}"`
+            : `💡 First letter: "${puzzle.syllables[0]}"`,
+          language === 'sinhala'
+            ? `🎯 වචනයේ අකුරු ${puzzle.syllables.length}ක් ඇත`
+            : `🎯 Word has ${puzzle.syllables.length} letters`
+        ]);
+      }
+      
       setHintsRemaining(hintsRemaining - 1);
+      setShowHintPanel(true);
+    } catch (error) {
+      console.error('Error getting AI hint:', error);
+      // Fallback to local hints
       setAiHints([
         language === 'sinhala' 
           ? `💡 පළමු අකුර: "${puzzle.syllables[0]}"`
@@ -524,9 +527,11 @@ const SinhalaWordPuzzleGame = () => {
           ? `🎯 වචනයේ අකුරු ${puzzle.syllables.length}ක් ඇත`
           : `🎯 Word has ${puzzle.syllables.length} letters`
       ]);
+      setHintsRemaining(hintsRemaining - 1);
       setShowHintPanel(true);
     }
-  };
+  }
+};
 
   const skipWord = () => {
     vibrate();
@@ -565,21 +570,17 @@ const SinhalaWordPuzzleGame = () => {
     setAttempts(0);
     setWrongAttempts(0);
     setShowWordAfterFail(false);
-    setGameOverDueToAttempts(false);
   };
 
-  // ---------- MENU SCREEN ----------
+  // MENU SCREEN
   if (gameState === 'menu') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 overflow-hidden relative">
-        {/* Animated Background Elements */}
+        {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-48 h-48 bg-blue-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-64 h-64 bg-indigo-200 rounded-full blur-3xl opacity-30 animate-bounce" style={{animationDuration: '3s'}}></div>
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-sky-200 rounded-full blur-3xl opacity-40 animate-ping" style={{animationDuration: '4s'}}></div>
-          
-          <div className="absolute top-20 right-20 text-8xl opacity-10 animate-spin-slow">🪷</div>
-          <div className="absolute bottom-20 left-20 text-8xl opacity-10 animate-spin-slow-reverse">🐘</div>
         </div>
 
         {/* Main Content */}
@@ -588,10 +589,8 @@ const SinhalaWordPuzzleGame = () => {
           <div className="text-center mb-6 pt-4">
             <div className="flex justify-center items-center gap-3 mb-2">
               <div className="text-6xl animate-bounce">🤟</div>
-              <h1 className="text-4xl md:text-5xl font-black text-gray-800 drop-shadow-lg">
-                <span className="bg-gradient-to-r from-indigo-600 to-blue-700 bg-clip-text text-transparent">
-                  {t.title}
-                </span>
+              <h1 className="text-4xl md:text-5xl font-black">
+                <span className="text-red-600 font-black">{t.title}</span>
               </h1>
               <div className="text-6xl animate-bounce" style={{animationDelay: '0.5s'}}>✊</div>
             </div>
@@ -601,23 +600,13 @@ const SinhalaWordPuzzleGame = () => {
 
           {/* Controls */}
           <div className="flex justify-end gap-2 mb-4">
-            <button 
-              onClick={toggleLanguage}
-              className="p-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-700 text-white flex items-center gap-2"
-            >
+            <button onClick={toggleLanguage} className="bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-full">
               <Globe size={20} />
-              <span className="font-bold">{language === 'sinhala' ? 'සිං' : 'EN'}</span>
             </button>
-            <button 
-              onClick={() => setSoundOn(!soundOn)}
-              className={`p-2 rounded-full ${soundOn ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'}`}
-            >
+            <button onClick={() => setSoundOn(!soundOn)} className={`p-2 rounded-full ${soundOn ? 'bg-green-500' : 'bg-gray-400'} text-white`}>
               {soundOn ? <Volume2 size={20} /> : <VolumeX size={20} />}
             </button>
-            <button 
-              onClick={() => setShowInstructions(!showInstructions)}
-              className="p-2 rounded-full bg-blue-500 text-white"
-            >
+            <button onClick={() => setShowInstructions(!showInstructions)} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full">
               <HelpCircle size={20} />
             </button>
           </div>
@@ -625,99 +614,78 @@ const SinhalaWordPuzzleGame = () => {
           {/* Instructions Modal */}
           {showInstructions && (
             <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-blue-300">
-                <h2 className="text-2xl font-black text-blue-800 mb-4 text-center">{t.instructionTitle}</h2>
+              <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
+                <h2 className="text-2xl font-black text-blue-600 mb-4 text-center">{t.instructionTitle}</h2>
                 <div className="space-y-3 mb-6">
                   {t.videoInstructions.map((instruction, index) => (
                     <div key={index} className="flex items-start gap-3">
-                      <div className="bg-blue-100 p-2 rounded-lg text-gray-700">{instruction.icon}</div>
+                      <div className="bg-blue-100 p-2 rounded-lg">{instruction.icon}</div>
                       <div>
-                        <p className="font-bold text-blue-700">{instruction.title}</p>
+                        <p className="font-bold text-blue-600">{instruction.title}</p>
                         <p className="text-sm text-gray-600">{instruction.desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <button 
-                  onClick={() => setShowInstructions(false)}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl"
-                >
+                <button onClick={() => setShowInstructions(false)} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl">
                   {t.instructionStart}
                 </button>
               </div>
             </div>
           )}
 
-          {/* Level Selection Grid */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 overflow-y-auto">
-            {Object.entries(levelConfig).map(([key, config]) => (
-              <button
-                key={key}
-                onClick={() => startGame(key)}
-                className={`${config.color} rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 border-4 ${config.borderColor} overflow-hidden`}
-              >
-                <div className="p-6 flex items-center gap-4">
-                  <div className="text-6xl animate-bounce">{config.icon}</div>
-                  <div className="text-left flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="text-2xl font-black text-gray-800">{config.name}</div>
-                      {language === 'english' && (
-                        <div className="text-gray-600 font-bold">({config.nameS})</div>
-                      )}
-                    </div>
-                    <p className={`${config.textColor} font-medium mb-2`}>
-                      {language === 'sinhala' ? config.description : config.descriptionE}
-                    </p>
-                    <p className="text-gray-600 text-sm">
-                      {language === 'sinhala' ? config.descriptionE : config.description}
-                    </p>
-                    <div className="mt-3 flex items-center gap-2">
-                      {[...Array(config.difficulty)].map((_, i) => (
-                        <Star key={i} size={16} className="text-blue-500 fill-blue-400" />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="text-4xl text-gray-700 opacity-70">➤</div>
-                </div>
-              </button>
-            ))}
+          {/* Level Selection */}
+<div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 overflow-y-auto">
+  {Object.entries(levelConfig).map(([key, config]) => {
+    // Define different colors for each level
+    const levelColors = {
+      basic: 'bg-emerald-400 hover:bg-emerald-500',
+      easy: 'bg-sky-400 hover:bg-sky-500',
+      medium: 'bg-indigo-400 hover:bg-indigo-500',
+      hard: 'bg-amber-400 hover:bg-amber-500'
+    };
+    
+    return (
+      <button 
+        key={key} 
+        onClick={() => startGame(key)} 
+        className={`${levelColors[key]} text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300`}
+      >
+        <div className="flex items-center gap-4">
+          <div className="text-6xl">{config.icon}</div>
+          <div className="text-left flex-1">
+            <div className="text-2xl font-black">{config.name}</div>
+            <p className="text-white/90 text-sm mt-1">
+              {language === 'sinhala' ? config.description : config.descriptionE}
+            </p>
+            <div className="mt-2 flex gap-1">
+              {[...Array(config.difficulty)].map((_, i) => (
+                <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
           </div>
+          <div className="text-white/70 text-2xl">➤</div>
+        </div>
+      </button>
+    );
+  })}
+</div>
 
           {/* Bottom Navigation */}
           <div className="pb-4">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4">
               <div className="grid grid-cols-3 gap-4">
-                <button
-                  onClick={() => navigate('/gameselection')}
-                  className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
-                >
-                  <div className="text-xl">🎯</div>
-                  <div className="text-left">
-                    <div className="text-sm font-bold">{t.moreGames}</div>
-                    <div className="text-xs">More Games</div>
-                  </div>
+                <button onClick={() => navigate('/gameselection')} className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                  <span className="text-xl">🎯</span>
+                  <span>{t.moreGames}</span>
                 </button>
-                
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
-                >
-                  <div className="text-xl">👤</div>
-                  <div className="text-left">
-                    <div className="text-sm font-bold">{t.myProfile}</div>
-                    <div className="text-xs">My Profile</div>
-                  </div>
+                <button onClick={() => navigate('/profile')} className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                  <span className="text-xl">👤</span>
+                  <span>{t.myProfile}</span>
                 </button>
-                
-                <button
-                  onClick={() => navigate('/achievements')}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
-                >
-                  <div className="text-xl">🏆</div>
-                  <div className="text-left">
-                    <div className="text-sm font-bold">{t.achievements}</div>
-                    <div className="text-xs">Achievements</div>
-                  </div>
+                <button onClick={() => navigate('/achievements')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                  <span className="text-xl">🏆</span>
+                  <span>{t.achievements}</span>
                 </button>
               </div>
             </div>
@@ -727,163 +695,53 @@ const SinhalaWordPuzzleGame = () => {
     );
   }
 
-  // ---------- LOADING STATE ----------
+  // LOADING STATE
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 flex flex-col items-center justify-center relative overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-gradient-to-r from-blue-200/40 to-indigo-200/40 animate-float"
-              style={{
-                width: `${Math.random() * 60 + 20}px`,
-                height: `${Math.random() * 60 + 20}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${Math.random() * 5 + 5}s`,
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="relative z-10 text-center space-y-6">
-          <div className="flex justify-center gap-4 mb-4">
-            <div className="text-6xl animate-bounce" style={{ animationDelay: '0s' }}>🤟</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 flex flex-col items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="flex justify-center gap-4">
+            <div className="text-6xl animate-bounce">🤟</div>
             <div className="text-6xl animate-bounce" style={{ animationDelay: '0.2s' }}>✋</div>
             <div className="text-6xl animate-bounce" style={{ animationDelay: '0.4s' }}>👌</div>
           </div>
-
-          <div>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-2 drop-shadow-lg">
-              <span className="bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
-                {language === 'sinhala' ? 'ප්‍රහේලිකා සූදානම් වෙමින්...' : 'Preparing Puzzle...'}
-              </span>
-            </h2>
-            <p className="text-gray-700 text-lg font-medium mb-6">{t.preparing}</p>
-          </div>
-
-          <div className="w-64 h-4 bg-gray-200 rounded-full overflow-hidden mx-auto">
-            <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-400 to-sky-400 rounded-full animate-progress"></div>
-          </div>
-
-          <div className="bg-gradient-to-r from-blue-100 to-cyan-100 backdrop-blur-sm rounded-2xl p-4 border-2 border-blue-200 max-w-md mx-auto">
-            <p className="text-gray-700 font-medium text-sm">
-              <span className="text-blue-500">✨</span> {t.finding}
-            </p>
+          <h2 className="text-3xl font-black text-gray-800">{language === 'sinhala' ? 'ප්‍රහේලිකා සූදානම් වෙමින්...' : 'Preparing Puzzle...'}</h2>
+          <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden mx-auto">
+            <div className="h-full bg-blue-500 rounded-full animate-progress w-full"></div>
           </div>
         </div>
       </div>
     );
   }
 
-  // ---------- GAME OVER SCREEN ----------
+  // GAME OVER SCREEN
   if (gameState === 'gameover') {
     const stars = score >= 800 ? 3 : score >= 500 ? 2 : score >= 200 ? 1 : 0;
     const messages = {
-      3: { 
-        text: t.gameOverMessages[3].text, 
-        emoji: '🏆', 
-        color: 'from-blue-300 to-indigo-400',
-        subtitle: t.gameOverMessages[3].subtitle
-      },
-      2: { 
-        text: t.gameOverMessages[2].text, 
-        emoji: '🎉', 
-        color: 'from-green-300 to-emerald-400',
-        subtitle: t.gameOverMessages[2].subtitle
-      },
-      1: { 
-        text: t.gameOverMessages[1].text, 
-        emoji: '👏', 
-        color: 'from-sky-300 to-blue-400',
-        subtitle: t.gameOverMessages[1].subtitle
-      },
-      0: { 
-        text: t.gameOverMessages[0].text, 
-        emoji: '💪', 
-        color: 'from-indigo-300 to-violet-400',
-        subtitle: t.gameOverMessages[0].subtitle
-      }
+      3: { text: t.gameOverMessages[3].text, emoji: '🏆', subtitle: t.gameOverMessages[3].subtitle },
+      2: { text: t.gameOverMessages[2].text, emoji: '🎉', subtitle: t.gameOverMessages[2].subtitle },
+      1: { text: t.gameOverMessages[1].text, emoji: '👏', subtitle: t.gameOverMessages[1].subtitle },
+      0: { text: t.gameOverMessages[0].text, emoji: '💪', subtitle: t.gameOverMessages[0].subtitle }
     };
-
     const message = messages[stars];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 flex items-center justify-center p-4 relative overflow-hidden">
-        {/* Celebration Particles */}
-        {Array.from({ length: 30 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-bounce"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              fontSize: `${Math.random() * 30 + 20}px`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${Math.random() * 3 + 2}s`,
-              opacity: 0.7
-            }}
-          >
-            {['🎉', '🎊', '🌟', '⭐', '🏆', '✨', '🥳', '🎈'][Math.floor(Math.random() * 8)]}
-          </div>
-        ))}
-
-        <div className="relative bg-white/90 backdrop-blur-2xl border-4 border-white/60 rounded-3xl shadow-2xl p-8 max-w-lg w-full text-center">
-          <div className="relative inline-block mb-2">
-            <div className="text-8xl animate-bounce">{message.emoji}</div>
-            <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-              {score}
-            </div>
-          </div>
-
-          <h2 className="text-4xl font-black text-gray-800 mb-2 drop-shadow-lg">{t.gameOver}</h2>
-          <p className="text-gray-600 text-lg mb-2">{t.gameComplete}</p>
-
-          <div className={`bg-gradient-to-r ${message.color} backdrop-blur-sm rounded-2xl p-6 mb-6 border-4 border-white/70 shadow-inner`}>
-            <div className="text-7xl font-black text-gray-800 mb-2 drop-shadow-lg">{score}</div>
-            <div className="text-4xl mb-3">
-              {'⭐'.repeat(stars)}{'☆'.repeat(3 - stars)}
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 flex items-center justify-center p-4">
+        <div className="bg-white/90 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 max-w-lg w-full text-center">
+          <div className="text-8xl animate-bounce mb-4">{message.emoji}</div>
+          <h2 className="text-4xl font-black text-gray-800 mb-2">{t.gameOver}</h2>
+          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl p-6 mb-6">
+            <div className="text-7xl font-black text-gray-800 mb-2">{score}</div>
+            <div className="text-4xl mb-3">{'⭐'.repeat(stars)}{'☆'.repeat(3 - stars)}</div>
             <div className="text-2xl font-bold text-gray-800 mb-1">{message.text}</div>
             <p className="text-gray-700 text-sm">{message.subtitle}</p>
           </div>
-
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-3 border-2 border-green-200 shadow-lg">
-              <div className="text-2xl mb-1 text-green-800">🎯</div>
-              <div className="text-gray-600 text-xs font-bold uppercase">{t.level}</div>
-              <div className="text-green-800 text-lg font-bold capitalize">{level}</div>
-            </div>
-            <div className="bg-gradient-to-br from-sky-100 to-blue-100 rounded-xl p-3 border-2 border-sky-200 shadow-lg">
-              <div className="text-2xl mb-1 text-blue-800">🔄</div>
-              <div className="text-gray-600 text-xs font-bold uppercase">{t.round}</div>
-              <div className="text-blue-800 text-lg font-bold">{round}/{totalRounds}</div>
-            </div>
-            <div className="bg-gradient-to-br from-sky-100 to-blue-100 rounded-xl p-3 border-2 border-sky-200 shadow-lg">
-              <div className="text-2xl mb-1 text-sky-800">❤️</div>
-              <div className="text-gray-600 text-xs font-bold uppercase">{t.lives}</div>
-              <div className="text-sky-800 text-lg font-bold">{lives}</div>
-            </div>
-          </div>
-
           <div className="space-y-3">
-            <button
-              onClick={restartGame}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black px-6 py-4 rounded-2xl shadow-xl transform hover:scale-105 transition-all flex items-center justify-center gap-3 text-lg border-4 border-green-300/50"
-            >
-              <RefreshCw className="w-6 h-6" />
-              <span>{t.restartGame}</span>
+            <button onClick={restartGame} className="w-full bg-green-500 hover:bg-green-600 text-white font-black py-4 rounded-2xl">
+              <RefreshCw className="inline w-5 h-5 mr-2" /> {t.restartGame}
             </button>
-
-            <button
-              onClick={() => navigate('/gameselection')}
-              className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2 border-2 border-teal-300/50"
-            >
-              <span className="text-xl">🎮</span>
-              <span>{t.otherGames}</span>
+            <button onClick={() => navigate('/gameselection')} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl">
+              🎮 {t.otherGames}
             </button>
           </div>
         </div>
@@ -891,23 +749,14 @@ const SinhalaWordPuzzleGame = () => {
     );
   }
 
-  // ---------- PLAYING STATE ----------
+  // PLAYING STATE
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 overflow-auto">
       {/* Celebration Animation */}
       {celebration && (
         <div className="fixed inset-0 pointer-events-none z-50">
           {Array.from({ length: 30 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-bounce"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                fontSize: `${Math.random() * 30 + 20}px`,
-                animationDelay: `${Math.random() * 0.5}s`,
-              }}
-            >
+            <div key={i} className="absolute animate-bounce" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, fontSize: `${Math.random() * 30 + 20}px` }}>
               {['🎉', '🎊', '🌟', '✨', '🥳', '👏'][Math.floor(Math.random() * 6)]}
             </div>
           ))}
@@ -915,121 +764,73 @@ const SinhalaWordPuzzleGame = () => {
       )}
 
       <div className="p-4 flex flex-col min-h-screen">
-        {/* Top Game Header */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg p-4 mb-4 flex justify-between items-center border border-gray-200 flex-shrink-0">
-          
-          {/* Left Section */}
+        {/* Game Header */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg p-4 mb-4 flex justify-between items-center flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <button
-              onClick={restartGame}
-              className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border border-indigo-400 shadow-md"
-            >
-              <Home className="w-5 h-5" />
-              <span className="hidden sm:inline">{t.mainMenu}</span>
+            <button onClick={restartGame} className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center gap-2">
+              <Home size={18} /> {t.mainMenu}
             </button>
-            
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-xl px-4 py-2 border border-blue-200 shadow-md">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-blue-700" />
-                <div>
-                  <div className="text-sm font-bold text-gray-600">{t.level}:</div>
-                  <div className="font-black text-lg text-gray-800">
-                    {language === 'sinhala' ? levelConfig[level].nameS : levelConfig[level].name}
-                  </div>
-                </div>
-              </div>
+            <div className="bg-blue-100 px-4 py-2 rounded-xl">
+              <div className="text-sm font-bold text-gray-600">{t.level}:</div>
+              <div className="font-black text-lg">{language === 'sinhala' ? levelConfig[level].nameS : levelConfig[level].name}</div>
             </div>
           </div>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-3">
-            <div className="flex gap-3">
-              <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
-                <Trophy className="w-5 h-5 text-blue-500 mx-auto mb-1" />
-                <div className="text-xl font-black text-gray-800">{score}</div>
-                <div className="text-xs text-gray-600 font-bold">{t.points}</div>
-              </div>
-              
-              <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
-                <Heart className="w-5 h-5 text-red-500 mx-auto mb-1" />
-                <div className="text-xl font-black text-gray-800">{lives}</div>
-                <div className="text-xs text-gray-600 font-bold">{t.lives}</div>
-              </div>
-              
-              <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
-                <Lightbulb className="w-5 h-5 text-blue-500 mx-auto mb-1" />
-                <div className="text-xl font-black text-gray-800">{hintsRemaining}</div>
-                <div className="text-xs text-gray-600 font-bold">{t.hintText}</div>
-              </div>
-              
-              <div className="text-center bg-white/80 backdrop-blur-sm rounded-xl p-3 min-w-[80px] border border-gray-200 shadow-md">
-                <Target className="w-5 h-5 text-green-500 mx-auto mb-1" />
-                <div className="text-xl font-black text-gray-800">{round + 1}/{totalRounds}</div>
-                <div className="text-xs text-gray-600 font-bold">{t.round}</div>
-              </div>
+          <div className="flex gap-3">
+            <div className="text-center bg-white rounded-xl p-2 min-w-[70px] shadow">
+              <Trophy size={18} className="text-blue-500 mx-auto" />
+              <div className="font-black">{score}</div>
+              <div className="text-xs text-gray-600">{t.points}</div>
             </div>
-
-            <button
-              onClick={toggleLanguage}
-              className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform border border-blue-400 shadow-md"
-            >
-              <Languages className="w-5 h-5" />
-              <span className="font-bold">{language === 'english' ? 'EN' : 'සිං'}</span>
+            <div className="text-center bg-white rounded-xl p-2 min-w-[70px] shadow">
+              <Heart size={18} className="text-red-500 mx-auto" />
+              <div className="font-black">{lives}</div>
+              <div className="text-xs text-gray-600">{t.lives}</div>
+            </div>
+            <div className="text-center bg-white rounded-xl p-2 min-w-[70px] shadow">
+              <Lightbulb size={18} className="text-yellow-500 mx-auto" />
+              <div className="font-black">{hintsRemaining}</div>
+              <div className="text-xs text-gray-600">{t.hintText}</div>
+            </div>
+            <div className="text-center bg-white rounded-xl p-2 min-w-[70px] shadow">
+              <Target size={18} className="text-green-500 mx-auto" />
+              <div className="font-black">{round + 1}/{totalRounds}</div>
+              <div className="text-xs text-gray-600">{t.round}</div>
+            </div>
+            <button onClick={toggleLanguage} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-xl">
+              {language === 'english' ? 'EN' : 'සිං'}
             </button>
           </div>
         </div>
 
         {/* Main Game Area */}
         <div className="flex-1 overflow-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Left Panel */}
             <div className="space-y-4">
-              {/* Video Section */}
-              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-lg">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="text-2xl text-blue-600">🤟</div>
-                  <h3 className="text-gray-800 font-bold text-lg">{t.signVideo}</h3>
-                  <div className="text-2xl text-blue-600">👀</div>
-                </div>
-                
-                <div className="relative rounded-xl overflow-hidden border-2 border-gray-300 shadow-inner">
+              {/* Video */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg">
+                <h3 className="text-center font-bold text-lg mb-3">🤟 {t.signVideo} 👀</h3>
+                <div className="rounded-xl overflow-hidden border">
                   {puzzle && puzzle.video_url ? (
-                    <video
-                      key={puzzle.word}
-                      src={`http://localhost:5001${puzzle.video_url}`}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-56 object-cover"
-                      onError={(e) => console.error('Video error:', e)}
-                    />
+                    <video src={`http://localhost:5001${puzzle.video_url}`} autoPlay loop muted playsInline className="w-full h-48 object-cover" />
                   ) : (
-                    <div className="w-full h-56 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                      <div className="text-6xl text-blue-400 animate-bounce">🤟</div>
+                    <div className="w-full h-48 bg-blue-100 flex items-center justify-center">
+                      <div className="text-6xl">🤟</div>
                     </div>
                   )}
-                  <div className="absolute bottom-3 right-3 bg-black/70 rounded-full p-2 shadow-lg">
-                    <Play className="w-5 h-5 text-white" />
-                  </div>
                 </div>
               </div>
 
               {/* Secret Word Info */}
               {puzzle && !showWordAfterFail && (
-                <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-lg">
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="text-2xl text-blue-600">❓</div>
-                    <h3 className="text-gray-800 font-bold text-lg">{t.secretWord}</h3>
-                    <div className="text-2xl text-blue-600">🔍</div>
-                  </div>
-                  
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 mb-4 border border-blue-200">
-                    <p className="text-gray-700 text-center font-medium mb-3">{t.wordHas} {puzzle.syllables.length} {t.selectConnected}</p>
-                    
-                    <div className="flex justify-center gap-3 mb-4">
+                <div className="bg-white rounded-2xl p-4 shadow-lg">
+                  <h3 className="text-center font-bold text-lg mb-3">❓ {t.secretWord} 🔍</h3>
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <p className="text-center mb-3">{t.wordHas} {puzzle.syllables.length} {t.selectConnected}</p>
+                    <div className="flex justify-center gap-2 mb-4">
                       {puzzle.syllables.map((_, index) => (
-                        <div key={index} className="w-12 h-14 bg-white rounded-lg flex items-center justify-center border-2 border-blue-200 shadow-sm relative group">
+                        <div key={index} className="w-12 h-14 bg-white rounded-lg flex items-center justify-center border-2 border-blue-200 relative">
                           {selectedCells.length > index ? (
                             <span className="text-2xl font-bold text-blue-600">
                               {(() => {
@@ -1038,96 +839,43 @@ const SinhalaWordPuzzleGame = () => {
                               })()}
                             </span>
                           ) : (
-                            <>
-                              <span className="text-gray-300 text-xl">?</span>
-                              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            </>
+                            <span className="text-gray-300 text-xl">?</span>
                           )}
-                          <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full text-xs flex items-center justify-center text-white font-bold">
-                            {index + 1}
-                          </div>
+                          <div className="absolute -top-2 -right-2 w-5 h-5 bg-blue-500 rounded-full text-xs flex items-center justify-center text-white">{index + 1}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-                  
-                  {/* MODIFIED: Enhanced Attempt Tracking with Wrong Attempts */}
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+
+                  {/* Attempt Tracking */}
+                  <div className="bg-blue-50 rounded-xl p-4 mt-3">
                     <div className="grid grid-cols-2 gap-4 mb-3">
                       <div className="text-center">
-                        <span className="text-gray-700 font-medium text-sm">{t.attempts}:</span>
-                        <div className={`text-2xl font-bold ${
-                          attempts >= 4 ? 'text-red-500' : 
-                          attempts >= 2 ? 'text-yellow-500' : 
-                          'text-green-500'
-                        }`}>{attempts}</div>
+                        <div className="text-sm text-gray-600">{t.attempts}</div>
+                        <div className={`text-2xl font-bold ${attempts >= 4 ? 'text-red-500' : attempts >= 2 ? 'text-yellow-500' : 'text-green-500'}`}>{attempts}</div>
                       </div>
                       <div className="text-center">
-                        <span className="text-gray-700 font-medium text-sm">{t.wrongAttempts}:</span>
-                        <div className={`text-2xl font-bold ${
-                          wrongAttempts >= 4 ? 'text-red-500' : 
-                          wrongAttempts >= 2 ? 'text-yellow-500' : 
-                          'text-blue-400'
-                        }`}>{wrongAttempts}</div>
+                        <div className="text-sm text-gray-600">{t.wrongAttempts}</div>
+                        <div className={`text-2xl font-bold ${wrongAttempts >= 4 ? 'text-red-500' : wrongAttempts >= 2 ? 'text-yellow-500' : 'text-blue-500'}`}>{wrongAttempts}</div>
                       </div>
                     </div>
-                    
-                    {/* Progress bar for wrong attempts out of 5 */}
-                    <div className="relative pt-1">
-                      <div className="flex mb-2 items-center justify-between">
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-600 bg-red-200">
-                            Game Over at 5
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs font-semibold inline-block text-red-600">
-                            {wrongAttempts}/5
-                          </span>
-                        </div>
-                      </div>
-                      <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-red-200">
-                        <div 
-                          style={{ width: `${(wrongAttempts / 5) * 100}%` }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500 transition-all duration-500"
-                        ></div>
-                      </div>
+                    <div className="h-2 bg-red-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-red-500 transition-all" style={{ width: `${(wrongAttempts / 5) * 100}%` }}></div>
                     </div>
-                    
-                    {/* Hint indicator */}
                     {attempts >= 2 && (
-                      <div className="mt-3 p-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg border border-blue-200">
-                        <p className="text-blue-800 text-sm font-medium text-center">
-                          💡 {language === 'sinhala' ? 'ඉඟි ලබා ගත හැක!' : 'Hints available!'}
-                        </p>
-                      </div>
+                      <div className="mt-3 p-2 bg-blue-100 rounded-lg text-center text-sm text-blue-800">💡 Hints available!</div>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* Word Reveal on Game Over or Skip */}
+              {/* Word Reveal */}
               {puzzle && showWordAfterFail && (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-200 shadow-lg">
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="text-2xl text-blue-500">💡</div>
-                    <h3 className="text-gray-800 font-bold text-lg">{t.wordWas}:</h3>
-                    <div className="text-2xl text-blue-500">📝</div>
-                  </div>
-                  
-                  <div className="bg-white rounded-xl p-4 mb-4 border border-blue-100">
-                    <p className="text-3xl font-black text-gray-800 text-center mb-3">{puzzle.word}</p>
-                    <div className="flex justify-center gap-2 flex-wrap">
-                      {puzzle.syllables.map((syllable, index) => (
-                        <span key={index} className="bg-gradient-to-r from-sky-100 to-blue-100 px-3 py-1 rounded-lg text-blue-700 font-bold border border-sky-200">
-                          {syllable}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl p-3 border border-sky-200">
-                    <p className="text-gray-700 text-center font-bold">📝 {puzzle.english}</p>
+                <div className="bg-white rounded-2xl p-4 shadow-lg">
+                  <h3 className="text-center font-bold text-lg mb-3">💡 {t.wordWas} 📝</h3>
+                  <div className="bg-blue-50 rounded-xl p-4 text-center">
+                    <div className="text-3xl font-black mb-2">{puzzle.word}</div>
+                    <div className="text-gray-600">{puzzle.english}</div>
                   </div>
                 </div>
               )}
@@ -1135,235 +883,104 @@ const SinhalaWordPuzzleGame = () => {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={useHint}
-                    disabled={hintsRemaining === 0}
-                    className={`py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
-                      hintsRemaining > 0
-                        ? 'bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white border border-teal-400 shadow-md hover:scale-105'
-                        : 'bg-gray-300 text-gray-500 border border-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    <Lightbulb className="w-5 h-5" />
-                    <span>{t.hint} ({hintsRemaining})</span>
+                  <button onClick={useHint} disabled={hintsRemaining === 0} className={`px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-2 ${hintsRemaining > 0 ? 'bg-teal-500 hover:bg-teal-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}>
+                    <Lightbulb size={18} /> {t.hint} ({hintsRemaining})
                   </button>
-                  
-                  <button
-                    onClick={clearSelection}
-                    disabled={selectedCells.length === 0}
-                    className={`py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
-                      selectedCells.length > 0
-                        ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border border-red-400 shadow-md hover:scale-105'
-                        : 'bg-gray-300 text-gray-500 border border-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    <X className="w-5 h-5" />
-                    <span>{t.clear}</span>
+                  <button onClick={clearSelection} disabled={selectedCells.length === 0} className={`px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-2 ${selectedCells.length > 0 ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}>
+                    <X size={18} /> {t.clear}
                   </button>
                 </div>
-
-                <button
-                  onClick={checkAnswer}
-                  disabled={selectedCells.length === 0}
-                  className={`w-full py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 transition-all ${
-                    selectedCells.length > 0
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border border-green-400 shadow-lg hover:shadow-xl hover:scale-105 animate-pulse'
-                      : 'bg-gray-400 text-gray-300 border border-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  <Check className="w-7 h-7" />
-                  <span>{t.checkAnswer}</span>
+                <button onClick={checkAnswer} disabled={selectedCells.length === 0} className={`w-full py-3 rounded-xl font-bold text-xl flex items-center justify-center gap-2 ${selectedCells.length > 0 ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}>
+                  <Check size={20} /> {t.checkAnswer}
                 </button>
-
-                <button
-                  onClick={skipWord}
-                  className="w-full py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white border border-gray-400 shadow-md hover:scale-105 transition-all"
-                >
-                  <SkipForward className="w-5 h-5" />
-                  <span>{t.nextWord}</span>
+                <button onClick={skipWord} className="w-full py-2 rounded-xl font-bold flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white">
+                  <SkipForward size={18} /> {t.nextWord}
                 </button>
               </div>
             </div>
 
             {/* Center Panel - Game Grid */}
-            <div className={`lg:col-span-2 bg-white rounded-2xl p-5 border border-gray-200 shadow-lg flex flex-col ${shake ? 'animate-shake' : ''}`}>
+            <div className={`lg:col-span-2 bg-white rounded-2xl p-5 shadow-lg ${shake ? 'animate-shake' : ''}`}>
               {/* Hint Panel */}
               {showHintPanel && aiHints.length > 0 && (
-                <div className="sticky top-2 z-[999] space-y-3 mb-4">
-                  <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl p-4 border-2 border-blue-300 shadow-lg">
-                    <div className="flex items-center gap-2 mb-3 justify-center">
-                      <span className="text-2xl">💡</span>
-                      <h4 className="text-lg font-black text-blue-900">
-                        {t.aiHint}
-                      </h4>
-                      <span className="text-2xl">🤖</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-2">
-                      {aiHints.map((hint, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200"
-                        >
-                          <p className="text-blue-800 font-medium text-sm">
-                            {hint}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <div className="bg-blue-100 rounded-xl p-4 mb-4">
+                  <h4 className="font-bold text-blue-900 text-center mb-2">💡 {t.aiHint} 🤖</h4>
+                  {aiHints.map((hint, idx) => (
+                    <div key={idx} className="bg-white rounded-lg p-2 mb-2 text-blue-800 text-sm">{hint}</div>
+                  ))}
                 </div>
               )}
 
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="text-3xl text-blue-400 animate-spin" style={{animationDuration: '3s'}}>✨</div>
-                <h3 className="text-2xl font-black text-gray-800 text-center">{t.findSecretWord}</h3>
-                <div className="text-3xl text-blue-400 animate-spin" style={{animationDuration: '3s', animationDirection: 'reverse'}}>✨</div>
-              </div>
+              <h3 className="text-2xl font-black text-center mb-4">✨ {t.findSecretWord} ✨</h3>
+              <div className="bg-blue-50 rounded-xl p-3 mb-4 text-center text-sm">{t.instructions}</div>
 
-              <div className="mb-6 bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl p-4 border border-sky-200">
-                <p className="text-gray-700 text-center text-sm font-medium">
-                  {t.instructions}
-                </p>
-              </div>
-
-              <div className="flex-1 flex items-center justify-center p-3 min-h-[400px]">
-                <div 
-                  className="grid gap-2 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 shadow-inner"
-                  style={{
-                    gridTemplateColumns: `repeat(${levelConfig[level].gridSize}, minmax(0, 1fr))`,
-                    maxWidth: 'min(600px, 90vw)',
-                    maxHeight: 'min(600px, 60vh)'
-                  }}
-                >
-                  {grid.map((row, rowIdx) =>
+              <div className="flex justify-center p-4">
+                <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${levelConfig[level].gridSize}, minmax(0, 80px))` }}>
+                  {grid.map((row, rowIdx) => (
                     row.map((cell, colIdx) => {
                       const cellKey = `${rowIdx}-${colIdx}`;
                       const isSelected = selectedCells.includes(cellKey);
                       const selectionIndex = selectedCells.indexOf(cellKey);
-
+                      //selected letter numbering {String.fromCharCode(65 + selectionIndex)}A,B..
                       return (
                         <button
                           key={cellKey}
                           onClick={() => toggleCell(rowIdx, colIdx)}
-                          className={`aspect-square flex items-center justify-center text-3xl font-black rounded-xl transition-all duration-200 border-2 relative ${
-                            isSelected
-                              ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white scale-105 border-yellow-400 shadow-lg z-10'
-                              : 'bg-white text-gray-800 hover:bg-blue-50 hover:scale-102 border-gray-300 shadow-sm hover:shadow-md'
+                          className={`aspect-square flex items-center justify-center text-2xl font-bold rounded-xl border-2 relative transition-all ${
+                            isSelected 
+                              ? 'bg-blue-500 text-white border-yellow-400 scale-105' 
+                              : 'bg-white text-gray-800 border-gray-300 hover:bg-blue-50'
                           }`}
                         >
                           {cell.letter}
                           {isSelected && (
-                            <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-base font-black text-white border-2 border-white shadow-lg">
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full text-xs flex items-center justify-center text-white">
                               {selectionIndex + 1}
                             </div>
                           )}
                         </button>
                       );
                     })
-                  )}
+                  ))}
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl border border-sky-200 shadow-sm">
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
-                    <div className="text-sm text-gray-600 font-bold mb-1">{t.secretWordText}</div>
-                    <div className="text-2xl font-black text-indigo-600">{puzzle ? puzzle.syllables.length : 0}</div>
+              <div className="mt-4 p-4 bg-blue-50 rounded-xl">
+                <div className="grid grid-cols-3 gap-4 mb-3">
+                  <div className="text-center bg-white rounded-lg p-2">
+                    <div className="text-xs text-gray-600">{t.secretWordText}</div>
+                    <div className="font-black text-xl">{puzzle ? puzzle.syllables.length : 0}</div>
                   </div>
-                  <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
-                    <div className="text-sm text-gray-600 font-bold mb-1">{t.selectedLetters}</div>
-                    <div className={`text-2xl font-black ${
-                      selectedCells.length === puzzle?.syllables.length ? 'text-green-500' : 'text-blue-500'
-                    }`}>
-                      {selectedCells.length}
-                    </div>
+                  <div className="text-center bg-white rounded-lg p-2">
+                    <div className="text-xs text-gray-600">{t.selectedLetters}</div>
+                    <div className={`font-black text-xl ${selectedCells.length === puzzle?.syllables.length ? 'text-green-500' : 'text-blue-500'}`}>{selectedCells.length}</div>
                   </div>
-                  <div className="text-center bg-white rounded-xl p-3 border border-gray-300">
-                    <div className="text-sm text-gray-600 font-bold mb-1">{t.attempts}</div>
-                    <div className="text-2xl font-black text-gray-800">{attempts}</div>
+                  <div className="text-center bg-white rounded-lg p-2">
+                    <div className="text-xs text-gray-600">{t.attempts}</div>
+                    <div className="font-black text-xl">{attempts}</div>
                   </div>
                 </div>
-                
-                <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg p-3 border border-blue-200">
-                  <p className="text-center text-blue-800 text-sm font-medium">
-                    {t.note}
-                  </p>
-                </div>
+                <div className="text-center text-sm text-blue-800">{t.note}</div>
               </div>
             </div>
           </div>
 
-          {/* Feedback Message */}
+          {/* Feedback */}
           {feedback && (
-            <div className={`p-4 rounded-2xl text-center font-bold text-lg border shadow-lg animate-bounce ${
-              feedback.type === 'success'
-                ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-300'
-                : feedback.type === 'error'
-                ? 'bg-gradient-to-r from-red-100 to-orange-100 text-red-800 border-red-300'
-                : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border-blue-300'
-            }`}>
-              <div className="flex items-center justify-center gap-3">
-                <div className="text-2xl">
-                  {feedback.type === 'success' ? '🎉' : feedback.type === 'error' ? '🤔' : '💡'}
-                </div>
-                <span>{feedback.message}</span>
-                <div className="text-2xl">
-                  {feedback.type === 'success' ? '✨' : feedback.type === 'error' ? '💪' : '👂'}
-                </div>
-              </div>
+            <div className={`mt-4 p-3 rounded-xl text-center font-bold ${feedback.type === 'success' ? 'bg-green-100 text-green-800' : feedback.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+              {feedback.message}
             </div>
           )}
         </div>
       </div>
 
       <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.6; }
-        }
-        
-        @keyframes progress {
-          0% { width: 0%; }
-          50% { width: 70%; }
-          100% { width: 100%; }
-        }
-        
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes spin-slow-reverse {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-          20%, 40%, 60%, 80% { transform: translateX(10px); }
-        }
-        
-        .animate-float {
-          animation: float infinite ease-in-out;
-        }
-        
-        .animate-progress {
-          animation: progress 2s ease-in-out infinite;
-        }
-        
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        
-        .animate-spin-slow-reverse {
-          animation: spin-slow-reverse 25s linear infinite;
-        }
-        
-        .animate-shake {
-          animation: shake 0.5s ease-in-out;
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-progress { animation: progress 2s ease-in-out infinite; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
       `}</style>
     </div>
   );
