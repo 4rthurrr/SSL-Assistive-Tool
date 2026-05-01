@@ -589,7 +589,7 @@ const SinhalaWordPuzzleGame = () => {
             <div className="flex justify-center items-center gap-3 mb-2">
               <div className="text-6xl animate-bounce">🤟</div>
               <h1 className="text-4xl md:text-5xl font-black text-gray-800 drop-shadow-lg">
-                <span className="bg-gradient-to-r from-indigo-600 to-blue-700 bg-clip-text text-transparent">
+                <span className="text-blue-600 font-black">
                   {t.title}
                 </span>
               </h1>
@@ -677,7 +677,8 @@ const SinhalaWordPuzzleGame = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="text-4xl text-gray-700 opacity-70">➤</div>
+                  {/*arrow*/}
+                  <div className="text-4xl text-black opacity-70">➤</div>
                 </div>
               </button>
             ))}
@@ -844,6 +845,7 @@ const SinhalaWordPuzzleGame = () => {
 
           <div className={`bg-gradient-to-r ${message.color} backdrop-blur-sm rounded-2xl p-6 mb-6 border-4 border-white/70 shadow-inner`}>
             <div className="text-7xl font-black text-gray-800 mb-2 drop-shadow-lg">{score}</div>
+            {/* Star Rating */}
             <div className="text-4xl mb-3">
               {'⭐'.repeat(stars)}{'☆'.repeat(3 - stars)}
             </div>
@@ -1227,13 +1229,14 @@ const SinhalaWordPuzzleGame = () => {
                 </p>
               </div>
 
-              <div className="flex-1 flex items-center justify-center p-3 min-h-[400px]">
+{/*puzzlegrid*/ }
+              <div className="flex-1 flex items-center justify-center p-3 min-h-[10px]">
                 <div 
                   className="grid gap-2 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 shadow-inner"
                   style={{
                     gridTemplateColumns: `repeat(${levelConfig[level].gridSize}, minmax(0, 1fr))`,
-                    maxWidth: 'min(600px, 90vw)',
-                    maxHeight: 'min(600px, 60vh)'
+                    maxWidth: 'min(800px, 950vw)',
+                    maxHeight: 'min(800px, 700vh)'
                   }}
                 >
                   {grid.map((row, rowIdx) =>
@@ -1252,6 +1255,8 @@ const SinhalaWordPuzzleGame = () => {
                               : 'bg-white text-gray-800 hover:bg-blue-50 hover:scale-102 border-gray-300 shadow-sm hover:shadow-md'
                           }`}
                         >
+                          {/*indexnumber - selected letter numbering {String.fromCharCode(65 + selectionIndex)}A,B..
+*/}
                           {cell.letter}
                           {isSelected && (
                             <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-base font-black text-white border-2 border-white shadow-lg">
