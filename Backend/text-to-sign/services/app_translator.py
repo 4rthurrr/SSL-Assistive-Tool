@@ -101,7 +101,7 @@ def translate():
         print(f"🔤 SSL Display   : {ssl_display_words}")
         print(f"📦 Clauses found : {len(animation_blocks)}")
 
-        # ── video stitching (unchanged logic, operates on flat sequence) ─────
+        #  video stitching (unchanged logic, operates on flat sequence) 
         # MANUAL IMPLEMENTATION
         # Word-to-video timing synchronization: cumulative duration tracking per sign clip
         # Produces word_timings array [{word, start_sec, end_sec}] aligned to output video

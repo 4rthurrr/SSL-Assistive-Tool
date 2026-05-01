@@ -410,7 +410,7 @@ const GameUserForm = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center font-['Fredoka',sans-serif]">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -423,7 +423,7 @@ const GameUserForm = () => {
 
   if (step === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center font-['Fredoka',sans-serif]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto mb-4"></div>
           <p className="text-xl text-gray-800">Checking your status...</p>
@@ -434,7 +434,7 @@ const GameUserForm = () => {
 
   if (step === 'goToGames') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4 font-['Fredoka',sans-serif]">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
           <Gamepad2 className="w-20 h-20 text-green-600 mx-auto mb-4 animate-bounce" />
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Welcome back, {userData?.name}!</h2>
@@ -479,7 +479,7 @@ const GameUserForm = () => {
 
   if (step === 'register') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center p-4 font-['Fredoka',sans-serif]">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
           <div className="text-center mb-6">
             <User className="w-16 h-16 text-sky-600 mx-auto mb-4" />
@@ -543,7 +543,7 @@ const GameUserForm = () => {
 
   if (step === 'quizIntro') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center p-4 font-['Fredoka',sans-serif]">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
           <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
 
@@ -579,7 +579,7 @@ const GameUserForm = () => {
     const videoKey = question.visualType === 'video' ? getVideoKey(question.videoUrl) : null;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4 font-['Fredoka',sans-serif]">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
@@ -664,7 +664,7 @@ const GameUserForm = () => {
     const { score, total, percentage, recommendation } = quizResult;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center p-4 font-['Fredoka',sans-serif]">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center">
           <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
 
