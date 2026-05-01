@@ -28,9 +28,17 @@ import requests
 import shlex
 import shutil
 
+# Fix Unicode encoding for Windows consoles BEFORE any emoji prints.
+if hasattr(sys.stdout, 'buffer') and getattr(sys.stdout, 'encoding', '').lower() != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO_DIR = os.path.dirname(_BASE_DIR)
 _LIP_READING_SOURCE_DIR = os.path.join(_REPO_DIR, "lip reading-final_finall4_21_2026")
+
+# Suppress OpenCV verbose backend warnings on Windows
+os.environ.setdefault("OPENCV_LOG_LEVEL", "ERROR")
+cv2.setLogLevel(0)  # 0 = SILENT
 
 # Local lip-reading resources in Backend folder (for self-contained operation)
 _LIP_READING_LOCAL_DIR = os.path.join(_BASE_DIR, "lip-reading")
@@ -105,7 +113,7 @@ try:
     _lip_feature_module = _load_lip_module("lip_source_feature_extraction", "feture_extract.py")
     lip_get_detels = _lip_feature_module.get_detels
 except Exception as exc:
-    print(f"⚠️ Lip feature module unavailable, using fallback: {exc}")
+    print(f"[WARN] Lip feature module unavailable, using fallback: {exc}")
 
     def lip_get_detels(cv_img, anotation=True):
         annotated = cv_img.copy()
@@ -126,7 +134,7 @@ try:
     _lip_predict_module = _load_lip_module("lip_source_prediction", "Predict_realtime.py")
     lip_predict_video = _lip_predict_module.predict_video
 except Exception as exc:
-    print(f"⚠️ Lip prediction module unavailable, using fallback: {exc}")
+    print(f"[WARN] Lip prediction module unavailable, using fallback: {exc}")
 
     def lip_predict_video(video_path):
         cap = cv2.VideoCapture(video_path)
@@ -203,9 +211,7 @@ def _proxy_to_source(path, method='GET', data=None, params=None, stream=False):
         print(f"⚠️ Proxy to source failed: {e}")
         return None
 
-# Fix Unicode encoding for Windows
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+# (UTF-8 stdout fix already applied at module top)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -335,6 +341,7 @@ _PLACEHOLDER = _make_placeholder()
 
 
 def _try_open_camera(index, backend_name, backend_flag):
+    print(f"[CAM] Trying index={index} backend={backend_name}...")
     if backend_flag is None:
         cap = cv2.VideoCapture(index)
     else:
@@ -342,33 +349,44 @@ def _try_open_camera(index, backend_name, backend_flag):
 
     if not cap.isOpened():
         cap.release()
+        print(f"[CAM]   -> not opened")
         return None, f"{backend_name} idx={index}: not opened"
 
+    print(f"[CAM]   -> opened, waiting for frames...")
     valid_frames = 0
     black_like_frames = 0
 
-    # Warm up and validate the stream.
-    for _ in range(20):
+    # Windows built-in cameras (especially DSHOW) can take 4-5 seconds before
+    # delivering the first real frame. Give up to 100 attempts x 60ms = 6 s.
+    max_attempts = 100
+    for attempt in range(max_attempts):
         ret, frame = cap.read()
         if not ret or frame is None:
-            time.sleep(0.02)
+            time.sleep(0.06)
             continue
         valid_frames += 1
         mean_val = float(np.mean(frame))
-        std_val = float(np.std(frame))
+        std_val  = float(np.std(frame))
         if mean_val < 2.0 and std_val < 2.0:
             black_like_frames += 1
-        time.sleep(0.02)
+        else:
+            # Got at least one real, non-black frame - camera is good!
+            print(f"[CAM]   -> got real frame at attempt {attempt} (mean={mean_val:.1f})")
+            break
+        time.sleep(0.06)
 
     if valid_frames == 0:
         cap.release()
-        return None, f"{backend_name} idx={index}: no frames"
+        print(f"[CAM]   -> no frames in {max_attempts} attempts, rejected")
+        return None, f"{backend_name} idx={index}: no frames in {max_attempts} attempts"
 
-    # Ignore sources that only output black frames.
+    # Reject only if EVERY frame we received was black (virtual/broken cam).
     if black_like_frames == valid_frames and valid_frames >= 5:
         cap.release()
+        print(f"[CAM]   -> only black frames, rejected")
         return None, f"{backend_name} idx={index}: black stream"
 
+    print(f"[CAM]   -> ACCEPTED (valid_frames={valid_frames}, black={black_like_frames})")
     return cap, None
 
 
@@ -387,22 +405,34 @@ def _build_camera_candidates():
         if idx not in indices:
             indices.append(idx)
 
+    # On Windows, DSHOW handles shared/built-in cameras better than MSMF.
+    # MSMF throws MF_E_HW_MFT_FAILED_START_STREAMING (-1072875772) when the
+    # camera hardware is busy or needs exclusive access. Try DSHOW first.
     all_backends = [
         ("DSHOW", cv2.CAP_DSHOW),
-        ("MSMF", cv2.CAP_MSMF),
-        ("AUTO", None),
+        ("AUTO",  None),
+        ("MSMF",  cv2.CAP_MSMF),  # Last resort — prone to exclusive-lock errors
     ]
 
     if preferred_backend in {"DSHOW", "MSMF", "AUTO"}:
         preferred = [b for b in all_backends if b[0] == preferred_backend]
-        others = [b for b in all_backends if b[0] != preferred_backend]
-        backends = preferred + others
+        others    = [b for b in all_backends if b[0] != preferred_backend]
+        backends  = preferred + others
     else:
         backends = all_backends
 
+    # Build candidates: try index 0 with every backend first (most likely to
+    # be the built-in laptop camera), then the remaining indices.
+    priority_idx = indices[0] if indices else 0
+    rest_indices = [i for i in indices if i != priority_idx]
+
     candidates = []
+    # Priority pass: all backends with index 0
     for backend_name, backend_flag in backends:
-        for idx in indices:
+        candidates.append((priority_idx, backend_name, backend_flag))
+    # Remaining indices with all backends
+    for idx in rest_indices:
+        for backend_name, backend_flag in backends:
             candidates.append((idx, backend_name, backend_flag))
 
     return candidates
@@ -1310,7 +1340,13 @@ if __name__ == "__main__":
     print(f"📹 Videos: {len(VIDEO_MAPPING)} mapped")
     print(f"🔗 MongoDB: {'Connected' if mongodb_manager else 'Not connected'}")
     print("="*70 + "\n")
-    
+
+    # Start the live camera background thread
+    _ensure_practis_videos()
+    cam_thread = threading.Thread(target=camera_worker, daemon=True, name="CameraWorker")
+    cam_thread.start()
+    print("📷 Camera worker thread started")
+
     if mongodb_manager and hasattr(mongodb_manager, 'disconnect'):
         atexit.register(mongodb_manager.disconnect)
     

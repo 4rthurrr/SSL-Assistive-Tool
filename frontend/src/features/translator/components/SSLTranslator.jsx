@@ -98,7 +98,7 @@ function App() {
     videoRef.current.play();
     setIsPlaying(true);
   };
-
+// Confetti Celibration
   const handleVideoEnd = () => {
     setIsPlaying(false);
     setShowConfetti(true);
