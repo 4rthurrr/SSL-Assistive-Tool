@@ -11,6 +11,8 @@ import SentenceGame from './features/games/sentence/SentenceGame';
 import SSLTranslator from './features/translator/components/SSLTranslator';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import "./shared/styles/App.css";
+import { LipReadingComponent } from './features/LipReading';
+
 
 /* ── Auth-aware Navbar ─────────────────────────── */
 function Navbar() {
@@ -67,7 +69,7 @@ function Navbar() {
       <div style={{ display: "flex", gap: "10px", alignItems: "center", zIndex: 1 }}>
         <NavLink to="/" label="🏠 Home" />
         <NavLink to="/ssl-translator" label="✨ Translator" locked={!isLoggedIn} />
-        <NavLink to="https://www.youtube.com/" label="👄 Lip Reading" external />
+        <NavLink to="/lip-reading" label="👄 Lip Reading" />
         <NavLink to={user?.hasTakenQuiz ? "/gameselection" : "/game-register"} label="🎮 Games" locked={!isLoggedIn} />
 
         {isLoggedIn ? (
@@ -173,6 +175,7 @@ function App() {
           <Route path="/ai-analytics" element={
             <ProtectedRoute><AIAnalyticsDashboard /></ProtectedRoute>
           } />
+          <Route path="/lip-reading" element={<LipReadingComponent />} />
         </Routes>
       </div>
     </Router>
@@ -209,17 +212,16 @@ const HomePage = () => {
       shadow: "rgba(76,175,80,.25)",
     },
     {
-      to: "https://www.youtube.com/",
+      to: "/lip-reading",
       icon: "👄",
       title: "Lip Reading",
       titleSi: "තොල් කියවීම",
-      desc: "Test navigation flow by opening YouTube Home from this tile",
-      btnLabel: "Open YouTube",
+      desc: "Practice lip reading with the original training flow and live camera view",
+      btnLabel: "Open Lip Reading",
       color: "#FF6B6B",
       gradient: "linear-gradient(135deg,#FF6B6B,#E63946)",
       shadow: "rgba(230,57,70,.25)",
       public: true,
-      external: true,
     },
     {
       to: "/translate",

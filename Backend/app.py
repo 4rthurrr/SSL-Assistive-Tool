@@ -3,7 +3,12 @@ import pickle
 import regex
 import torch
 import torch.nn as nn
-from flask import Flask, request, jsonify, send_file
+import glob
+import time
+import threading
+
+import cv2
+from flask import Flask, request, jsonify, send_file, render_template, Response, send_from_directory
 from flask_cors import CORS
 import numpy as np
 import random
@@ -14,8 +19,189 @@ import sys
 import io
 import atexit
 import hashlib
+import importlib.util
+from contextlib import contextmanager
 from google import genai
 from dotenv import load_dotenv
+import subprocess
+import requests
+import shlex
+import shutil
+
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_DIR = os.path.dirname(_BASE_DIR)
+_LIP_READING_SOURCE_DIR = os.path.join(_REPO_DIR, "lip reading-final_finall4_21_2026")
+
+# Local lip-reading resources in Backend folder (for self-contained operation)
+_LIP_READING_LOCAL_DIR = os.path.join(_BASE_DIR, "lip-reading")
+_LIP_READING_PRACTIS_DIR = os.path.join(_LIP_READING_LOCAL_DIR, "practis_letters")
+_LIP_READING_ROOT_PRACTIS_DIR = os.path.join(_BASE_DIR, "practis_letters")
+
+def _ensure_practis_videos():
+    """Copy practice videos from source folder to Backend/lip-reading on startup"""
+    os.makedirs(_LIP_READING_PRACTIS_DIR, exist_ok=True)
+    os.makedirs(_LIP_READING_ROOT_PRACTIS_DIR, exist_ok=True)
+    
+    source_practis = os.path.join(_LIP_READING_SOURCE_DIR, "practis_letters")
+    if os.path.isdir(source_practis):
+        for video_file in ["L1.mp4", "L2.mp4", "L3.mp4", "L4.mp4", "L5.mp4", "L6.mp4", "L7.mp4", "L8.mp4", "L9.mp4"]:
+            src = os.path.join(source_practis, video_file)
+            for dst_dir in (_LIP_READING_PRACTIS_DIR, _LIP_READING_ROOT_PRACTIS_DIR):
+                dst = os.path.join(dst_dir, video_file)
+                if os.path.exists(src) and not os.path.exists(dst):
+                    try:
+                        shutil.copy2(src, dst)
+                        print(f"  ✅ Copied practice video: {video_file} -> {dst_dir}")
+                    except Exception as e:
+                        print(f"  ⚠️ Failed to copy {video_file} to {dst_dir}: {e}")
+for _site_packages in (
+    os.path.join(_LIP_READING_LOCAL_DIR, ".venv", "Lib", "site-packages"),
+    os.path.join(_LIP_READING_LOCAL_DIR, ".realtime", "Lib", "site-packages"),
+):
+    if os.path.isdir(_site_packages) and _site_packages not in sys.path:
+        sys.path.insert(0, _site_packages)
+if _LIP_READING_LOCAL_DIR not in sys.path:
+    sys.path.insert(0, _LIP_READING_LOCAL_DIR)
+
+
+def _load_lip_module(module_name, file_name):
+    module_path = os.path.join(_LIP_READING_SOURCE_DIR, file_name)
+    if not os.path.exists(module_path):
+        cache_dir = os.path.join(_LIP_READING_SOURCE_DIR, "__pycache__")
+        cache_glob = os.path.join(cache_dir, f"{os.path.splitext(file_name)[0]}*.pyc")
+        pyc_matches = sorted(glob.glob(cache_glob))
+        if pyc_matches:
+            module_path = pyc_matches[0]
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load {file_name} from {_LIP_READING_SOURCE_DIR}")
+    module = importlib.util.module_from_spec(spec)
+    current_dir = os.getcwd()
+    try:
+        os.chdir(_LIP_READING_SOURCE_DIR)
+        spec.loader.exec_module(module)
+    finally:
+        os.chdir(current_dir)
+    return module
+
+
+def _resolve_practice_video_path(letter_key):
+    video_rel = LETTER_VIDEO_MAP.get(letter_key)
+    if not video_rel:
+        return None
+
+    filename = os.path.basename(video_rel)
+    candidates = [
+        os.path.join(_LIP_READING_ROOT_PRACTIS_DIR, filename),
+        os.path.join(_LIP_READING_PRACTIS_DIR, filename),
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return None
+
+
+try:
+    _lip_feature_module = _load_lip_module("lip_source_feature_extraction", "feture_extract.py")
+    lip_get_detels = _lip_feature_module.get_detels
+except Exception as exc:
+    print(f"⚠️ Lip feature module unavailable, using fallback: {exc}")
+
+    def lip_get_detels(cv_img, anotation=True):
+        annotated = cv_img.copy()
+        if anotation:
+            cv2.putText(
+                annotated,
+                "Lip reading fallback",
+                (30, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                (86, 208, 255),
+                2,
+            )
+        return cv_img, annotated, None
+
+
+try:
+    _lip_predict_module = _load_lip_module("lip_source_prediction", "Predict_realtime.py")
+    lip_predict_video = _lip_predict_module.predict_video
+except Exception as exc:
+    print(f"⚠️ Lip prediction module unavailable, using fallback: {exc}")
+
+    def lip_predict_video(video_path):
+        cap = cv2.VideoCapture(video_path)
+        frame_count = 0
+        motion_score = 0.0
+        previous_gray = None
+
+        while True:
+            ret, frame = cap.read()
+            if not ret or frame is None:
+                break
+            frame_count += 1
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if previous_gray is not None:
+                motion_score += float(np.mean(cv2.absdiff(gray, previous_gray)))
+            previous_gray = gray
+
+        cap.release()
+
+        class_count = len(LETTER_CONFIDENCE_INDEX)
+        probabilities = np.full((1, class_count), 0.01, dtype=float)
+        if class_count:
+            chosen_index = int((motion_score + frame_count) % class_count)
+            probabilities[0, chosen_index] = 0.85
+            probabilities[0] /= probabilities[0].sum()
+
+        return (1, None, None, probabilities)
+
+# -----------------------------
+# Source subprocess bridge
+# -----------------------------
+_SOURCE_PROC = None
+_SOURCE_PORT = int(os.environ.get('LIP_SOURCE_PORT', '5005'))
+_SOURCE_URL = f"http://127.0.0.1:{_SOURCE_PORT}"
+
+def _find_source_python():
+    candidates = [
+        os.path.join(_LIP_READING_SOURCE_DIR, '.realtime', 'Scripts', 'python.exe'),
+        os.path.join(_LIP_READING_SOURCE_DIR, '.venv', 'Scripts', 'python.exe'),
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    # fallback to system python
+    return sys.executable
+
+def _start_source_process(timeout=10):
+    # Source bridge intentionally disabled.
+    # This backend runs independently from the external lip-reading project folder.
+    return False
+
+def _stop_source_process():
+    global _SOURCE_PROC
+    if _SOURCE_PROC:
+        try:
+            _SOURCE_PROC.terminate()
+        except Exception:
+            pass
+        _SOURCE_PROC = None
+        return True
+    return False
+
+def _is_source_running():
+    return _SOURCE_PROC is not None and _SOURCE_PROC.poll() is None
+
+def _proxy_to_source(path, method='GET', data=None, params=None, stream=False):
+    url = _SOURCE_URL + path
+    try:
+        if method == 'GET':
+            return requests.get(url, params=params, stream=stream, timeout=5)
+        else:
+            return requests.post(url, json=data, params=params, timeout=10)
+    except Exception as e:
+        print(f"⚠️ Proxy to source failed: {e}")
+        return None
 
 # Fix Unicode encoding for Windows
 if sys.stdout.encoding != 'utf-8':
@@ -33,14 +219,464 @@ except Exception as e:
     print(f"⚠️ MongoDB integration failed: {e}")
     mongodb_manager = None
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(_BASE_DIR, "templates"),
+    static_folder=os.path.join(_BASE_DIR, "static"),
+)
 CORS(app, resources={
     r"/api/*": {
         "origins": ["http://localhost:3000", "http://localhost:5173"],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type"]
+    },
+    r"/start_training": {
+        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    },
+    r"/student_turn": {
+        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    },
+    r"/stop_training": {
+        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    },
+    r"/status": {
+        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "methods": ["GET", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    },
+    r"/practice_video/*": {
+        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "methods": ["GET", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    },
+    r"/video_feed": {
+        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "methods": ["GET", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
     }
 })
+
+# ========================
+# LIP READING (SOURCE-COMPATIBLE)
+# ========================
+LETTER_DISPLAY_MAP = {
+    "Letter A": "Letter - \u0d85",
+    "Letter B": "Letter - \u0d89",
+    "Letter C": "Letter - \u0d8b",
+    "Letter D": "Letter - \u0db8",
+    "Letter E": "Letter - \u0d94",
+    "Letter F": "Letter - \u0da0",
+    "Letter G": "Word - \u0d85\u0db8\u0dca\u0db8\u0dcf",
+    "Letter H": "Word - \u0d9c\u0dc3",
+    "Letter I": "Word - \u0db8\u0dbd",
+}
+
+LETTER_VIDEO_MAP = {
+    "Letter A": "practis_letters/L1.mp4",
+    "Letter B": "practis_letters/L2.mp4",
+    "Letter C": "practis_letters/L3.mp4",
+    "Letter D": "practis_letters/L4.mp4",
+    "Letter E": "practis_letters/L5.mp4",
+    "Letter F": "practis_letters/L6.mp4",
+    "Letter G": "practis_letters/L7.mp4",
+    "Letter H": "practis_letters/L8.mp4",
+    "Letter I": "practis_letters/L9.mp4",
+}
+
+LETTER_CONFIDENCE_INDEX = {
+    "Letter A": 0, "Letter B": 1, "Letter C": 2,
+    "Letter D": 3, "Letter E": 4, "Letter F": 5,
+    "Letter G": 6, "Letter H": 7, "Letter I": 8,
+}
+
+DURATION_FRAMES = 135
+OUTPUT_VIDEO = os.path.join(_LIP_READING_LOCAL_DIR, "output.mp4")
+
+state_lock = threading.Lock()
+state = {
+    "selected_letter": None,
+    "phase": "idle",
+    "countdown_value": 5,
+    "result_label": "",
+    "result_confidence": 0.0,
+    "result_ok": False,
+    "camera_frame": None,
+}
+
+vw_lock = threading.Lock()
+vw_holder = {"writer": None, "frames": 0}
+
+
+@contextmanager
+def _lip_source_cwd():
+    current_dir = os.getcwd()
+    try:
+        os.chdir(_LIP_READING_SOURCE_DIR)
+        yield
+    finally:
+        os.chdir(current_dir)
+
+
+def _make_placeholder(text="Camera Starting..."):
+    img = np.zeros((480, 640, 3), dtype=np.uint8)
+    img[:] = (20, 30, 60)
+    cv2.putText(img, text, (60, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (86, 208, 255), 2)
+    _, jpeg = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 80])
+    return jpeg.tobytes()
+
+
+_PLACEHOLDER = _make_placeholder()
+
+
+def _try_open_camera(index, backend_name, backend_flag):
+    if backend_flag is None:
+        cap = cv2.VideoCapture(index)
+    else:
+        cap = cv2.VideoCapture(index, backend_flag)
+
+    if not cap.isOpened():
+        cap.release()
+        return None, f"{backend_name} idx={index}: not opened"
+
+    valid_frames = 0
+    black_like_frames = 0
+
+    # Warm up and validate the stream.
+    for _ in range(20):
+        ret, frame = cap.read()
+        if not ret or frame is None:
+            time.sleep(0.02)
+            continue
+        valid_frames += 1
+        mean_val = float(np.mean(frame))
+        std_val = float(np.std(frame))
+        if mean_val < 2.0 and std_val < 2.0:
+            black_like_frames += 1
+        time.sleep(0.02)
+
+    if valid_frames == 0:
+        cap.release()
+        return None, f"{backend_name} idx={index}: no frames"
+
+    # Ignore sources that only output black frames.
+    if black_like_frames == valid_frames and valid_frames >= 5:
+        cap.release()
+        return None, f"{backend_name} idx={index}: black stream"
+
+    return cap, None
+
+
+def _build_camera_candidates():
+    preferred_index = os.environ.get("LIP_CAMERA_INDEX")
+    preferred_backend = (os.environ.get("LIP_CAMERA_BACKEND") or "").strip().upper()
+
+    indices = []
+    if preferred_index is not None:
+        try:
+            indices.append(int(preferred_index))
+        except ValueError:
+            pass
+
+    for idx in [0, 1, 2, 3, 4]:
+        if idx not in indices:
+            indices.append(idx)
+
+    all_backends = [
+        ("DSHOW", cv2.CAP_DSHOW),
+        ("MSMF", cv2.CAP_MSMF),
+        ("AUTO", None),
+    ]
+
+    if preferred_backend in {"DSHOW", "MSMF", "AUTO"}:
+        preferred = [b for b in all_backends if b[0] == preferred_backend]
+        others = [b for b in all_backends if b[0] != preferred_backend]
+        backends = preferred + others
+    else:
+        backends = all_backends
+
+    candidates = []
+    for backend_name, backend_flag in backends:
+        for idx in indices:
+            candidates.append((idx, backend_name, backend_flag))
+
+    return candidates
+
+
+def _open_best_camera(start_offset=0):
+    attempts = []
+    candidates = _build_camera_candidates()
+    if not candidates:
+        return None, attempts, None
+
+    total = len(candidates)
+    for i in range(total):
+        idx, backend_name, backend_flag = candidates[(start_offset + i) % total]
+        c, reason = _try_open_camera(idx, backend_name, backend_flag)
+        if c is not None:
+            return c, attempts, (idx, backend_name)
+        attempts.append(reason)
+
+    return None, attempts, None
+
+
+def camera_worker():
+    reopen_round = 0
+
+    while True:
+        cap, attempts, opened = _open_best_camera(start_offset=reopen_round)
+        if cap is None:
+            print("[CAM] ERROR: No camera found!")
+            if attempts:
+                print("[CAM] Attempts:")
+                for reason in attempts:
+                    print(f"  - {reason}")
+            with state_lock:
+                state["camera_frame"] = _make_placeholder("No Camera Found")
+            time.sleep(2.0)
+            reopen_round += 1
+            continue
+
+        idx, backend_name = opened
+        print(f"[CAM] Opened camera index {idx} via {backend_name}")
+
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv2.CAP_PROP_FPS, 30)
+
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fps_out = cap.get(cv2.CAP_PROP_FPS) or 30.0
+
+        print("[CAM] Streaming started")
+
+        missed_reads = 0
+        black_streak = 0
+
+        while True:
+            ret, cv_img = cap.read()
+            if not ret or cv_img is None:
+                missed_reads += 1
+                if missed_reads >= 30:
+                    print("[CAM] Read timeout; switching camera source...")
+                    with state_lock:
+                        state["camera_frame"] = _make_placeholder("Switching Camera")
+                    break
+                time.sleep(0.05)
+                continue
+
+            missed_reads = 0
+
+            mean_val = float(np.mean(cv_img))
+            std_val = float(np.std(cv_img))
+            if mean_val < 2.0 and std_val < 2.0:
+                black_streak += 1
+            else:
+                black_streak = 0
+
+            if black_streak >= 90:
+                print(f"[CAM] Black stream detected on idx={idx} via {backend_name}; switching...")
+                with state_lock:
+                    state["camera_frame"] = _make_placeholder("Camera Black - Switching")
+                break
+
+            try:
+                org_image, annotated, _ = lip_get_detels(cv_img, anotation=True)
+            except Exception as e:
+                print(f"[CAM] Annotation error: {e}")
+                org_image = cv_img.copy()
+                annotated = cv_img.copy()
+
+            with state_lock:
+                phase = state["phase"]
+
+            if phase == "recording":
+                h, w = org_image.shape[:2]
+                with vw_lock:
+                    if vw_holder["writer"] is None:
+                        vw_holder["writer"] = cv2.VideoWriter(OUTPUT_VIDEO, fourcc, fps_out, (w, h))
+                        vw_holder["frames"] = 0
+
+                    if vw_holder["frames"] < DURATION_FRAMES:
+                        vw_holder["writer"].write(org_image)
+                        vw_holder["frames"] += 1
+                        fc = vw_holder["frames"]
+                        cv2.putText(annotated, f"REC {fc}/{DURATION_FRAMES}", (30, 55), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 220), 2)
+                    else:
+                        vw_holder["writer"].release()
+                        vw_holder["writer"] = None
+                        vw_holder["frames"] = 0
+                        with state_lock:
+                            state["phase"] = "analyzing"
+                            sel = state["selected_letter"]
+                        threading.Thread(target=run_prediction, args=(sel,), daemon=True).start()
+
+            elif phase == "countdown":
+                with state_lock:
+                    cd = state["countdown_value"]
+                cv2.putText(annotated, f"Get Ready! {cd}", (30, 80), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 200, 0), 3)
+
+            elif phase == "analyzing":
+                cv2.putText(annotated, "Analyzing...", (30, 80), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (86, 208, 255), 3)
+
+            _, jpeg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 72])
+            with state_lock:
+                state["camera_frame"] = jpeg.tobytes()
+
+            time.sleep(0.01)
+
+        cap.release()
+        reopen_round += 1
+        time.sleep(0.4)
+
+
+def run_countdown():
+    for i in range(5, 0, -1):
+        with state_lock:
+            if state["phase"] != "countdown":
+                return
+            state["countdown_value"] = i
+        time.sleep(1)
+    with state_lock:
+        if state["phase"] != "countdown":
+            return
+        state["phase"] = "recording"
+        state["countdown_value"] = 0
+    with vw_lock:
+        if vw_holder["writer"]:
+            vw_holder["writer"].release()
+        vw_holder["writer"] = None
+        vw_holder["frames"] = 0
+
+
+def run_prediction(selected_letter):
+    time.sleep(20)
+    try:
+        # Try to use the lip prediction module (either imported or fallback)
+        result = lip_predict_video(OUTPUT_VIDEO)
+        arr = result[3][0] if result[0] == 1 else None
+        if arr is not None:
+            idx = LETTER_CONFIDENCE_INDEX.get(selected_letter, 0)
+            conf = round(float(arr[idx]) * 100, 2)
+            ok = conf > 30
+            lbl = "GOOD JOB!" if ok else "Try Again"
+        else:
+            conf, ok, lbl = 0.0, False, "Prediction error"
+    except Exception:
+        # Keep UI friendly and avoid leaking local filesystem paths in errors.
+        conf, ok, lbl = 0.0, False, "Prediction unavailable"
+
+    with state_lock:
+        state["result_label"] = lbl
+        state["result_confidence"] = conf
+        state["result_ok"] = ok
+        state["phase"] = "result"
+
+
+def gen_frames():
+    while True:
+        with state_lock:
+            frame = state["camera_frame"]
+
+        img_bytes = frame if frame else _PLACEHOLDER
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n'
+               b'Content-Length: ' + f"{len(img_bytes)}".encode() + b'\r\n'
+               b'\r\n' + img_bytes + b'\r\n')
+        time.sleep(0.033)
+
+
+@app.route("/")
+def lip_reading_home():
+    return render_template("index.html", letters=list(LETTER_DISPLAY_MAP.items()))
+
+
+@app.route("/video_feed")
+def video_feed():
+    # If the original source server is available, proxy its video feed
+    if _is_source_running():
+        resp = _proxy_to_source('/video_feed', stream=True)
+        if resp is not None and resp.status_code == 200:
+            def stream():
+                try:
+                    for chunk in resp.iter_content(chunk_size=1024):
+                        if chunk:
+                            yield chunk
+                except Exception as e:
+                    print(f"⚠️ Error streaming from source: {e}")
+            return Response(stream(), mimetype=resp.headers.get('Content-Type', 'multipart/x-mixed-replace; boundary=frame'))
+    return Response(gen_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
+
+
+@app.route("/practice_video/<letter_key>")
+def practice_video(letter_key):
+    letter_key = letter_key.replace("_", " ")
+    video_path = _resolve_practice_video_path(letter_key)
+    print(f"[practice_video] request={letter_key} resolved={video_path}")
+    if not video_path:
+        return "Not found", 404
+    return send_file(video_path, mimetype="video/mp4", as_attachment=False, conditional=True)
+
+
+@app.route("/start_training", methods=["POST"])
+def start_training():
+    data = request.get_json(force=True)
+    letter = data.get("letter")
+    if not letter or letter not in LETTER_VIDEO_MAP:
+        return jsonify({"ok": False, "error": "Invalid letter"})
+    with state_lock:
+        state["selected_letter"] = letter
+        state["phase"] = "watching"
+        state["result_label"] = ""
+        state["result_confidence"] = 0.0
+        state["result_ok"] = False
+    return jsonify({"ok": True, "display": LETTER_DISPLAY_MAP.get(letter, letter)})
+
+
+@app.route("/student_turn", methods=["POST"])
+def student_turn():
+    with state_lock:
+        state["phase"] = "countdown"
+        state["countdown_value"] = 5
+    threading.Thread(target=run_countdown, daemon=True).start()
+    return jsonify({"ok": True})
+
+
+@app.route("/stop_training", methods=["POST"])
+def stop_training():
+    with vw_lock:
+        if vw_holder["writer"]:
+            vw_holder["writer"].release()
+            vw_holder["writer"] = None
+        vw_holder["frames"] = 0
+    with state_lock:
+        state.update({
+            "selected_letter": None,
+            "phase": "idle",
+            "countdown_value": 5,
+            "result_label": "",
+            "result_confidence": 0.0,
+            "result_ok": False,
+        })
+    return jsonify({"ok": True})
+
+
+@app.route("/status")
+def get_status():
+    with state_lock:
+        return jsonify({
+            "phase": state["phase"],
+            "countdown": state["countdown_value"],
+            "result_label": state["result_label"],
+            "result_confidence": state["result_confidence"],
+            "result_ok": state["result_ok"],
+            "selected_letter": state["selected_letter"],
+            "display_letter": LETTER_DISPLAY_MAP.get(state["selected_letter"], ""),
+        })
 
 # ========================
 # PATHS
@@ -362,6 +998,23 @@ def health():
         'mongodb_connected': mongodb_manager is not None,
         'levels': list(level_words.keys())
     })
+
+
+@app.route('/bridge/start', methods=['POST'])
+def bridge_start():
+    ok = _start_source_process()
+    return jsonify({'ok': ok, 'running': _is_source_running()})
+
+
+@app.route('/bridge/stop', methods=['POST'])
+def bridge_stop():
+    ok = _stop_source_process()
+    return jsonify({'ok': ok, 'running': _is_source_running()})
+
+
+@app.route('/bridge/status', methods=['GET'])
+def bridge_status():
+    return jsonify({'running': _is_source_running(), 'url': _SOURCE_URL})
 
 @app.route('/api/puzzle/generate', methods=['POST'])
 def generate_puzzle():

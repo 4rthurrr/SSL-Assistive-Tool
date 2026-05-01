@@ -1,7 +1,8 @@
 // API base URLs
 export const API_URLS = {
-  auth:       'http://localhost:5000',
-  game:       'http://localhost:5000/api',
+  // Primary backend app (Flask) runs on port 5001 in this workspace
+  auth:       'http://localhost:5001',
+  game:       'http://localhost:5001/api',
   translator: 'http://localhost:5002',
   ai:         'http://localhost:5001/api',
   sentence:   'http://localhost:5003/api',
