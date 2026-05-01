@@ -38,7 +38,6 @@ _LIP_READING_SOURCE_DIR = os.path.join(_REPO_DIR, "lip reading-final_finall4_21_
 
 # Suppress OpenCV verbose backend warnings on Windows
 os.environ.setdefault("OPENCV_LOG_LEVEL", "ERROR")
-# cv2.setLogLevel() does not exist in OpenCV - using env var above instead
 
 # Local lip-reading resources in Backend folder (for self-contained operation)
 _LIP_READING_LOCAL_DIR = os.path.join(_BASE_DIR, "lip-reading")
