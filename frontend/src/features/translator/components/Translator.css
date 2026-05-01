@@ -1,0 +1,144 @@
+/* ============================================================
+   Translator.css — Unified Child-Friendly Design
+   Matches App.css design system: sky-blue / yellow / green
+   ============================================================ */
+
+.sl-page {
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.sl-hero {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+
+.sl-hero-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.sl-hero h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  margin: 0 0 10px;
+  text-shadow: 2px 2px 0px var(--secondary);
+}
+
+.sl-hero p {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Specific Overrides for Translator ──────────────────── */
+.sl-lang-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--primary-light);
+  border: 2px solid var(--primary);
+  color: var(--primary-dark);
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.sl-output-card {
+  background: var(--accent-light);
+  border: 3px solid var(--accent);
+  border-radius: 22px;
+  padding: 24px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(76,175,80,.15);
+}
+
+.sl-output-title {
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.sl-result-text {
+  font-size: 2.4rem;
+  color: var(--text-main);
+  font-weight: 900;
+  margin: 10px 0;
+  font-family: 'Fredoka', 'Noto Sans Sinhala', sans-serif;
+}
+
+.sl-fact-card {
+  background: var(--secondary-light);
+  border: 3px solid var(--secondary);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.sl-fact-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.sl-fact-text {
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.sl-tip-card {
+  background: white;
+  border: 3px solid var(--primary-light);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.sl-tip-title {
+  color: var(--primary-dark);
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sl-tip-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+
+.sl-tip-icon { font-size: 1.2rem; }
+
+.sl-tip-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.sl-footer-deco {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--primary);
+  font-size: 1.5rem;
+  letter-spacing: 12px;
+  opacity: 0.3;
+}

@@ -181,12 +181,7 @@ function App() {
             </div>
 
             {translationError && (
-              <div className="error-msg" style={{
-                background: "#fff3cd", border: "2px solid #ffc107",
-                borderRadius: "14px", padding: "14px 18px",
-                color: "#856404", fontSize: "1rem", marginTop: "12px",
-                fontFamily: "var(--sl-font)"
-              }}>
+              <div className="error-msg">
                 ⚠️ {translationError}
               </div>
             )}

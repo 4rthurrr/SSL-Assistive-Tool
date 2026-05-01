@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Play, Trophy, Heart, Lightbulb, RefreshCw, Home, 
@@ -176,12 +176,12 @@ const SinhalaWordPuzzleGame = () => {
       description: 'පිල්ලම් නැති සරල වචන',
       descriptionE: 'Simple words without vowel signs',
       gridSize: 6,
-      bgGradient: 'from-emerald-100 to-green-200',
-      textColor: 'text-emerald-800',
-      borderColor: 'border-emerald-300',
+      bgGradient: 'from-green-100 to-emerald-200',
+      textColor: 'text-green-800',
+      borderColor: 'border-green-300',
       icon: '🌱',
       difficulty: 1,
-      color: 'bg-gradient-to-r from-emerald-100 to-green-200'
+      color: 'bg-gradient-to-r from-green-100 to-emerald-200'
     },
     easy: {
       name: language === 'sinhala' ? 'පහසු' : 'EASY',
@@ -202,12 +202,12 @@ const SinhalaWordPuzzleGame = () => {
       description: 'මධ්‍යම වචන (4-6 අකුරු)',
       descriptionE: 'Medium words (4-6 letters)',
       gridSize: 8,
-      bgGradient: 'from-indigo-100 to-blue-200',
-      textColor: 'text-indigo-800',
-      borderColor: 'border-indigo-300',
+      bgGradient: 'from-blue-100 to-indigo-200',
+      textColor: 'text-blue-900',
+      borderColor: 'border-blue-300',
       icon: '🏃',
       difficulty: 3,
-      color: 'bg-gradient-to-r from-indigo-100 to-blue-200'
+      color: 'bg-gradient-to-r from-blue-100 to-indigo-200'
     },
     hard: {
       name: language === 'sinhala' ? 'දුෂ්කර' : 'HARD',
@@ -215,12 +215,12 @@ const SinhalaWordPuzzleGame = () => {
       description: 'දුෂ්කර වචන (7+ අකුරු)',
       descriptionE: 'Hard words (7+ letters)',
       gridSize: 10,
-      bgGradient: 'from-amber-100 to-yellow-200',
-      textColor: 'text-amber-800',
-      borderColor: 'border-yellow-300',
+      bgGradient: 'from-yellow-100 to-amber-200',
+      textColor: 'text-amber-900',
+      borderColor: 'border-yellow-400',
       icon: '🏆',
       difficulty: 4,
-      color: 'bg-gradient-to-r from-amber-100 to-yellow-200'
+      color: 'bg-gradient-to-r from-yellow-100 to-amber-200'
     }
   };
 
@@ -603,7 +603,7 @@ const SinhalaWordPuzzleGame = () => {
           <div className="flex justify-end gap-2 mb-4">
             <button 
               onClick={toggleLanguage}
-              className="p-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-700 text-white flex items-center gap-2"
+              className="p-2 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white flex items-center gap-2"
             >
               <Globe size={20} />
               <span className="font-bold">{language === 'sinhala' ? 'සිං' : 'EN'}</span>
@@ -700,7 +700,7 @@ const SinhalaWordPuzzleGame = () => {
                 
                 <button
                   onClick={() => navigate('/profile')}
-                  className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
                 >
                   <div className="text-xl">👤</div>
                   <div className="text-left">

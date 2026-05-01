@@ -214,21 +214,21 @@ const SignLanguageGame = () => {
   const levelConfig = {
     level_1: {
       name: language === 'en' ? 'Beginner' : 'මූලික',
-      color: 'from-emerald-400 to-green-500',
+      color: 'from-green-400 to-emerald-500',
       icon: '🌱',
       difficulty: language === 'en' ? 'Easy' : 'පහසු',
       description: language === 'en' ? 'Simple actions with family (2 words)' : 'පවුලේ අය සමඟ සරල ක්‍රියා (වචන 2)'
     },
     level_2: {
       name: language === 'en' ? 'Intermediate' : 'මධ්‍යම',
-      color: 'from-amber-400 to-orange-500',
+      color: 'from-sky-400 to-blue-500',
       icon: '🪷',
       difficulty: language === 'en' ? 'Medium' : 'මධ්‍යම',
       description: language === 'en' ? 'Eating, going, and describing (2-3 words)' : 'කෑම, යෑම සහ විස්තර කිරීම (වචන 2-3)'
     },
     level_3: {
       name: language === 'en' ? 'Advanced' : 'සංකීර්ණ',
-      color: 'from-red-500 to-orange-600',
+      color: 'from-yellow-400 to-amber-500',
       icon: '🏆',
       difficulty: language === 'en' ? 'Hard' : 'දුෂ්කර',
       description: language === 'en' ? 'Past tense, questions, and helping others (3-4 words)' : 'අතීත කාලය, ප්‍රශ්න සහ උදව් කිරීම (වචන 3-4)'
@@ -575,7 +575,7 @@ const SignLanguageGame = () => {
                   player.rank === 2 ? 'bg-gray-100 border-2 border-gray-400' :
                     player.rank === 3 ? 'bg-orange-100 border-2 border-orange-400' : 'bg-gray-50'
                 }`}>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex items-center justify-center font-black text-xl">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white flex items-center justify-center font-black text-xl">
                   {player.rank}
                 </div>
                 <div className="flex-1">
