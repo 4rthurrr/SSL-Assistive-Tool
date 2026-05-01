@@ -268,6 +268,7 @@ export default function GameSelection() {
             <Sparkles className="w-10 h-10 md:w-12 md:h-12" />
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </div>
+          {/* Sinhala title with English subtitle */}
           <h3 className="text-xl md:text-2xl font-bold mb-1 text-black">
             සංඥා විදු ප්‍රහේලිකා
           </h3>
@@ -284,10 +285,10 @@ export default function GameSelection() {
             <Play className="w-10 h-10 md:w-12 md:h-12" />
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-1">
+          <h3 className="text-xl md:text-2xl font-bold mb-1 text-black">
             සංඥා වාක්‍ය හුරු ක්‍රීඩා
           </h3>
-          <p className="text-green-100 text-sm md:text-base">
+          <p className="text-black text-sm md:text-base">
             Sign Sentence Familiarity Game
           </p>
         </button>
