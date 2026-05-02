@@ -34,7 +34,8 @@ if hasattr(sys.stdout, 'buffer') and getattr(sys.stdout, 'encoding', '').lower()
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO_DIR = os.path.dirname(_BASE_DIR)
-_LIP_READING_SOURCE_DIR = os.path.join(_REPO_DIR, "lip reading-final_finall4_21_2026")
+# Integrated Lip Reading location (internal to Backend)
+_LIP_READING_SOURCE_DIR = os.path.join(_BASE_DIR, "lip-reading")
 
 # Suppress OpenCV verbose backend warnings on Windows
 os.environ.setdefault("OPENCV_LOG_LEVEL", "ERROR")
@@ -67,6 +68,8 @@ for _site_packages in (
 ):
     if os.path.isdir(_site_packages) and _site_packages not in sys.path:
         sys.path.insert(0, _site_packages)
+if _LIP_READING_SOURCE_DIR not in sys.path:
+    sys.path.insert(0, _LIP_READING_SOURCE_DIR)
 if _LIP_READING_LOCAL_DIR not in sys.path:
     sys.path.insert(0, _LIP_READING_LOCAL_DIR)
 

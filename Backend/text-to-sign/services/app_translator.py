@@ -138,7 +138,7 @@ def translate():
                 "animation_blocks":   animation_blocks,
                 "semantic_json":      semantic_json,
             }), 200
-
+ # Crearte single video clip from multiple video clips 
         final_clip = concatenate_videoclips(generated_clips, method="compose")
         filename = f"{uuid.uuid4()}.mp4"
         output_path = os.path.join(OUTPUT_DIR, filename)
@@ -190,6 +190,7 @@ def translate():
                 })
 
         # Normal
+         #After generating video file, upload video to the frontend using this return statement 
         return jsonify({
             "video_url":            f"http://localhost:5002/videos/{filename}",
             "ssl_grammar":          ssl_words,
