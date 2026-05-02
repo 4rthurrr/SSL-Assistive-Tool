@@ -41,8 +41,8 @@ _LIP_READING_SOURCE_DIR = os.path.join(_BASE_DIR, "lip-reading")
 os.environ.setdefault("OPENCV_LOG_LEVEL", "ERROR")
 
 # Local lip-reading resources in Backend folder (for self-contained operation)
-_LIP_READING_LOCAL_DIR = os.path.join(_BASE_DIR, "lip-reading")
-_LIP_READING_PRACTIS_DIR = os.path.join(_LIP_READING_LOCAL_DIR, "practis_letters")
+_LIP_READING_LOCAL_DIR = _BASE_DIR
+_LIP_READING_PRACTIS_DIR = os.path.join(_BASE_DIR, "practis_letters")
 _LIP_READING_ROOT_PRACTIS_DIR = os.path.join(_BASE_DIR, "practis_letters")
 
 def _ensure_practis_videos():
@@ -62,12 +62,16 @@ def _ensure_practis_videos():
                         print(f"  ✅ Copied practice video: {video_file} -> {dst_dir}")
                     except Exception as e:
                         print(f"  ⚠️ Failed to copy {video_file} to {dst_dir}: {e}")
+_ORIGINAL_RESEARCH_DIR = r"D:\Research\lip reading\lip reading-final_finall4_21_2026"
 for _site_packages in (
     os.path.join(_LIP_READING_LOCAL_DIR, ".venv", "Lib", "site-packages"),
     os.path.join(_LIP_READING_LOCAL_DIR, ".realtime", "Lib", "site-packages"),
+    os.path.join(_ORIGINAL_RESEARCH_DIR, ".realtime", "Lib", "site-packages"),
+    os.path.join(_ORIGINAL_RESEARCH_DIR, ".venv", "Lib", "site-packages"),
 ):
     if os.path.isdir(_site_packages) and _site_packages not in sys.path:
         sys.path.insert(0, _site_packages)
+
 if _LIP_READING_SOURCE_DIR not in sys.path:
     sys.path.insert(0, _LIP_READING_SOURCE_DIR)
 if _LIP_READING_LOCAL_DIR not in sys.path:
@@ -112,58 +116,17 @@ def _resolve_practice_video_path(letter_key):
 
 
 try:
-    _lip_feature_module = _load_lip_module("lip_source_feature_extraction", "feture_extract.py")
-    lip_get_detels = _lip_feature_module.get_detels
-except Exception as exc:
-    print(f"[WARN] Lip feature module unavailable, using fallback: {exc}")
-
-    def lip_get_detels(cv_img, anotation=True):
-        annotated = cv_img.copy()
-        if anotation:
-            cv2.putText(
-                annotated,
-                "Lip reading fallback",
-                (30, 50),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1.0,
-                (86, 208, 255),
-                2,
-            )
-        return cv_img, annotated, None
+    from feture_extract import get_detels as lip_get_detels
+except ImportError:
+    def lip_get_detels(img, anotation=True):
+        return img, img, None
 
 
 try:
-    _lip_predict_module = _load_lip_module("lip_source_prediction", "Predict_realtime.py")
-    lip_predict_video = _lip_predict_module.predict_video
-except Exception as exc:
-    print(f"[WARN] Lip prediction module unavailable, using fallback: {exc}")
-
+    from Predict_realtime import predict_video as lip_predict_video
+except ImportError:
     def lip_predict_video(video_path):
-        cap = cv2.VideoCapture(video_path)
-        frame_count = 0
-        motion_score = 0.0
-        previous_gray = None
-
-        while True:
-            ret, frame = cap.read()
-            if not ret or frame is None:
-                break
-            frame_count += 1
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            if previous_gray is not None:
-                motion_score += float(np.mean(cv2.absdiff(gray, previous_gray)))
-            previous_gray = gray
-
-        cap.release()
-
-        class_count = len(LETTER_CONFIDENCE_INDEX)
-        probabilities = np.full((1, class_count), 0.01, dtype=float)
-        if class_count:
-            chosen_index = int((motion_score + frame_count) % class_count)
-            probabilities[0, chosen_index] = 0.85
-            probabilities[0] /= probabilities[0].sum()
-
-        return (1, None, None, probabilities)
+        return [0, 0, 0, 0]
 
 # -----------------------------
 # Source subprocess bridge
@@ -273,9 +236,15 @@ CORS(app, resources={
 # ========================
 # LIP READING (SOURCE-COMPATIBLE)
 # ========================
+LETTER_CONFIDENCE_INDEX = {
+    "Letter A": 0, "Letter B": 1, "Letter C": 2,
+    "Letter D": 3, "Letter E": 4, "Letter F": 5,
+    "Letter G": 6, "Letter H": 7, "Letter I": 8,
+}
+
 LETTER_DISPLAY_MAP = {
     "Letter A": "Letter - \u0d85",
-    "Letter B": "Letter - \u0d89",
+    "Letter B": "Letter - \u0d86",
     "Letter C": "Letter - \u0d8b",
     "Letter D": "Letter - \u0db8",
     "Letter E": "Letter - \u0d94",
@@ -295,12 +264,6 @@ LETTER_VIDEO_MAP = {
     "Letter G": "practis_letters/L7.mp4",
     "Letter H": "practis_letters/L8.mp4",
     "Letter I": "practis_letters/L9.mp4",
-}
-
-LETTER_CONFIDENCE_INDEX = {
-    "Letter A": 0, "Letter B": 1, "Letter C": 2,
-    "Letter D": 3, "Letter E": 4, "Letter F": 5,
-    "Letter G": 6, "Letter H": 7, "Letter I": 8,
 }
 
 DURATION_FRAMES = 135
@@ -530,6 +493,7 @@ def camera_worker():
                 h, w = org_image.shape[:2]
                 with vw_lock:
                     if vw_holder["writer"] is None:
+                        print(f"[DIAG] Starting recording. Resolution: {w}x{h}, FPS: {fps_out}")
                         vw_holder["writer"] = cv2.VideoWriter(OUTPUT_VIDEO, fourcc, fps_out, (w, h))
                         vw_holder["frames"] = 0
 
@@ -586,21 +550,39 @@ def run_countdown():
 
 
 def run_prediction(selected_letter):
-    time.sleep(20)
+    time.sleep(5) # Reduced from 20 to 5 as recording is ~4.5s
+    if not os.path.exists(OUTPUT_VIDEO):
+        print(f"[DIAG] ERROR: {OUTPUT_VIDEO} not found after recording!")
+        with state_lock:
+            state["result_label"] = "Recording failed"
+            state["phase"] = "result"
+        return
+
     try:
+        # Diagnostic Log
+        print(f"[DIAG] Prediction started for selected letter: '{selected_letter}'")
+        
         # Try to use the lip prediction module (either imported or fallback)
         result = lip_predict_video(OUTPUT_VIDEO)
+        
         arr = result[3][0] if result[0] == 1 else None
         if arr is not None:
             idx = LETTER_CONFIDENCE_INDEX.get(selected_letter, 0)
             conf = round(float(arr[idx]) * 100, 2)
             ok = conf > 30
             lbl = "GOOD JOB!" if ok else "Try Again"
+            
+            # Diagnostic Log
+            print(f"[DIAG] Class Index: {idx}")
+            print(f"[DIAG] Confidence for selected class: {conf}%")
+            print(f"[DIAG] Predicted word (max prob): {result[1]}")
+            # print(f"[DIAG] Full probabilities: {arr}")
         else:
             conf, ok, lbl = 0.0, False, "Prediction error"
-    except Exception:
-        # Keep UI friendly and avoid leaking local filesystem paths in errors.
+            print("[DIAG] Prediction failed: No output from model.")
+    except Exception as e:
         conf, ok, lbl = 0.0, False, "Prediction unavailable"
+        print(f"[DIAG] Prediction error: {e}")
 
     with state_lock:
         state["result_label"] = lbl

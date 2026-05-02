@@ -41,6 +41,12 @@ server.log
 **/models/target_vocab.json
 
 # Dataset
+extracted_data_csv/
+persons/
+dataset_video/
+Temp_predict_CSV/
+lip-reading/
+
 backend/Dataset*Original/
 backend/Dataset - Original/
 Dataset - Original/
