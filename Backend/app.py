@@ -440,6 +440,9 @@ def camera_worker():
         idx, backend_name = opened
         print(f"[CAM] Opened camera index {idx} via {backend_name}")
 
+        # WARM-UP: Give hardware a moment to stabilize
+        time.sleep(1.0)
+
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         cap.set(cv2.CAP_PROP_FPS, 30)
@@ -447,7 +450,7 @@ def camera_worker():
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         fps_out = cap.get(cv2.CAP_PROP_FPS) or 30.0
 
-        print("[CAM] Streaming started")
+        print(f"[CAM] Streaming started. FPS out: {fps_out}")
 
         missed_reads = 0
         black_streak = 0
@@ -468,13 +471,17 @@ def camera_worker():
 
             mean_val = float(np.mean(cv_img))
             std_val = float(np.std(cv_img))
+            
+            # Diagnostic: print occasionally if black
             if mean_val < 2.0 and std_val < 2.0:
                 black_streak += 1
+                if black_streak % 50 == 0:
+                    print(f"[CAM] Black streak: {black_streak} (mean={mean_val:.2f}, std={std_val:.2f})")
             else:
                 black_streak = 0
 
-            if black_streak >= 90:
-                print(f"[CAM] Black stream detected on idx={idx} via {backend_name}; switching...")
+            if black_streak >= 200: # Increased from 90
+                print(f"[CAM] Persistent black stream on idx={idx} ({backend_name}); switching...")
                 with state_lock:
                     state["camera_frame"] = _make_placeholder("Camera Black - Switching")
                 break
