@@ -116,7 +116,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_DRAW": {'label': 'Draw', 'sinhala': 'අඳිනවා', 'synonyms': ['අඳිනවා', 'අඳින්න', 'ඇන්දා']},
     "CONCEPT_DRINK": {'label': 'Drink', 'sinhala': 'බොනවා', 'synonyms': ['බොනවා', 'බිව්වා', 'බොන්න', 'බොමු']},
     "CONCEPT_EAR": {'label': 'Ear', 'sinhala': 'කන', 'synonyms': ['කන']},
-    "CONCEPT_EAT": {'label': 'Eat', 'sinhala': 'කනවා', 'synonyms': ['කනවා', 'කෑවා', 'කන්න', 'කමු']},
+    "CONCEPT_EAT": {'label': 'Eat', 'sinhala': 'කනවා', 'synonyms': ['කනවා', 'කෑවා', 'කන්න','අනුභව කරනවා','අනුභව' ,'අනුභව කරමි','අනුභව කල','අනුභව කළා','අනුභව කළේ','අනුභව කළේ','කමු','අනුභව කර','අනුභව කරමු']},
     "CONCEPT_ELDER_BRO": {'label': 'Elder bro', 'sinhala': 'අයියා', 'synonyms': ['අයියා', 'අයියේ', 'අයිය']},
     "CONCEPT_ELDER_SISTER": {'label': 'Elder sister', 'sinhala': 'අක්කා', 'synonyms': ['අක්කා', 'අක්කේ', 'අක්ක', 'අක්කි']},
     "CONCEPT_ELEPHANT": {'label': 'Elephant', 'sinhala': 'අලියා', 'synonyms': ['අලියා', 'අලි', 'අලියෙක්']},
