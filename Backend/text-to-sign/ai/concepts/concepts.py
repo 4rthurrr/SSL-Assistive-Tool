@@ -81,7 +81,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_CLOTHING": {'label': 'Clothing', 'sinhala': 'ඇඳුම්', 'synonyms': ['ඇඳුම්']},
     "CONCEPT_COLD": {'label': 'Cold', 'sinhala': 'සීතල', 'synonyms': ['සීතල']},
     "CONCEPT_COLOR": {'label': 'Color', 'sinhala': 'පාට', 'synonyms': ['පාට', 'වර්ණ']},
-    "CONCEPT_COME": {'label': 'Come', 'sinhala': 'එනවා', 'synonyms': ['එනවා', 'එන්න', 'ආවා', 'එමු', 'එන්නම්']},
+    "CONCEPT_COME": {'label': 'Come', 'sinhala': 'එනවා', 'synonyms': ['එනවා', 'එන්න', 'ආවා','ආවේ', 'එමු', 'එන්නම්','ආවනේ']}, 
     "CONCEPT_COMPUTER": {'label': 'Computer', 'sinhala': 'පරිගණකය', 'synonyms': ['පරිගණකය', 'කොම්පියුටරය']},
     "CONCEPT_CONNECT": {'label': 'Connect', 'sinhala': 'සම්බන්ධ කරනවා', 'synonyms': ['සම්බන්ධ කරනවා', 'සම්බන්ධ කරන්න', 'සම්බන්ධ කළා', 'සම්බන්ධ']},
     "CONCEPT_COOK": {'label': 'Cook', 'sinhala': 'උයනවා', 'synonyms': ['උයනවා', 'උයන්න', 'ඉව්වා']},
