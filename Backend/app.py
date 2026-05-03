@@ -485,9 +485,28 @@ def get_progress_report():
 # ==============================================================================
 # 🚀 SECTION 4: SERVER RUN
 # ==============================================================================
+def _start_sign_to_text_backend():
+    """Launch the Sign-to-Text FastAPI backend as a subprocess on port 8001."""
+    import subprocess
+    sign_dir = os.path.join(_BASE_DIR, "sign_to_text")
+    if not os.path.isfile(os.path.join(sign_dir, "main.py")):
+        print("⚠️  Sign-to-Text backend not found — skipping")
+        return None
+    print("🤟 Starting Sign-to-Text backend on port 8001...")
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8001"],
+        cwd=sign_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    atexit.register(proc.terminate)
+    print(f"✅ Sign-to-Text backend started (PID {proc.pid})")
+    return proc
+
 if __name__ == "__main__":
     print("\n" + "="*70 + "\n🚀 SignBridge Integrated API\n" + "="*70)
     _ensure_practis_videos()
     threading.Thread(target=camera_worker, daemon=True, name="CameraWorker").start()
     if mongodb_manager and hasattr(mongodb_manager, 'disconnect'): atexit.register(mongodb_manager.disconnect)
+    _start_sign_to_text_backend()
     app.run(host="0.0.0.0", port=5001, debug=False)

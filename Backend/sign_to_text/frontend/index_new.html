@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL Sign Language Recognition</title>
+    <!-- Google Fonts for Sinhala Support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Tokens ──────────────────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #0a0f1e;
+            --surface:   #111827;
+            --card:      #1a2235;
+            --border:    rgba(255,255,255,0.07);
+            --accent:    #6366f1;
+            --accent2:   #10b981;
+            --warn:      #f59e0b;
+            --danger:    #ef4444;
+            --text:      #f1f5f9;
+            --muted:     #64748b;
+            --dimmed:    #94a3b8;
+            --sinhala:   #a78bfa;
+            --radius:    14px;
+            --gap:       18px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Top Bar ─────────────────────────────────────────────────── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topbar-brand .logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .topbar-brand h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+        .topbar-brand p {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+        .status-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            font-size: 0.72rem;
+            color: var(--dimmed);
+            white-space: nowrap;
+        }
+        .pill-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--warn);
+            flex-shrink: 0;
+        }
+        .pill-dot.ok  { background: var(--accent2); }
+        .pill-dot.err { background: var(--danger);  }
+
+        /* ── 3-Column Layout ─────────────────────────────────────────── */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1.05fr 1fr 1fr;
+            gap: var(--gap);
+            padding: var(--gap) 24px 24px;
+            flex: 1;
+        }
+        @media (max-width: 1100px) {
+            .workspace { grid-template-columns: 1fr 1fr; }
+            .col-image  { grid-column: 1 / -1; }
+        }
+        @media (max-width: 680px) {
+            .workspace { grid-template-columns: 1fr; padding: 12px; }
+            .col-image  { grid-column: 1; }
+        }
+
+        /* ── Card ────────────────────────────────────────────────────── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 14px 18px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .card-body {
+            padding: 16px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ── Camera ──────────────────────────────────────────────────── */
+        .video-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #webcam, #canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10,15,30,0.82);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--dimmed);
+        }
+        #overlay .overlay-icon { font-size: 2.4rem; }
+        #overlay.hidden { display: none; }
+
+        /* ── Quality bar ─────────────────────────────────────────────── */
+        .qual-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+        .qual-track {
+            flex: 1;
+            height: 5px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        #qualityBar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent2);
+            border-radius: 99px;
+            transition: width 0.18s, background 0.3s;
+        }
+
+        /* ── Buttons ─────────────────────────────────────────────────── */
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-row.wrap { flex-wrap: wrap; }
+        .btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 9px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: filter 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; filter: none !important; }
+        .btn:not(:disabled):hover { filter: brightness(1.12); transform: translateY(-1px); }
+        .btn:not(:disabled):active { transform: translateY(0); }
+        .btn-primary  { background: var(--accent);  color: #fff; }
+        .btn-neutral  { background: rgba(255,255,255,0.08); color: var(--dimmed); border: 1px solid var(--border); }
+        .btn-success  { background: var(--accent2); color: #fff; }
+        .btn-vote     { background: linear-gradient(135deg,#8b5cf6,#d946ef); color: #fff; }
+        .btn-auto     { background: #0891b2; color: #fff; }
+        .btn-auto.active { background: var(--danger); }
+        .btn-demo     { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #111; }
+        .btn-demo.active { background: linear-gradient(135deg,#f43f5e,#ec4899); color: #fff; animation: demoglow 1.5s infinite; }
+        @keyframes demoglow { 0%,100% { box-shadow: 0 0 8px rgba(244,63,94,0.4); } 50% { box-shadow: 0 0 18px rgba(244,63,94,0.75); } }
+
+        /* ── Vote Progress ───────────────────────────────────────────── */
+        .vote-progress {
+            display: none;
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 9px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            color: var(--warn);
+            text-align: center;
+        }
+        .vote-progress.active { display: block; }
+        .vote-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .vote-round-dot {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(245,158,11,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700;
+            color: var(--warn);
+        }
+        .vote-round-dot.done  { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+        .vote-round-dot.active { background: var(--warn); animation: pulse 0.8s infinite; }
+
+        /* ── Auto indicator ──────────────────────────────────────────── */
+        .auto-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.25);
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: var(--accent2);
+        }
+        .auto-indicator.active { display: flex; }
+        .auto-pulse {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent2);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        /* ── Prediction / Results ────────────────────────────────────── */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            padding: 32px 0;
+            text-align: center;
+        }
+        .empty-state .empty-icon { font-size: 2.6rem; }
+
+        .pred-hero {
+            text-align: center;
+            padding: 20px 0 12px;
+        }
+        .pred-sinhala {
+            font-size: 3.4rem;
+            font-weight: 700;
+            color: var(--sinhala);
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            line-height: 1.2;
+        }
+        .pred-english {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 6px;
+            letter-spacing: -0.01em;
+        }
+        .pred-category {
+            font-size: 0.73rem;
+            color: var(--muted);
+            margin-top: 4px;
+            letter-spacing: 0.04em;
+        }
+
+        /* confidence badge */
+        .conf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .conf-high   { background: rgba(16,185,129,0.15); color: var(--accent2); border: 1px solid rgba(16,185,129,0.3); }
+        .conf-mid    { background: rgba(245,158,11,0.15); color: var(--warn);    border: 1px solid rgba(245,158,11,0.3); }
+        .conf-low    { background: rgba(239,68,68,0.15);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.3); }
+
+        /* progress bar */
+        .conf-bar-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .conf-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.5s ease;
+        }
+
+        /* top3 list */
+        .top3-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .top3-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            cursor: default;
+            transition: background 0.15s;
+        }
+        .top3-item:first-child { border-color: rgba(99,102,241,0.35); background: rgba(99,102,241,0.06); }
+        .top3-item:hover { background: rgba(255,255,255,0.07); }
+        .top3-rank {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--muted);
+            width: 16px;
+            flex-shrink: 0;
+        }
+        .top3-texts { flex: 1; min-width: 0; }
+        .top3-si {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--sinhala);
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+        }
+        .top3-en {
+            font-size: 0.78rem;
+            color: var(--dimmed);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .top3-conf {
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ── History ─────────────────────────────────────────────────── */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 160px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .history-list::-webkit-scrollbar { width: 4px; }
+        .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-badge {
+            padding: 2px 7px;
+            border-radius: 99px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .badge-high { background: rgba(16,185,129,0.15); color: var(--accent2); }
+        .badge-mid  { background: rgba(245,158,11,0.15);  color: var(--warn); }
+        .badge-low  { background: rgba(239,68,68,0.15);   color: var(--danger); }
+        .history-sign    { font-weight: 600; color: var(--text); flex: 1; }
+        .history-sinhala { color: var(--sinhala); font-family: 'Noto Sans Sinhala', sans-serif; font-size: 0.95rem; }
+
+        /* ── Image Panel ─────────────────────────────────────────────── */
+        .image-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            text-align: center;
+            padding: 28px 16px;
+        }
+        .image-empty .empty-icon { font-size: 2.8rem; }
+
+        #generatedImage {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
+        }
+        #imageResult { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .img-caption {
+            text-align: center;
+            padding: 10px 0 2px;
+        }
+        .img-caption-si {
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--sinhala);
+        }
+        .img-caption-hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ── Loading spinner ─────────────────────────────────────────── */
+        .spinner-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 32px 0;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+        .spinner-wrap.hidden { display: none; }
+        .spinner {
+            width: 38px; height: 38px;
+            border: 3px solid rgba(255,255,255,0.07);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Error toast ─────────────────────────────────────────────── */
+        .error-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 9px;
+            color: var(--danger);
+            font-size: 0.8rem;
+        }
+        .error-bar.hidden { display: none; }
+
+        /* ── Demo badge inline ───────────────────────────────────────── */
+        .demo-badge {
+            display: inline-block;
+            background: linear-gradient(135deg,#f43f5e,#ec4899);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 99px;
+            letter-spacing: 0.04em;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        /* section label */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--muted);
+            padding-bottom: 4px;
+        }
+
+        /* divider */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 2px 0;
+        }
+
+        /* ── JS-compat toggles (keep class names the JS expects) ─────── */
+        .test-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.035);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 92px;
+            gap: 8px;
+            align-items: end;
+        }
+        @media (max-width: 680px) {
+            .test-grid { grid-template-columns: 1fr; }
+        }
+        .test-control {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+        .test-control label {
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .test-control select,
+        .test-control input {
+            width: 100%;
+            min-height: 36px;
+            background: rgba(10,15,30,0.72);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.82rem;
+        }
+        .test-status {
+            min-height: 18px;
+            font-size: 0.76rem;
+            color: var(--dimmed);
+        }
+        .test-session {
+            font-size: 0.68rem;
+            color: var(--muted);
+            word-break: break-all;
+        }
+        .test-results {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .test-row {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr) auto;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            font-size: 0.76rem;
+        }
+        .test-row.correct { border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.06); }
+        .test-row.wrong { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.06); }
+        .test-row.skipped { border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.06); }
+        .test-row-main { min-width: 0; }
+        .test-row-main strong,
+        .test-row-main span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .test-row-main span { color: var(--muted); margin-top: 2px; }
+        .test-row-score { font-weight: 700; }
+
+        .loading         { display: none; }
+        .loading.active  { display: flex; }
+        .error-message   { display: none; }
+        .error-message.active { display: flex; align-items:center; gap:8px; padding:9px 14px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:9px; color:var(--danger); font-size:.8rem; }
+
+        /* ── Status dots (JS sets className directly) ───────────────────── */
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--warn);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .status-dot.connected { background: var(--accent2); }
+        .status-dot.error     { background: var(--danger);  }
+
+        /* ── Prediction items (JS generates these via innerHTML) ─────────── */
+        .pred-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            margin-bottom: 6px;
+        }
+        .pred-item:first-child { border-color: rgba(99,102,241,0.35); background: rgba(99,102,241,0.06); }
+        .pred-item-text { flex: 1; min-width: 0; }
+        .pred-item-sinhala {
+            font-size: 1.15rem; font-weight: 600;
+            color: var(--sinhala);
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+        }
+        .pred-item-english { font-size: .78rem; color: var(--dimmed); }
+        .pred-item-confidence { font-size: .9rem; font-weight: 700; flex-shrink: 0; }
+
+        /* Use JS-driven flex for imageSection and imageResult */
+        #imageSection[style*="display:block"]  { display: flex !important; }
+        #imageResult[style*="display:block"]   { display: flex !important; }
+        #imageSection[style*="display: block"] { display: flex !important; }
+        #imageResult[style*="display: block"]  { display: flex !important; }
+    </style>
+</head>
+<body>
+
+    <!-- ── Top Bar ──────────────────────────────────────────────────── -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="logo">🤟</div>
+            <div>
+                <h1>SSL Sign Language</h1>
+                <p>Sri Lankan Sign Language Recognition</p>
+            </div>
+        </div>
+        <div class="status-pills">
+            <div class="pill">
+                <span class="status-dot" id="serverDot"></span>
+                <span>Server: <strong id="serverStatus">Checking…</strong></span>
+            </div>
+            <div class="pill">
+                <span class="status-dot" id="mediapipeDot"></span>
+                <span>MediaPipe: <strong id="mediapipeStatus">Init…</strong></span>
+            </div>
+            <div class="pill">
+                <span class="status-dot" id="handDot"></span>
+                <span>Tracking: <strong id="handStatus">—</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── 3-Column Workspace ────────────────────────────────────────── -->
+    <div class="workspace">
+
+        <!-- Column 1 — Camera -->
+        <div class="card col-camera">
+            <div class="card-header">
+                <span class="card-title">📷 Camera</span>
+            </div>
+            <div class="card-body">
+
+                <div class="video-wrap">
+                    <video id="webcam" autoplay playsinline></video>
+                    <canvas id="canvas"></canvas>
+                    <div id="overlay">
+                        <span class="overlay-icon">📷</span>
+                        <span>Click "Start Camera" to begin</span>
+                    </div>
+                </div>
+
+                <div class="qual-row">
+                    <span>Quality</span>
+                    <div class="qual-track"><div id="qualityBar"></div></div>
+                    <span id="qualityLabel">—</span>
+                </div>
+
+                <!-- Primary controls -->
+                <div class="btn-row">
+                    <button id="startBtn"  class="btn btn-primary">📷 Start</button>
+                    <button id="stopBtn"   class="btn btn-neutral" disabled>⏹ Stop</button>
+                    <button id="recordBtn" class="btn btn-success" disabled>🎬 Record</button>
+                </div>
+
+                <!-- Advanced controls -->
+                <div class="btn-row wrap">
+                    <button id="voteBtn" class="btn btn-vote" disabled>🗳️ 3× Vote</button>
+                    <button id="autoBtn" class="btn btn-auto" disabled>⚡ Auto</button>
+                    <button id="demoBtn" class="btn btn-demo">🎯 Demo: OFF</button>
+                </div>
+
+                <!-- Vote progress -->
+                <div class="vote-progress" id="voteProgress">
+                    <span id="voteProgressText">Collecting round 1 / 3…</span>
+                    <div class="vote-dots">
+                        <div class="vote-round-dot" id="dot1">1</div>
+                        <div class="vote-round-dot" id="dot2">2</div>
+                        <div class="vote-round-dot" id="dot3">3</div>
+                    </div>
+                </div>
+
+                <!-- Auto indicator -->
+                <div class="auto-indicator" id="autoIndicator">
+                    <div class="auto-pulse"></div>
+                    <span>Auto-predicting… hold sign steady</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Column 2 — Results -->
+        <div class="card col-results">
+            <div class="card-header">
+                <span class="card-title">📊 Results</span>
+            </div>
+            <div class="card-body" style="gap:10px;">
+                <div class="loading" id="loading" style="flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:28px 0; color:var(--muted); font-size:.82rem;">
+                    <div class="spinner"></div>
+                    <span>Analysing sign…</span>
+                </div>
+                <div class="error-message" id="errorMessage"></div>
+                <div id="results" style="display:none;">
+                    <div class="pred-hero">
+                        <div class="pred-sinhala" id="mainSinhala">—</div>
+                        <div class="pred-english"  id="mainEnglish">—</div>
+                        <div class="pred-category" id="mainCategory">—</div>
+                        <span class="conf-badge conf-high" id="mainConfidence">—</span>
+                    </div>
+                    <div class="divider" style="margin:8px 0;"></div>
+                    <div class="section-label">Top Predictions</div>
+                    <div class="top3-list" id="topPredictions"></div>
+                    <div class="divider" style="margin:8px 0;"></div>
+                    <div class="section-label">Recent History</div>
+                    <div class="pred-history" id="predHistory" style="display:none;">
+                        <div class="history-list" id="historyList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3 — Visual Learning -->
+        <div class="card col-image">
+            <div class="card-header">
+                <span class="card-title">🎨 Visual Learning</span>
+            </div>
+            <div class="card-body" style="gap:12px;">
+                <div id="imageSection" style="display:none; flex-direction:column; gap:12px;">
+                    <button id="generateImageBtn" class="btn btn-primary" style="width:100%;">✨ Generate Visual Aid</button>
+                    <div id="imageResult" style="display:none; flex-direction:column; gap:8px;">
+                        <img id="generatedImage" alt="Visual learning aid" />
+                        <div class="img-caption">
+                            <div class="img-caption-si" id="imageCaptionSinhala"></div>
+                            <div class="img-caption-hint">This image connects the sign with the word</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider" style="margin:4px 0;"></div>
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <span class="section-label">📋 Recommended Signs</span>
+                    <button id="toggleGuideBtn" class="btn btn-neutral" style="flex:0; padding:4px 10px; font-size:0.7rem; min-width:auto;" onclick="toggleSignGuide()">Show</button>
+                </div>
+                <div id="signGuide" style="display:none; max-height:420px; overflow-y:auto; padding-right:4px;">
+                    <div id="signGuideContent" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /workspace -->
+
+    <!-- MediaPipe CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+    <script>
+    function toggleSignGuide(){const g=document.getElementById('signGuide'),b=document.getElementById('toggleGuideBtn');if(g.style.display==='none'){g.style.display='block';b.textContent='Hide';loadSignGuide();}else{g.style.display='none';b.textContent='Show';}}
+    async function loadSignGuide(){const c=document.getElementById('signGuideContent');if(c.dataset.loaded==='1')return;try{const r=await fetch(`${API_URL}/recommended-signs`);const d=await r.json();if(d.signs&&d.signs.length>0){renderSignGuide(d.signs);c.dataset.loaded='1';return;}}catch(e){}renderSignGuideFallback();c.dataset.loaded='1';}
+    function renderSignGuide(signs){const c=document.getElementById('signGuideContent');const cats={};for(const s of signs){if(!cats[s.category])cats[s.category]=[];cats[s.category].push(s);}const icons={Greetings:'🤝',People:'👥',Verbs:'🏃',Nouns:'📦',Adjectives:'✨',Places:'🏠',Vehicles:'🚗',Colors:'🎨',Days:'📅',Months:'🗓️',Numbers:'🔢',Adverb:'💬',Interjection:'❗'};let h='';for(const[cat,items]of Object.entries(cats)){h+=`<div style="margin-bottom:6px;"><div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${icons[cat]||'📌'} ${cat}</div><div style="display:flex;flex-wrap:wrap;gap:4px;">`;for(const s of items.slice(0,10)){const cl=s.f1>=90?'var(--accent2)':s.f1>=70?'#fbbf24':'var(--dimmed)';h+=`<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;font-size:0.73rem;" title="${s.sign} — F1: ${s.f1}%"><span style="color:var(--sinhala);font-family:'Noto Sans Sinhala',sans-serif;font-size:0.8rem;">${s.sinhala||''}</span><span style="color:var(--text);">${s.english}</span><span style="color:${cl};font-size:0.65rem;font-weight:700;">${s.f1}%</span></span>`;}h+='</div></div>';}c.innerHTML=h;}
+    function renderSignGuideFallback(){const c=document.getElementById('signGuideContent');const g=[{c:'🤝 Greetings',s:['Hello','Thank you','Ayubowan','Alright']},{c:'👥 People',s:['Mother','Man','Child','Elder bro','Younger bro','Us','Doctor']},{c:'🏃 Actions',s:['See','Walk','Drink','Play','Meet','Cook','Teach','Sleep','Look','Fight']},{c:'📦 Objects',s:['Camera','Computer','Laptop','Hat','Shirt','Suit','Bag','Table']},{c:'🏠 Places',s:['House','Road','Shop']},{c:'✨ Adjectives',s:['Good','Healthy','Fast','Beautiful','Rich','Wrong']},{c:'🎨 Colors',s:['Green','Red']},{c:'🚗 Vehicles',s:['Boat','Car','Bus']}];let h='';for(const gr of g){h+=`<div style="margin-bottom:6px;"><div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${gr.c}</div><div style="display:flex;flex-wrap:wrap;gap:4px;">`;for(const s of gr.s)h+=`<span style="padding:3px 8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;font-size:0.73rem;color:var(--text);">${s}</span>`;h+='</div></div>';}c.innerHTML=h;}
+    </script>
+</body>
+</html>
+

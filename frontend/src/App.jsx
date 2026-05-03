@@ -12,6 +12,7 @@ import SSLTranslator from './features/translator/components/SSLTranslator';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import "./shared/styles/App.css";
 import { LipReadingComponent } from './features/LipReading';
+import SignToText from './features/SignToText';
 
 
 /* ── Auth-aware Navbar ─────────────────────────── */
@@ -70,6 +71,7 @@ function Navbar() {
         <NavLink to="/" label="🏠 Home" />
         <NavLink to="/ssl-translator" label="✨ Translator" locked={!isLoggedIn} />
         <NavLink to="/lip-reading" label="👄 Lip Reading" />
+        <NavLink to="/sign-to-text" label="🤟 Sign to Text" />
         <NavLink to={user?.hasTakenQuiz ? "/gameselection" : "/game-register"} label="🎮 Games" locked={!isLoggedIn} />
 
         {isLoggedIn ? (
@@ -176,6 +178,7 @@ function App() {
             <ProtectedRoute><AIAnalyticsDashboard /></ProtectedRoute>
           } />
           <Route path="/lip-reading" element={<LipReadingComponent />} />
+          <Route path="/sign-to-text" element={<SignToText />} />
         </Routes>
       </div>
     </Router>
@@ -234,6 +237,18 @@ const HomePage = () => {
       gradient: "linear-gradient(135deg,#FFD93D,#E6C200)",
       shadow: "rgba(255,217,61,.30)",
       public: true,   // not protected
+    },
+    {
+      to: "/sign-to-text",
+      icon: "🤟",
+      title: "Sign to Text",
+      titleSi: "සංඥා සිට පෙළට",
+      desc: "Real-time sign language recognition using webcam with AI visual aids",
+      btnLabel: "Open Recognition",
+      color: "#8B5CF6",
+      gradient: "linear-gradient(135deg,#8B5CF6,#6C5CE7)",
+      shadow: "rgba(139,92,246,.25)",
+      public: true,
     },
   ];
 
