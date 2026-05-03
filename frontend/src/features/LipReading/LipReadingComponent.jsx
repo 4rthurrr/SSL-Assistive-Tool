@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './LipReadingComponent.css';
+import '../../shared/styles/App.css';
 import { API_URLS } from '../../utils/api';
 
 const BACKEND_URL = API_URLS.auth;
@@ -221,15 +222,10 @@ const LipReadingComponent = () => {
   };
 
   return (
-    <>
-      <header className="top-bar">
-        <div className="brand">
-          <span className="brand-icon">🤟</span>
-          <span className="brand-title">Sign Language Trainer</span>
-        </div>
-        <div className="header-badge">
-          <span className="dot pulse"></span> Live System
-        </div>
+    <div className="kids-app">
+      <header className="kids-header">
+        <h1>🦁 SignBridge </h1>
+        <p>තොල් කියවන්න අපි උදව් කරන්නම් 🤟</p>
       </header>
 
       <main className="layout">
@@ -331,10 +327,10 @@ const LipReadingComponent = () => {
         </aside>
       </main>
 
-      <footer className="footer">
-        🤟 Deaf Kids Sign Language Training System &nbsp;|&nbsp; Flask Web Edition
+      <footer className="footer" style={{ textAlign: "center", padding: "20px", opacity: 0.6, fontSize: "0.9rem" }}>
+        SignBridge ✨ Learning Buddy
       </footer>
-    </>
+    </div>
   );
 };
 

@@ -12,10 +12,8 @@ build/
 .DS_Store
 
 # Project Specific
-static/outputs/*.mp4
-static/outputs/driver_*.mp4
-static/outputs/sk_*.mp4
-static/outputs/ai_*.mp4
+Backend/static/outputs/
+!Backend/static/outputs/.gitkeep
 server.log
 *.log
 
@@ -41,6 +39,12 @@ server.log
 **/models/target_vocab.json
 
 # Dataset
+extracted_data_csv/
+persons/
+dataset_video/
+Temp_predict_CSV/
+lip-reading/
+
 backend/Dataset*Original/
 backend/Dataset - Original/
 Dataset - Original/

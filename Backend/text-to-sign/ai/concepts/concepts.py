@@ -81,7 +81,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_CLOTHING": {'label': 'Clothing', 'sinhala': 'ඇඳුම්', 'synonyms': ['ඇඳුම්']},
     "CONCEPT_COLD": {'label': 'Cold', 'sinhala': 'සීතල', 'synonyms': ['සීතල']},
     "CONCEPT_COLOR": {'label': 'Color', 'sinhala': 'පාට', 'synonyms': ['පාට', 'වර්ණ']},
-    "CONCEPT_COME": {'label': 'Come', 'sinhala': 'එනවා', 'synonyms': ['එනවා', 'එන්න', 'ආවා', 'එමු', 'එන්නම්']},
+    "CONCEPT_COME": {'label': 'Come', 'sinhala': 'එනවා', 'synonyms': ['එනවා', 'එන්න', 'ආවා','ආවේ', 'එමු', 'එන්නම්','ආවනේ']}, 
     "CONCEPT_COMPUTER": {'label': 'Computer', 'sinhala': 'පරිගණකය', 'synonyms': ['පරිගණකය', 'කොම්පියුටරය']},
     "CONCEPT_CONNECT": {'label': 'Connect', 'sinhala': 'සම්බන්ධ කරනවා', 'synonyms': ['සම්බන්ධ කරනවා', 'සම්බන්ධ කරන්න', 'සම්බන්ධ කළා', 'සම්බන්ධ']},
     "CONCEPT_COOK": {'label': 'Cook', 'sinhala': 'උයනවා', 'synonyms': ['උයනවා', 'උයන්න', 'ඉව්වා']},
@@ -146,7 +146,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_FRIDAY": {'label': 'Friday', 'sinhala': 'සිකුරාදා', 'synonyms': ['සිකුරාදා']},
     "CONCEPT_FRIEND": {'label': 'Friend', 'sinhala': 'යාළුවා', 'synonyms': ['යාළුවා', 'යාළුවෝ', 'යාළුවෙ', 'මිතුරේ']},
     "CONCEPT_FULL": {'label': 'Full', 'sinhala': 'පිරුණු', 'synonyms': ['පිරුණු']},
-    "CONCEPT_FUTURE": {'label': 'Future', 'sinhala': 'ඉදිරිය', 'synonyms': ['ඉදිරිය', 'හෙට', 'ඉදිරිදී', 'ඉදිරියේ']},
+    "CONCEPT_FUTURE": {'label': 'Future', 'sinhala': 'ඉදිරිය', 'synonyms': ['ඉදිරිය', 'ඉදිරිදී', 'ඉදිරියේ']},
     "CONCEPT_GET_UP": {'label': 'Get up', 'sinhala': 'නැගිටිනවා', 'synonyms': ['නැගිටිනවා', 'නැගිටින්න', 'නැගිට්ටා']},
     "CONCEPT_GIVE": {'label': 'Give', 'sinhala': 'දෙනවා', 'synonyms': ['දෙනවා', 'දෙන්න', 'දුන්නා']},
     "CONCEPT_GO": {'label': 'Go', 'sinhala': 'යනවා', 'synonyms': ['යනවා', 'යන්න', 'ගියා', 'යමු', 'යන්නම්']},
@@ -433,6 +433,7 @@ CONCEPT_NORMALIZATION_MAP = {
     "CONCEPT_LOOK_READ": "CONCEPT_STUDY",
     "CONCEPT_WE": "CONCEPT_US",       # No separate 'We' folder; SSl uses same sign as 'Us'
     "CONCEPT_WATCH": "CONCEPT_SEE", # Example if Watch video is missing
+    "CONCEPT_RICE": "CONCEPT_FOOD", # Fallback for Rice
     # Add more mappings as verified against dataset
 }
 

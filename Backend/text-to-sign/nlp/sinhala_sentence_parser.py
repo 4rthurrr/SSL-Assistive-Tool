@@ -60,6 +60,17 @@ _PERSON_CONCEPT_IDS: frozenset = frozenset({
     "CONCEPT_TEACHER", "CONCEPT_DOCTOR", "CONCEPT_STUDENT",
 })
 
+# ── Negation / Question concept IDs (handled explicitly in Stage 5) ──
+_NEGATION_CONCEPT_IDS: frozenset = frozenset({
+    "CONCEPT_NO", "CONCEPT_NOT", "CONCEPT_DONT", "CONCEPT_CANT", "CONCEPT_NONE", 
+    "CONCEPT_NOT_GOOD", "CONCEPT_NOT_LIKE", "CONCEPT_NOT_LIKE_(DISLIKE)"
+})
+
+_QUESTION_CONCEPT_IDS: frozenset = frozenset({
+    "CONCEPT_WHAT", "CONCEPT_WHERE", "CONCEPT_WHO", "CONCEPT_WHY", "CONCEPT_WHEN", 
+    "CONCEPT_HOW_MANY", "CONCEPT_HOW_MUCH", "CONCEPT_WHICH", "CONCEPT_WHOSE", "CONCEPT_WHOM"
+})
+
 
 # CUSTOM OPTIMIZATION
 # Self-synchronizing concept maps built from CONCEPT_DEFINITIONS at import time
@@ -267,6 +278,9 @@ class GlossBlock:
 # Full 6-stage Sinhala-to-SSL semantic NLP pipeline (rule-based, no external model)
 # Stage 0–6: Segmentation → Tokenization → Tense → SVO → Gloss → AnimationBlock
 # Designed for low-resource Sinhala SSL — no pre-trained Sinhala NLP model available
+
+# Words and punctuation marks in a separated sentence are identified separately.
+
 def segment_sentences(text: str) -> list[str]:
     """
     Split text into individual sentences on Sinhala & ASCII sentence-ending
@@ -293,6 +307,8 @@ def segment_sentences(text: str) -> list[str]:
 # ─────────────────────────────────────────────────────────────────────────────
 # STAGE 1 — TOKENISATION
 # ─────────────────────────────────────────────────────────────────────────────
+# Words and punctuation marks in a separated sentence are identified separately.
+
 
 def tokenize_sinhala(sentence: str) -> list[str]:
     """
@@ -311,6 +327,8 @@ def tokenize_sinhala(sentence: str) -> list[str]:
 # ─────────────────────────────────────────────────────────────────────────────
 # STAGE 2 — TENSE DETECTION
 # ─────────────────────────────────────────────────────────────────────────────
+# It identifies whether the sentence is in the past, present, or future tense. Two methods are used here:
+
 
 def detect_tense(tokens: list[str]) -> TenseInfo:
     """
@@ -346,12 +364,16 @@ def detect_tense(tokens: list[str]) -> TenseInfo:
 # ─────────────────────────────────────────────────────────────────────────────
 # STAGE 3 — SEMANTIC ROLE LABELLING (SVO extraction)
 # ─────────────────────────────────────────────────────────────────────────────
+# In a sentence, who is doing the action (Subject), what is being done (Verb), and to whom it is being done (Object) are distinguished.
 
 def _lookup_concept(token: str) -> Optional[str]:
     """Return a CONCEPT_* id for a Sinhala token via concepts.py if available."""
     try:
-        from concepts import get_concept_by_sinhala
-        return get_concept_by_sinhala(token)
+        from concepts import get_concept_by_sinhala, normalize_concept
+        cid = get_concept_by_sinhala(token)
+        if cid:
+            return normalize_concept(cid)
+        return None
     except Exception:
         return None
 
@@ -462,6 +484,9 @@ def extract_svo(tokens: list[str]) -> tuple[
         bare = _strip_case_suffix(tok_nc)
         cid = _lookup_concept(bare) or _lookup_concept(tok_nc)
         if cid:
+            # Skip negation/question concepts — they are added explicitly in Stage 5
+            if cid in _NEGATION_CONCEPT_IDS or cid in _QUESTION_CONCEPT_IDS:
+                continue
             objects.append(tok_nc)
             obj_concepts.append(cid)
         else:
@@ -508,12 +533,16 @@ def build_semantic_clause(raw_clause: str) -> SemanticClause:
 
     # Modifiers = time adverbs + left-over tokens not in SVO
     svo_tokens = {subject, verb} | set(objects)
-    modifiers = [
-        unicodedata.normalize("NFC", t) for t in tokens
-        if unicodedata.normalize("NFC", t) not in svo_tokens
-        and unicodedata.normalize("NFC", t) not in COORD_CONJUNCTIONS
-        and unicodedata.normalize("NFC", t) not in {"නෑ", "නැහැ"}
-    ]
+    modifiers = []
+    for t in tokens:
+        t_nc = unicodedata.normalize("NFC", t)
+        if t_nc in svo_tokens or t_nc in COORD_CONJUNCTIONS:
+            continue
+        # Skip negation/question tokens - handled explicitly at the end
+        cid = _lookup_concept(t_nc)
+        if cid in _NEGATION_CONCEPT_IDS or cid in _QUESTION_CONCEPT_IDS:
+            continue
+        modifiers.append(t_nc)
     mod_concepts = [_lookup_concept(m) or f"RAW:{m}" for m in modifiers]
 
     return SemanticClause(

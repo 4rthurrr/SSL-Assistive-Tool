@@ -65,6 +65,8 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 AVATAR_DIR = os.path.join(_TS, "assets", "avatars")
 os.makedirs(AVATAR_DIR, exist_ok=True)
 
+
+#When the user types a Sinhala sentence, it comes here.
 @app.route('/translate', methods=['POST'])
 def translate():
     if not MOVIEPY_AVAILABLE:
@@ -138,7 +140,7 @@ def translate():
                 "animation_blocks":   animation_blocks,
                 "semantic_json":      semantic_json,
             }), 200
-
+ # Crearte single video clip from multiple video clips 
         final_clip = concatenate_videoclips(generated_clips, method="compose")
         filename = f"{uuid.uuid4()}.mp4"
         output_path = os.path.join(OUTPUT_DIR, filename)
@@ -190,6 +192,7 @@ def translate():
                 })
 
         # Normal
+         #After generating video file, upload video to the frontend using this return statement 
         return jsonify({
             "video_url":            f"http://localhost:5002/videos/{filename}",
             "ssl_grammar":          ssl_words,
@@ -234,12 +237,12 @@ def upload_avatar():
         print(f"❌ Upload Error: {e}")
         return jsonify({"error": str(e)}), 500
 
-
+#The finished video is used to stream (display) to the Frontend.
 @app.route('/videos/<path:filename>')
 def serve_video(filename):
     return send_from_directory(OUTPUT_DIR, filename)
 
-
+# Sinhala characters are set to display correctly even on the server's console.
 if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8')
     sys.stderr.reconfigure(encoding='utf-8')

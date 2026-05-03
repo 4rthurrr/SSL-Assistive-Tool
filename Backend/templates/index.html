@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deaf Kids Sign Language Training</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<header class="top-bar">
+  <div class="brand">
+    <span class="brand-icon">🤟</span>
+    <span class="brand-title">Sign Language Trainer</span>
+  </div>
+  <div class="header-badge">
+    <span class="dot pulse"></span> Live System
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- LEFT: Letter list -->
+  <aside class="panel letter-panel">
+    <h2 class="panel-title">📚 Select Letter</h2>
+    <p class="panel-hint">Pick a letter then press <strong>Start</strong></p>
+    <ul class="letter-list" id="letterList">
+      {% for key, display in letters %}
+      <li class="letter-item" data-key="{{ key }}" data-display="{{ display }}">
+        <span class="letter-badge">{{ loop.index }}</span>
+        <span class="letter-text">{{ display }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- CENTER -->
+  <section class="panel center-panel">
+
+    <div class="status-bar" id="statusBar">
+      <span id="statusIcon">💡</span>
+      <span id="statusText">Select a letter and press Start to begin training.</span>
+    </div>
+
+    <div class="video-row">
+
+      <!-- Live camera: MJPEG from server -->
+      <div class="video-block">
+        <div class="video-label">📷 Live Camera</div>
+        <div class="video-frame">
+          <img id="liveFeed" src="/video_feed" alt="Live Camera" />
+        </div>
+      </div>
+
+      <!-- Practice video -->
+      <div class="video-block">
+        <div class="video-label">🎬 Practice Video</div>
+        <div class="video-frame">
+          <video id="practiceVideo" muted playsinline>
+            <source id="practiceSource" src="" type="video/mp4" />
+          </video>
+          <div class="video-placeholder" id="videoPh">
+            <span>▶ Select a letter to see practice video</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Result card -->
+    <div class="result-card hidden" id="resultCard">
+      <div class="result-icon" id="resultIcon">✅</div>
+      <div class="result-text" id="resultText">GOOD JOB!</div>
+      <div class="result-bar-wrap">
+        <div class="result-bar" id="resultBar"></div>
+      </div>
+      <div class="result-confidence" id="resultConfidence">0%</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn btn-start" id="startBtn" disabled>▶ Start Training</button>
+      <button class="btn btn-stop"  id="stopBtn"  disabled>⏹ Stop</button>
+    </div>
+
+  </section>
+
+  <!-- RIGHT: Info panel -->
+  <aside class="panel info-panel">
+    <h2 class="panel-title">📊 Session Info</h2>
+
+    <div class="info-block">
+      <div class="info-label">Selected</div>
+      <div class="info-value sinhala" id="infoSelected">—</div>
+    </div>
+
+    <div class="info-block">
+      <div class="info-label">Phase</div>
+      <div class="info-value" id="infoPhase">Idle</div>
+    </div>
+
+    <div class="info-block">
+      <div class="info-label">Countdown</div>
+      <div class="countdown-circle" id="countdownCircle">
+        <span id="countdownNum">—</span>
+      </div>
+    </div>
+
+    <div class="phase-legend">
+      <div class="phase-step" id="ps-watching">👀 Watch Video</div>
+      <div class="phase-step" id="ps-countdown">⏱ Get Ready</div>
+      <div class="phase-step" id="ps-recording">🔴 Recording</div>
+      <div class="phase-step" id="ps-analyzing">🧠 Analyzing</div>
+      <div class="phase-step" id="ps-result">🏆 Result</div>
+    </div>
+  </aside>
+
+</main>
+
+<footer class="footer">
+  🤟 Deaf Kids Sign Language Training System &nbsp;|&nbsp; Flask Web Edition
+</footer>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

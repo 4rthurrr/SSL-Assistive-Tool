@@ -1,4 +1,4 @@
-﻿import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Register from "./features/auth/components/Register";
 import Login from "./features/auth/components/Login";
@@ -63,7 +63,7 @@ function Navbar() {
         textDecoration: "none", display: "flex", alignItems: "center", gap: "8px",
         textShadow: "1px 2px 5px rgba(255,255,255,.50)", zIndex: 1
       }}>
-        🤟 සංඥා භාෂා
+        🤟 SignBridge
       </Link>
 
       <div style={{ display: "flex", gap: "10px", alignItems: "center", zIndex: 1 }}>
@@ -262,7 +262,7 @@ const HomePage = () => {
 
       {/* Hero */}
       <div style={{ textAlign: "center", zIndex: 1 }}>
-        <div style={{ fontSize: "4.5rem", marginBottom: "10px" }}>� ✨ 🤟</div>
+        <div style={{ fontSize: "4.5rem", marginBottom: "10px" }}> ✨ 🤟</div>
         <h1 style={{
           margin: "0 0 8px", fontSize: "clamp(2rem,5vw,3.2rem)", fontWeight: 900,
           background: "linear-gradient(135deg,#4DA6FF,#2B8FE8)",
