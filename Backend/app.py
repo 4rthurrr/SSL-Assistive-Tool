@@ -706,9 +706,26 @@ def get_status():
             "selected_letter": state["selected_letter"],
             "display_letter": LETTER_DISPLAY_MAP.get(state["selected_letter"], ""),
         })
+    
+@app.route('/bridge/start', methods=['POST'])
+def bridge_start():
+    ok = _start_source_process()
+    return jsonify({'ok': ok, 'running': _is_source_running()})
+
+
+@app.route('/bridge/stop', methods=['POST'])
+def bridge_stop():
+    ok = _stop_source_process()
+    return jsonify({'ok': ok, 'running': _is_source_running()})
+
+
+@app.route('/bridge/status', methods=['GET'])
+def bridge_status():
+    return jsonify({'running': _is_source_running(), 'url': _SOURCE_URL})    
+
 
 # ========================
-# PATHS
+# PATHS - Puzzlegame dataset and model directories
 # ========================
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(_BASE_DIR, "text-to-sign", "SSL_model")
@@ -723,6 +740,7 @@ user_game_states = {}
 # ========================
 # BUILD VIDEO MAPPING
 # ========================
+#Maps each word to its corresponding sign language video file
 def build_video_mapping():
     """Build mapping: only one video per word"""
     video_map = {}
@@ -906,6 +924,8 @@ Output format:
         print(f"⚠️ AI hint generation failed: {e}")
         
         # Fallback hints based on word characteristics
+        #if AI fails,returns pre-defined hints for common words or a generic hint based on the English meaning
+
         fallback_hints = {
             # Common Sinhala words with simple clues
             'අම්මා': '🔎 Hint: 👩 The person who takes care of you',
@@ -943,24 +963,28 @@ Output format:
             'hint': f"🔎 Hint: This word is about {english_word.lower()}",
             'hint_type': 'generic'
         }
-
+#LSTM stands for Long Short-Term Memory - it's a type of neural network that has 'memory'. When processing a sign language video frame by frame, the LSTM remembers what happened in previous frames.
 # ========================
-# MODEL
+# MODEL - LSTM(LongshortTermMemory) architecture for sign language recognition
 # ========================
+# Deep learning model for sign language recognition
 class LSTMPuzzleModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, num_classes):
+    def __init__(self, input_dim, hidden_dim, num_classes): #def __init__	Constructor - runs when creating a new model instance
+        #input_dim:size of input features per time step,hiddedn_dim:number of features in LSTM hidden state,num_classes:number of output classes (signs)
         super().__init__()
-        self.lstm = nn.LSTM(input_dim, hidden_dim, batch_first=True, bidirectional=True)
+        self.lstm = nn.LSTM(input_dim, hidden_dim, batch_first=True, bidirectional=True) #Bidirectional LSTM looks at video frames forward AND backward
         self.fc = nn.Sequential(nn.Linear(hidden_dim*2, 128), nn.ReLU(), nn.Linear(128, num_classes))
-    
+    #num classes-Number of signs the model can recognize
     def forward(self, x):
-        lstm_out, _ = self.lstm(x)
+        lstm_out, _ = self.lstm(x) #pass input through LSTM layers
         return self.fc(lstm_out[:, -1, :])
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+#torch.cuda.is_available()	- Checks if NVIDIA GPU is present
+#'cuda' if ... else 'cpu'- 	Ternary operator - use GPU if available
+device = 'cuda' if torch.cuda.is_available() else 'cpu'  #GPU (CUDA) is 10-50x faster than CPU for deep learning!
 model = LSTMPuzzleModel(input_dim, hidden_dim, num_classes)
 try:
-    model.load_state_dict(torch.load(os.path.join(MODEL_DIR, "sinhala_sign_model.pth"), map_location=device))
+    model.load_state_dict(torch.load(os.path.join(MODEL_DIR, "sinhala_sign_model.pth"), map_location=device)) #model.load_state_dict()-	Loadmodel weights from file
     model.to(device)
     model.eval()
     print(f"✅ Model loaded on: {device}")
@@ -970,22 +994,22 @@ except Exception as e:
 # ========================
 # GAME STATE MANAGEMENT
 # ========================
-class GameState:
+class GameState: #usersprogress in a specific level
     def __init__(self, user_id, level):
-        self.user_id = user_id
-        self.level = level
-        self.used_words = []
-        self.round = 0
-        self.max_rounds = 10
+        self.user_id = user_id   #  Unique identifier for the user
+        self.level = level    #Stores which level this is for
+        self.used_words = []   #trackused words to avoid repetition within a session
+        self.round = 0         #currentquestion number in the session
+        self.max_rounds = 10   #total ques per level
         
     def add_used_word(self, word):
-        if word not in self.used_words:
-            self.used_words.append(word)
+        if word not in self.used_words:   #avoidrepetition within a session
+            self.used_words.append(word)  #Addsword to end of used words list
     
-    def get_available_words(self, all_words):
+    def get_available_words(self, all_words):  
         return [w for w in all_words if w not in self.used_words]
     
-    def reset_game(self):
+    def reset_game(self):   #Starts fresh when user chooses "Play Again"
         self.used_words = []
         self.round = 0
     
@@ -1001,11 +1025,11 @@ def get_game_state(user_id, level):
 # ========================
 # VIDEO HELPER
 # ========================
-def find_video_for_word(sinhala_word):
+def find_video_for_word(sinhala_word): #def - python keyword to define a function ,find_video_for_word - Function name,sinhala_word	-Parameter
     """Find video file for word"""
-    english = label_to_english.get(sinhala_word, '').lower()
+    english = label_to_english.get(sinhala_word, '').lower()   #Look up English translation
     
-    if english in VIDEO_MAPPING:
+    if english in VIDEO_MAPPING:   #Check if video exists for English word
         return english
     if sinhala_word.lower() in VIDEO_MAPPING:
         return sinhala_word.lower()
@@ -1029,21 +1053,7 @@ def health():
     })
 
 
-@app.route('/bridge/start', methods=['POST'])
-def bridge_start():
-    ok = _start_source_process()
-    return jsonify({'ok': ok, 'running': _is_source_running()})
 
-
-@app.route('/bridge/stop', methods=['POST'])
-def bridge_stop():
-    ok = _stop_source_process()
-    return jsonify({'ok': ok, 'running': _is_source_running()})
-
-
-@app.route('/bridge/status', methods=['GET'])
-def bridge_status():
-    return jsonify({'running': _is_source_running(), 'url': _SOURCE_URL})
 
 @app.route('/api/puzzle/generate', methods=['POST'])
 def generate_puzzle():

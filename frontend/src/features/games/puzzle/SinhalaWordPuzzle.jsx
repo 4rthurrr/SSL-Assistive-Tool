@@ -284,7 +284,7 @@ const SinhalaWordPuzzleGame = () => {
     );
 
     const startRow = Math.floor(Math.random() * size);
-    const startCol = Math.floor(Math.random() * (size - syllables.length + 1));
+    const startCol = Math.floor(Math.random() * (size - syllables.length + 1)); {/*count syllables*/}
     
     syllables.forEach((syllable, i) => {
       newGrid[startRow][startCol + i] = {
@@ -455,6 +455,10 @@ const SinhalaWordPuzzleGame = () => {
       const [r, c] = key.split('-').map(Number);
       return grid[r][c].letter;
     });
+
+//the number of selected letters matches puzzle.syllables.length, and very selected letter exactly equals the corresponding puzzle.syllables[i].
+
+// This ensures that the player has selected the correct letters in the correct order to form the target word.
 
     const isCorrect = 
       selectedLetters.length === puzzle.syllables.length &&
@@ -845,7 +849,7 @@ const SinhalaWordPuzzleGame = () => {
 
           <div className={`bg-gradient-to-r ${message.color} backdrop-blur-sm rounded-2xl p-6 mb-6 border-4 border-white/70 shadow-inner`}>
             <div className="text-7xl font-black text-gray-800 mb-2 drop-shadow-lg">{score}</div>
-            {/* Star Rating */}
+            {/* StarRating */}
             <div className="text-4xl mb-3">
               {'⭐'.repeat(stars)}{'☆'.repeat(3 - stars)}
             </div>

@@ -41,7 +41,7 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     
     # Game settings
-    QUESTIONS_PER_LEVEL = 8
+    QUESTIONS_PER_LEVEL = 8  #questionsperlevel
     MAX_ATTEMPTS = 5
     POINTS_PER_CORRECT = 10
     
@@ -104,21 +104,21 @@ print(f"🖥 Device: {device}")
 class WordLSTM(nn.Module):
     def __init__(self, input_dim, hidden, n_cls, n_layers=3, dropout=0.3):
         super().__init__()
-        self.bn = nn.BatchNorm1d(input_dim)
+        self.bn = nn.BatchNorm1d(input_dim)   #Normalizes the input features to have mean=0, variance=1 ,Makes training faster and more stable
         self.lstm = nn.LSTM(input_dim, hidden, n_layers, batch_first=True,
-                           dropout=dropout, bidirectional=True)
+                           dropout=dropout, bidirectional=True)   #Why bidirectional: Word meaning depends on both left and right context!
         self.attn = nn.Linear(hidden * 2, 1)
         self.drop = nn.Dropout(dropout)
-        self.fc = nn.Linear(hidden * 2, n_cls)
-        self.embed_fc = nn.Linear(hidden * 2, Config.WORD_EMBED_DIM)
+        self.fc = nn.Linear(hidden * 2, n_cls)  #hidden * 2-Forward LSTM output: 256 numbers Backward LSTM output: 256 numbers Concatenated = 512 numbers
+        self.embed_fc = nn.Linear(hidden * 2, Config.WORD_EMBED_DIM)  #Maps LSTM output to a compact 128-dimensional vector
 
     def _attended(self, out):
-        w = torch.softmax(self.attn(out), dim=1)
+        w = torch.softmax(self.attn(out), dim=1) #Convert to probabilities using softmax
         ctx = (w * out).sum(1)
         return ctx
 
     def forward(self, x):
-        B, T, D = x.shape
+        B, T, D = x.shape      # B-batchsize ,T-time steps (words in sentence) ,D-feature per word
         xf = x.reshape(B * T, D)
         xf = self.bn(xf).reshape(B, T, D)
         out, _ = self.lstm(xf)
@@ -134,25 +134,26 @@ class WordLSTM(nn.Module):
         return F.relu(self.embed_fc(ctx))
 
 
-class PositionalEncoding(nn.Module):
+class PositionalEncoding(nn.Module):   #Transformer models (like the SentenceOrderingModel) process all words simultaneously
     def __init__(self, d_model, max_len=20):
         super().__init__()
         pe = torch.zeros(max_len, d_model)
-        position = torch.arange(0, max_len).unsqueeze(1).float()
+        position = torch.arange(0, max_len).unsqueeze(1).float()  #Create Position Indices
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * 
                             (-np.log(10000.0) / d_model))
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
+        pe[:, 0::2] = torch.sin(position * div_term)        #Sin/Cos: Values always between -1 and 1
+        pe[:, 1::2] = torch.cos(position * div_term)        #1::2: Start at index 1, step by 2 → odd columns
         self.register_buffer('pe', pe.unsqueeze(0))
 
     def forward(self, x):
         return x + self.pe[:, :x.size(1)]
 
-
+#main neural network for the SSL game that reorders scrambled Sinhala words into correct grammatical order. 
+#It uses a Transformer architecture with positional encoding to capture the relationships between words in a sentence, and outputs a prediction for the correct word order.
 class SentenceOrderingModel(nn.Module):
     def __init__(self, embed_dim, d_model, nhead, nlayers, max_words, dropout=0.1):
         super().__init__()
-        self.proj = nn.Linear(embed_dim, d_model)
+        self.proj = nn.Linear(embed_dim, d_model)  #Linear transformation from embedding space to model space
         self.pe = PositionalEncoding(d_model, max_len=max_words + 2)
         encoder_layer = nn.TransformerEncoderLayer(
             d_model, nhead, dim_feedforward=d_model * 4,
@@ -163,7 +164,7 @@ class SentenceOrderingModel(nn.Module):
         self.drop = nn.Dropout(dropout)
 
     def forward(self, x):
-        x = F.gelu(self.proj(x))
+        x = F.gelu(self.proj(x)) #gelu- Smoother gradients = better training
         x = self.pe(x)
         x = self.transformer(x)
         return self.head(self.drop(x))
@@ -248,7 +249,7 @@ class SSLGrammar:
         return "OBJ"  # Default
 
     # RESEARCH CONTRIBUTION
-    # Deterministic TIME → SUBJ → ADJ → DAT → OBJ → WH → VERB → STATE → Q ordering for game feedback
+    # orderingrule - Deterministic TIME → SUBJ → ADJ → DAT → OBJ → WH → VERB → STATE → Q ordering for game feedback
     def order(self, words):
         """Return words in correct SSL order: TIME → SUBJ → ADJ → DAT → OBJ → WH → VERB → STATE → Q"""
         buckets = defaultdict(list)
@@ -269,6 +270,7 @@ class SSLGrammar:
         return ordered if ordered else words
 
     # MANUAL IMPLEMENTATION
+    #iscorrect - Simple equality check for correct word order (used for final validation in game)
     # Rich answer validation with per-position diagnostics, score and motivational emoji feedback
     def validate(self, user_order, correct_order):
         """Validate user's answer against correct order"""
@@ -301,6 +303,7 @@ class SSLGrammar:
 # ========================
 # RESEARCH CONTRIBUTION
 # Robust metadata loader that supports multiple JSON schemas and auto-fallback for classroom demos
+#loadmodels
 def load_metadata():
     """Load metadata from pickle file"""
     metadata_path = os.path.join(Config.MODEL_DIR, "metadata.pkl")
@@ -367,7 +370,7 @@ def create_fallback_sentences():
         {"sinhala": "පූසා දුවනවා", "words": ["පූසා", "දුවනවා"], "english": "Cat runs"},
         {"sinhala": "අපි යනවා", "words": ["අපි", "යනවා"], "english": "We go"},
         {"sinhala": "ඔයා එනවා", "words": ["ඔයා", "එනවා"], "english": "You come"},
-        {"sinhala": "සීයා බලනවා", "words": ["සීයා", "බලනවා"], "english": "Grandfather looks"},
+        # {"sinhala": "සීයා බලනවා", "words": ["සීයා", "බලනවා"], "english": "Grandfather looks"},
     ]
     
     level_2 = [
@@ -489,7 +492,7 @@ DATASET_BASE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 # Maps each Sinhala game word -> (category_folder, english_word_folder)
 SINHALA_TO_DATASET = {
     # People
-    "දරුවා":        ("People",     "Child"),
+    "දරුවා":        ("People",     "Child"),  #each entry is a tuple: (dataset category folder, english word folder)
     "දරුවාට":       ("People",     "Child"),
     "අම්මා":        ("People",     "Mother"),
     "අම්මාට":       ("People",     "Mother"),
@@ -506,6 +509,8 @@ SINHALA_TO_DATASET = {
     "මම":           ("Nouns",      "I"),
     "ඔයා":          ("Nouns",      "You"),
     "පවුල":         ("People",     "Family"),
+    "සීයා":         ("People",     "Grand father"),  # ← ADD THIS LINE
+    "ආච්චි":        ("People",     "Grand mother"),  # ← ADD THIS LINE
     # Verbs
     "ඇවිදිනවා":     ("Verbs",      "Walk"),
     "දුවනවා":       ("Verbs",      "Run"),
@@ -577,12 +582,17 @@ SINHALA_TO_DATASET = {
 
 # MANUAL IMPLEMENTATION
 # Look up dataset location and construct stable word-level video URLs used by the frontend player
+# translator between Sinhala words and their sign language video files
+#Input: A Sinhala word string like "මම", "කනවා", or "අම්මා"
+
+#Output: Either a URL string or None if no video exists
 def resolve_word_video_url(sinhala_word):
     """Return /api/word-video/<cat>/<word> URL for a sinhala word, or None."""
     entry = SINHALA_TO_DATASET.get(sinhala_word)
     if not entry:
-        return None
-    cat, eng = entry
+        return None 
+    cat, eng = entry   #unpack the tuple into category and English word
+    #cat-category ,eng-english word
     folder = os.path.join(DATASET_BASE, cat, eng)
     if not os.path.isdir(folder):
         return None
@@ -684,7 +694,7 @@ class GameSession:
     def reset_attempts(self):
         self.attempts = 0
         self.game_over = False
-    
+    #increseattempts
     def increment_attempts(self):
         self.attempts += 1
         if self.attempts >= self.max_attempts:
@@ -737,6 +747,7 @@ class GameEngine:
     
     # MANUAL IMPLEMENTATION
     # Derive level metadata and availability from sentence corpus for dynamic frontend map
+    #availablelevels
     def get_available_levels(self):
         """Return metadata for all levels"""
         levels = {}
@@ -753,6 +764,7 @@ class GameEngine:
         return levels
     
     # RESEARCH CONTRIBUTION
+    #levelquestions
     # Custom question generation: sentence sampling, distractors, and word-level video linking
     def get_level_questions(self, level_id, count=Config.QUESTIONS_PER_LEVEL):
         """Get random questions for a level"""
@@ -768,7 +780,7 @@ class GameEngine:
         if not valid:
             return []
         
-        # Select random sentences (preserves original index)
+        # Selectrandom sentences (preserves original index)
         selected = random.sample(valid, min(count, len(valid)))
         
         questions = []
@@ -843,8 +855,7 @@ class GameEngine:
             "total_questions": len(questions),
             "first_question": first_question
         }
-    
-    # MANUAL IMPLEMENTATION
+
     # Track and expose current question along with live session metrics to the frontend
     def get_current_question(self, user_id):
         """Get current question for user"""
@@ -873,6 +884,7 @@ class GameEngine:
         }
     
     # RESEARCH CONTRIBUTION
+    #iscorrect
     # Core game rule engine: checks ordering, updates score, manages attempts, and computes stars
     def check_answer(self, user_id, user_order):
         """Check user's answer and update session"""
@@ -1027,7 +1039,9 @@ class GameEngine:
 game_engine = GameEngine(sentence_data, grammar, word_model, sent_model)
 print("✅ Game engine initialized")
 
-
+#these are the API endpoints that the frontend will call to interact with the game engine.
+# Each endpoint corresponds to a specific action in the game, such as starting a level, checking an answer, or getting a hint. 
+#The endpoints use the Flask framework to handle HTTP requests and return JSON responses that the frontend can easily consume.
 # ========================
 # API ENDPOINTS
 # ========================
@@ -1070,7 +1084,7 @@ def start_level():
         print(f"❌ Error in start_level: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
+#currentquestion
 @app.route('/api/current-question', methods=['POST'])
 def current_question():
     """Get current question for user"""
@@ -1111,7 +1125,7 @@ def current_question():
         print(f"❌ Error in current_question: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
+#iscorrect
 @app.route('/api/check', methods=['POST'])
 def check_answer():
     """Check user's answer"""
@@ -1170,7 +1184,7 @@ def get_score():
         print(f"❌ Error in get_score: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
+#resetlevel
 @app.route('/api/reset-level', methods=['POST'])
 def reset_level():
     """Reset current level"""
@@ -1306,6 +1320,7 @@ def serve_sentence_video_by_index(level_id, sent_idx):
         print(f"[VIDEO] Error: {e}")
         return jsonify({'error': 'Video serving error'}), 500
 
+#endpoint is the video streaming server that delivers sentence videos to the frontend.
 @app.route('/api/sentence-video/<path:filename>', methods=['GET'])
 # MANUAL IMPLEMENTATION
 # Legacy compatibility endpoint preserved for older clients while new index-based API is used by the game

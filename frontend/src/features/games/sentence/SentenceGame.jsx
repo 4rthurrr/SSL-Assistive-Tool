@@ -6,6 +6,8 @@ import {
   AlertCircle, XCircle, TrendingUp, Medal
 } from 'lucide-react';
 
+// useState: Manages changing data (score, level, questions)
+{/*api configuration*/}
 const API_URL = 'http://localhost:5003/api';
 
 const SignLanguageGame = () => {
@@ -47,7 +49,7 @@ const SignLanguageGame = () => {
   const [loadingLevels, setLoadingLevels] = useState(true);
 
   const [userId] = useState(() => {
-    let id = localStorage.getItem('gameUserId');
+    let id = localStorage.getItem('gameUserId');  {/*local srorage- minidb*/}
     if (!id) {
       id = 'user_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('gameUserId', id);
@@ -69,7 +71,7 @@ const SignLanguageGame = () => {
   useEffect(() => {
     if (!currentQuestion) return;
     setActiveWordVideoIdx(0);
-    setWordVideoSpeed(1.0);
+    setWordVideoSpeed(1.0);   {/*videospeed*/}
     setWordVideoError(false);
     setWordVideoPlaying(false);
   }, [currentQuestion?.id]);
@@ -238,7 +240,9 @@ const SignLanguageGame = () => {
   useEffect(() => {
     loadLevels();
     fetchLeaderboard();
-    return () => { if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current); };
+    return () => { 
+      if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current); 
+    };
   }, []);
 
   const loadLevels = async () => {
@@ -249,7 +253,6 @@ const SignLanguageGame = () => {
       if (data.success) setLevels(data.levels);
     } catch (error) {
       console.error('Error loading levels:', error);
-      // Don't block the UI — just leave levels empty
     } finally {
       setLoadingLevels(false);
     }
@@ -267,8 +270,6 @@ const SignLanguageGame = () => {
 
   // RESEARCH CONTRIBUTION
   // Resilient level-start flow with /current-question fallback to handle backend edge cases
-  // ── FIXED startLevel: if API fails or returns no question,
-  //    fetch /current-question as a fallback before giving up ──────────
   const startLevel = async (level) => {
     try {
       setLoading(true);
@@ -308,11 +309,9 @@ const SignLanguageGame = () => {
       setCorrectAnswer(null);
       setCanAdvance(false);
 
-      // ── KEY FIX: use first_question if provided, otherwise fetch it ──
       let question = data.first_question;
 
       if (!question) {
-        // Fallback: fetch the current question explicitly
         const qResp = await fetch(`${API_URL}/current-question`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -325,6 +324,7 @@ const SignLanguageGame = () => {
         }
       }
 
+      //errorquestion
       if (!question) {
         setError('No questions available for this level. Please check your backend has sentences loaded.');
         return;
@@ -332,8 +332,6 @@ const SignLanguageGame = () => {
 
       setCurrentQuestion(question);
       setShuffledWords(question.shuffled_words || []);
-
-      // ── Navigate to playing screen ONLY after question is confirmed ──
       setGameState('playing');
 
     } catch (error) {
@@ -392,6 +390,29 @@ const SignLanguageGame = () => {
     }
   };
 
+  const checkLevelCompletion = async () => {
+    try {
+      const response = await fetch(`${API_URL}/current-question`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.level_complete) {
+        const stars = data.stars_earned || 0;
+        setLevelStars(prev => ({ ...prev, [currentLevel]: stars }));
+        setShowLevelComplete(true);
+        if (!completedLevels.includes(currentLevel)) {
+          setCompletedLevels(prev => [...prev, currentLevel]);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking level completion:', error);
+    }
+  };
+
   // RESEARCH CONTRIBUTION
   // Tap-based word selection UX that models drag-and-drop ordering for touchscreen learners
   const handleWordClick = (word, idx) => {
@@ -439,10 +460,14 @@ const SignLanguageGame = () => {
           setScore(data.score);
           setTotalScore(prev => prev + 10);
 
-          setCanAdvance(false);
-          autoAdvanceTimer.current = setTimeout(() => {
-            autoAdvanceTimer.current = null;
-            setCanAdvance(true);
+          // AUTO ADVANCE TO NEXT QUESTION AFTER 1.5 SECONDS
+          setTimeout(() => {
+            if (questionNumber < totalQuestions) {
+              loadNextQuestion();
+            } else {
+              // Check if level is complete
+              checkLevelCompletion();
+            }
           }, 1500);
 
         } else {
@@ -607,7 +632,7 @@ const SignLanguageGame = () => {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <LanguageToggle /><SoundToggle />
         <div className="text-center">
-          <div className="text-7xl animate-bounce mb-6">�</div>
+          <div className="text-7xl animate-bounce mb-6">🌱</div>
           <h2 className="text-3xl font-black text-gray-800 mb-4">{t.loading}</h2>
           <div className="w-48 h-3 bg-gray-200 rounded-full overflow-hidden mx-auto">
             <div className="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full animate-pulse" style={{ width: '60%' }} />
@@ -796,7 +821,6 @@ const SignLanguageGame = () => {
 
   // ── Game Playing Screen ─────────────────────────────────────────────
   // If somehow we reach 'playing' with no question, show a spinner
-  // (this should not happen with the fixed startLevel above)
   if (!currentQuestion) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 flex items-center justify-center p-4">
@@ -846,8 +870,8 @@ const SignLanguageGame = () => {
 
       <div className="max-w-4xl mx-auto">
 
-        {/* Header */}
-          <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-6 mb-6 border-8 border-blue-200">
+        {/* sentenceHome */}
+        <div className="bg-white rounded-[30px] shadow-xl p-4 sm:p-6 mb-6 border-8 border-blue-200">
           <div className="flex justify-between items-center mb-4">
             <button onClick={goToMap} className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 py-3 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg flex items-center gap-2">
               <Home className="w-6 h-6" /><span className="hidden sm:inline">{t.home}</span>
@@ -954,7 +978,7 @@ const SignLanguageGame = () => {
                     : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
                 }`}
               >🐢 Slow</button>
-
+{/*stopbutton*/}
               <button
                 onClick={toggleWordVideo}
                 className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white text-lg sm:text-xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center border-4 border-white"
@@ -1004,7 +1028,7 @@ const SignLanguageGame = () => {
                   onClick={() => handleSelectedWordClick(word, index)}
                   className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-[20px] text-lg sm:text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-emerald-600"
                   disabled={showResult || loading}
-                >
+                >  {/*wordnumber*/}
                   {word}<span className="ml-2 text-xs sm:text-sm opacity-75">({index + 1})</span>
                 </button>
               ))
@@ -1026,7 +1050,7 @@ const SignLanguageGame = () => {
               <button
                 key={index}
                 onClick={() => handleWordClick(word, index)}
-              className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-[20px] text-lg sm:text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-blue-600"
+                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-[20px] text-lg sm:text-2xl font-black shadow-lg hover:scale-110 transition-transform border-4 border-blue-600"
                 disabled={showResult || loading}
               >
                 {word}
@@ -1062,14 +1086,17 @@ const SignLanguageGame = () => {
               <CheckCircle className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" /><span>{t.checkAnswer}</span>
             </button>
           ) : (
-            <button
-              onClick={loadNextQuestion}
-              disabled={!canAdvance || loading}
-              className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg border-4 sm:border-6 border-blue-700 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-            >
-              <span>{questionNumber < totalQuestions ? t.nextQuestion : t.finish}</span>
-              <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" />
-            </button>
+            // Only show next button for incorrect answers
+            !isCorrect && (
+              <button
+                onClick={loadNextQuestion}
+                disabled={loading}
+                className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-transform shadow-lg border-4 sm:border-6 border-blue-700 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                <span>{questionNumber < totalQuestions ? t.nextQuestion : t.finish}</span>
+                <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0" />
+              </button>
+            )
           )}
 
           <button
