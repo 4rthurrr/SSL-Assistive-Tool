@@ -12,10 +12,8 @@ build/
 .DS_Store
 
 # Project Specific
-static/outputs/*.mp4
-static/outputs/driver_*.mp4
-static/outputs/sk_*.mp4
-static/outputs/ai_*.mp4
+Backend/static/outputs/
+!Backend/static/outputs/.gitkeep
 server.log
 *.log
 

@@ -146,7 +146,7 @@ CONCEPT_DEFINITIONS = {
     "CONCEPT_FRIDAY": {'label': 'Friday', 'sinhala': 'සිකුරාදා', 'synonyms': ['සිකුරාදා']},
     "CONCEPT_FRIEND": {'label': 'Friend', 'sinhala': 'යාළුවා', 'synonyms': ['යාළුවා', 'යාළුවෝ', 'යාළුවෙ', 'මිතුරේ']},
     "CONCEPT_FULL": {'label': 'Full', 'sinhala': 'පිරුණු', 'synonyms': ['පිරුණු']},
-    "CONCEPT_FUTURE": {'label': 'Future', 'sinhala': 'ඉදිරිය', 'synonyms': ['ඉදිරිය', 'හෙට', 'ඉදිරිදී', 'ඉදිරියේ']},
+    "CONCEPT_FUTURE": {'label': 'Future', 'sinhala': 'ඉදිරිය', 'synonyms': ['ඉදිරිය', 'ඉදිරිදී', 'ඉදිරියේ']},
     "CONCEPT_GET_UP": {'label': 'Get up', 'sinhala': 'නැගිටිනවා', 'synonyms': ['නැගිටිනවා', 'නැගිටින්න', 'නැගිට්ටා']},
     "CONCEPT_GIVE": {'label': 'Give', 'sinhala': 'දෙනවා', 'synonyms': ['දෙනවා', 'දෙන්න', 'දුන්නා']},
     "CONCEPT_GO": {'label': 'Go', 'sinhala': 'යනවා', 'synonyms': ['යනවා', 'යන්න', 'ගියා', 'යමු', 'යන්නම්']},
@@ -433,6 +433,7 @@ CONCEPT_NORMALIZATION_MAP = {
     "CONCEPT_LOOK_READ": "CONCEPT_STUDY",
     "CONCEPT_WE": "CONCEPT_US",       # No separate 'We' folder; SSl uses same sign as 'Us'
     "CONCEPT_WATCH": "CONCEPT_SEE", # Example if Watch video is missing
+    "CONCEPT_RICE": "CONCEPT_FOOD", # Fallback for Rice
     # Add more mappings as verified against dataset
 }
 
