@@ -1,0 +1,318 @@
+                        precision    recall  f1-score   support
+
+        Adjectives/Bad       1.00      1.00      1.00         1
+  Adjectives/Beautiful       0.67      0.86      0.75         7
+       Adjectives/Cold       0.50      0.33      0.40         3
+       Adjectives/Deaf       0.60      0.75      0.67         4
+       Adjectives/Deep       1.00      0.67      0.80         3
+  Adjectives/Different       0.00      0.00      0.00         2
+     Adjectives/Double       0.00      0.00      0.00         1
+       Adjectives/Fast       0.67      1.00      0.80         4
+        Adjectives/Fat       0.00      0.00      0.00         2
+       Adjectives/Free       0.00      0.00      0.00         1
+       Adjectives/Full       0.00      0.00      0.00         2
+       Adjectives/Good       1.00      0.92      0.96        13
+      Adjectives/Happy       0.00      0.00      0.00         2
+       Adjectives/Hard       1.00      0.33      0.50         3
+    Adjectives/Healthy       1.00      1.00      1.00         4
+       Adjectives/High       1.00      1.00      1.00         2
+Adjectives/Independent       0.00      0.00      0.00         1
+       Adjectives/Less       0.50      1.00      0.67         1
+      Adjectives/Loose       1.00      1.00      1.00         2
+        Adjectives/Low       1.00      1.00      1.00         2
+       Adjectives/Next       0.00      0.00      0.00         1
+       Adjectives/Nice       1.00      1.00      1.00         1
+   Adjectives/Not good       1.00      1.00      1.00         1
+        Adjectives/Old       0.00      0.00      0.00         1
+       Adjectives/Past       1.00      0.50      0.67         2
+   Adjectives/Positive       0.00      0.00      0.00         1
+    Adjectives/Present       1.00      0.50      0.67         2
+      Adjectives/Quick       0.00      0.00      0.00         2
+       Adjectives/Rich       0.57      1.00      0.73         4
+       Adjectives/Same       0.00      0.00      0.00         2
+     Adjectives/Senior       0.00      0.00      0.00         1
+      Adjectives/Small       0.00      0.00      0.00         2
+       Adjectives/Soft       1.00      1.00      1.00         2
+     Adjectives/Strong       1.00      1.00      1.00         2
+      Adjectives/Tight       0.67      1.00      0.80         2
+    Adjectives/Welcome       0.00      0.00      0.00         1
+      Adjectives/Wrong       0.67      1.00      0.80         4
+          Adverb/Again       0.67      0.80      0.73         5
+           Adverb/Also       0.00      0.00      0.00         2
+            Adverb/Can       0.50      1.00      0.67         2
+           Adverb/Cant       0.50      1.00      0.67         1
+           Adverb/Here       0.25      1.00      0.40         1
+        Adverb/Instead       0.00      0.00      0.00         1
+          Adverb/Never       0.00      0.00      0.00         1
+           Adverb/When       1.00      1.00      1.00         1
+            Adverb/Why       0.50      1.00      0.67         1
+          Colors/Black       0.67      0.67      0.67         6
+           Colors/Blue       0.00      0.00      0.00         1
+          Colors/Brown       0.50      1.00      0.67         1
+           Colors/Gold       1.00      1.00      1.00         1
+          Colors/Green       0.83      0.83      0.83         6
+           Colors/Grey       0.00      0.00      0.00         0
+         Colors/Orange       1.00      1.00      1.00         1
+           Colors/Pink       0.00      0.00      0.00         1
+         Colors/Purple       0.40      0.33      0.36         6
+            Colors/Red       1.00      0.83      0.91         6
+          Colors/White       0.67      0.40      0.50        10
+         Colors/Yellow       0.67      0.60      0.63        10
+       Conjunctions/Or       0.00      0.00      0.00         1
+              Days/Day       0.50      0.50      0.50         4
+          Days/Evening       0.00      0.00      0.00         0
+           Days/Friday       1.00      1.00      1.00         2
+     Days/Good evening       0.00      0.00      0.00         1
+     Days/Good morning       0.33      1.00      0.50         1
+       Days/Good night       0.00      0.00      0.00         1
+             Days/Hour       0.86      0.86      0.86         7
+           Days/Monday       0.00      0.00      0.00         5
+            Days/Night       0.00      0.00      0.00         1
+         Days/Saturday       1.00      1.00      1.00         1
+           Days/Sunday       0.50      1.00      0.67         1
+         Days/Thursday       0.00      0.00      0.00         1
+             Days/Time       1.00      0.60      0.75         5
+            Days/Today       0.71      0.71      0.71         7
+         Days/Tomorrow       0.60      0.75      0.67         4
+          Days/Tuesday       0.00      0.00      0.00         1
+        Days/Wednesday       1.00      0.50      0.67         4
+             Days/Week       0.20      1.00      0.33         1
+        Days/Yesterday       1.00      0.67      0.80         3
+         Determiner/No       0.00      0.00      0.00         1
+     Greetings/Alright       0.80      1.00      0.89         4
+    Greetings/Ayubowan       1.00      1.00      1.00         1
+       Greetings/Hello       0.77      0.85      0.81        20
+   Greetings/Thank you       1.00      0.87      0.93        23
+      Interjection/Yes       1.00      1.00      1.00         1
+          Months/April       0.00      0.00      0.00         2
+         Months/August       0.33      1.00      0.50         1
+       Months/December       0.00      0.00      0.00         1
+       Months/February       1.00      1.00      1.00         2
+        Months/January       1.00      0.67      0.80         6
+           Months/July       1.00      1.00      1.00         1
+           Months/June       0.00      0.00      0.00         1
+          Months/March       0.00      0.00      0.00         2
+            Months/May       0.50      1.00      0.67         1
+          Months/Month       0.00      0.00      0.00         1
+       Months/November       0.33      1.00      0.50         2
+        Months/October       0.25      0.50      0.33         2
+      Months/September       1.00      1.00      1.00         1
+         Nouns/Article       0.00      0.00      0.00         1
+             Nouns/Bag       1.00      1.00      1.00         3
+             Nouns/Bed       1.00      1.00      1.00         3
+            Nouns/Book       0.75      1.00      0.86         3
+          Nouns/Camera       1.00      1.00      1.00         4
+            Nouns/Card       1.00      0.50      0.67         2
+             Nouns/Cat       0.50      0.40      0.44         5
+     Nouns/Ceiling fan       1.00      1.00      1.00         3
+      Nouns/Cell phone       1.00      1.00      1.00         3
+        Nouns/Children       0.50      1.00      0.67         1
+          Nouns/Choice       0.00      0.00      0.00         2
+        Nouns/Clothing       1.00      0.75      0.86         4
+        Nouns/Computer       1.00      1.00      1.00         3
+       Nouns/Crocodile       1.00      0.75      0.86         4
+         Nouns/Culture       0.00      0.00      0.00         1
+            Nouns/Door       0.00      0.00      0.00         1
+        Nouns/Elephant       1.00      0.80      0.89         5
+             Nouns/Eye       0.00      0.00      0.00         1
+            Nouns/Eyes       0.00      0.00      0.00         1
+            Nouns/Face       1.00      0.50      0.67         2
+           Nouns/Fever       0.57      1.00      0.73         4
+            Nouns/Food       0.00      0.00      0.00         1
+           Nouns/Group       0.00      0.00      0.00         2
+             Nouns/Gun       1.00      1.00      1.00         3
+             Nouns/Hat       1.00      1.00      1.00         4
+              Nouns/He       1.00      1.00      1.00         5
+          Nouns/Health       0.00      0.00      0.00         1
+            Nouns/Hill       0.00      0.00      0.00         1
+               Nouns/I       0.62      1.00      0.76         8
+          Nouns/Impact       0.00      0.00      0.00         1
+        Nouns/Internet       0.50      0.50      0.50         2
+             Nouns/Key       1.00      0.33      0.50         3
+          Nouns/Laptop       1.00      1.00      1.00         3
+            Nouns/List       0.25      0.50      0.33         2
+            Nouns/Lock       1.00      1.00      1.00         3
+          Nouns/Middle       0.00      0.00      0.00         1
+            Nouns/Mind       0.00      0.00      0.00         1
+           Nouns/Money       0.60      0.75      0.67         8
+           Nouns/Movie       0.00      0.00      0.00         1
+              Nouns/My       0.60      0.60      0.60         5
+         Nouns/Network       0.00      0.00      0.00         1
+            Nouns/None       0.00      0.00      0.00         1
+              Nouns/Ok       0.50      0.50      0.50         2
+             Nouns/Our       0.00      0.00      0.00         1
+           Nouns/Paint       0.67      0.50      0.57         4
+            Nouns/Part       0.00      0.00      0.00         1
+            Nouns/Path       0.00      0.00      0.00         1
+           Nouns/Peace       0.00      0.00      0.00         1
+          Nouns/Pencil       0.67      0.67      0.67         3
+           Nouns/Phone       0.00      0.00      0.00         1
+          Nouns/Pocket       1.00      0.75      0.86         4
+           Nouns/Point       0.00      0.00      0.00         2
+         Nouns/Problem       0.00      0.00      0.00         2
+           Nouns/Radio       1.00      1.00      1.00         3
+            Nouns/Ring       1.00      0.75      0.86         4
+           Nouns/Shirt       1.00      1.00      1.00         4
+            Nouns/Sign       0.00      0.00      0.00         2
+           Nouns/Skirt       0.67      1.00      0.80         4
+         Nouns/Society       0.00      0.00      0.00         1
+        Nouns/Squirrel       0.67      0.80      0.73         5
+          Nouns/Street       0.00      0.00      0.00         1
+       Nouns/Structure       0.25      1.00      0.40         1
+            Nouns/Suit       1.00      1.00      1.00         4
+           Nouns/Table       1.00      1.00      1.00         3
+            Nouns/Team       0.00      0.00      0.00         1
+      Nouns/Technology       1.00      0.75      0.86         4
+       Nouns/Telephone       0.67      0.50      0.57         4
+            Nouns/They       0.00      0.00      0.00         1
+         Nouns/Weather       0.00      0.00      0.00         2
+             Nouns/Who       0.00      0.00      0.00         1
+            Nouns/Whom       0.50      1.00      0.67         1
+          Nouns/Window       1.00      1.00      1.00         3
+             Nouns/You       0.90      0.75      0.82        12
+        Numbers/1. one       0.67      0.50      0.57         4
+       Numbers/10. ten       0.00      0.00      0.00         0
+    Numbers/11. eleven       0.00      0.00      0.00         1
+    Numbers/12. twelve       0.00      0.00      0.00         0
+  Numbers/13. thirteen       0.00      0.00      0.00         1
+   Numbers/15. fifteen       0.00      0.00      0.00         1
+   Numbers/16. sixteen       0.00      0.00      0.00         1
+  Numbers/18. eighteen       1.00      1.00      1.00         1
+        Numbers/2. two       0.33      0.20      0.25         5
+      Numbers/3. three       0.50      0.50      0.50         2
+       Numbers/4. four       0.00      0.00      0.00         3
+       Numbers/5. five       0.20      0.67      0.31         3
+        Numbers/6. six       1.00      0.50      0.67         2
+      Numbers/7. seven       0.00      0.00      0.00         1
+      Numbers/8. eight       0.00      0.00      0.00         2
+       Numbers/9. nine       0.00      0.00      0.00         1
+      Numbers/Addition       0.00      0.00      0.00         1
+         Numbers/Count       0.00      0.00      0.00         1
+        Numbers/Divide       0.00      0.00      0.00         1
+         Numbers/Equal       0.50      1.00      0.67         3
+Numbers/Multiplication       0.50      1.00      0.67         1
+   Numbers/Subtraction       1.00      1.00      1.00         1
+           People/Aunt       0.00      0.00      0.00         1
+           People/Baby       1.00      1.00      1.00         1
+            People/Bro       1.00      1.00      1.00         2
+          People/Child       0.83      0.83      0.83         6
+       People/Daughter       1.00      1.00      1.00         1
+         People/Doctor       0.75      0.75      0.75         4
+      People/Elder bro       0.80      0.80      0.80         5
+   People/Elder sister       0.57      0.80      0.67         5
+         People/Family       1.00      1.00      1.00         1
+         People/Father       0.33      1.00      0.50         1
+   People/Grand father       0.75      0.60      0.67         5
+   People/Grand mother       1.00      1.00      1.00         1
+      People/Grand son       0.00      0.00      0.00         1
+           People/Lady       1.00      1.00      1.00         1
+            People/Man       0.75      0.82      0.78        11
+         People/Mother       1.00      1.00      1.00         6
+         People/Player       1.00      0.75      0.86         4
+         People/Sister       0.50      1.00      0.67         1
+            People/Son       1.00      0.60      0.75         5
+          People/Uncle       0.00      0.00      0.00         1
+             People/Us       0.83      1.00      0.91         5
+           People/Wife       0.50      1.00      0.67         1
+    People/Younger bro       0.83      1.00      0.91         5
+ People/Younger sister       1.00      1.00      1.00         2
+          Places/House       1.00      1.00      1.00        12
+       Places/Location       1.00      0.75      0.86         4
+ Places/Police station       1.00      1.00      1.00         1
+           Places/Road       1.00      1.00      1.00         4
+           Places/Shop       0.80      1.00      0.89         4
+     Preposition/After       0.00      0.00      0.00         1
+    Preposition/Around       0.00      0.00      0.00         1
+        Preposition/In       0.33      0.50      0.40         2
+    Preposition/Inside       0.00      0.00      0.00         1
+      Preposition/Near       0.00      0.00      0.00         2
+        Preposition/On       0.00      0.00      0.00         1
+       Preposition/Out       0.00      0.00      0.00         1
+      Preposition/Over       0.00      0.00      0.00         1
+      Preposition/Than       0.00      0.00      0.00         1
+        Preposition/To       0.00      0.00      0.00         2
+     Preposition/Until       0.00      0.00      0.00         2
+        Preposition/Up       0.00      0.00      0.00         2
+      Vehicles/Bicycle       1.00      1.00      1.00         1
+         Vehicles/Boat       1.00      1.00      1.00         4
+          Vehicles/Bus       1.00      1.00      1.00         1
+          Vehicles/Car       1.00      1.00      1.00         1
+   Vehicles/Motorcycle       0.00      0.00      0.00         2
+        Vehicles/Plane       1.00      0.50      0.67         6
+          Vehicles/Van       1.00      1.00      1.00         1
+      Vehicles/Vehicle       0.20      0.50      0.29         2
+           Verbs/Allow       1.00      0.50      0.67         2
+          Verbs/Change       0.00      0.00      0.00         2
+          Verbs/Choose       0.00      0.00      0.00         2
+           Verbs/Click       0.14      1.00      0.25         1
+            Verbs/Come       0.60      0.43      0.50         7
+         Verbs/Connect       0.00      0.00      0.00         1
+            Verbs/Cook       1.00      0.67      0.80         6
+            Verbs/Copy       0.00      0.00      0.00         2
+           Verbs/Cough       0.60      0.75      0.67         4
+           Verbs/Cover       0.00      0.00      0.00         1
+             Verbs/Cry       0.67      0.40      0.50         5
+             Verbs/Cut       0.43      0.43      0.43         7
+           Verbs/Dance       1.00      1.00      1.00         1
+            Verbs/Done       0.00      0.00      0.00         1
+           Verbs/Drink       0.80      1.00      0.89         8
+             Verbs/Eat       0.62      0.56      0.59         9
+           Verbs/Enter       0.00      0.00      0.00         1
+           Verbs/Erase       0.08      0.50      0.14         2
+        Verbs/Exchange       0.00      0.00      0.00         2
+            Verbs/Feel       0.00      0.00      0.00         2
+           Verbs/Fight       0.80      0.80      0.80         5
+          Verbs/Follow       0.00      0.00      0.00         2
+            Verbs/Give       0.00      0.00      0.00         3
+              Verbs/Go       1.00      0.14      0.25         7
+           Verbs/Guide       0.00      0.00      0.00         1
+            Verbs/Hang       0.50      1.00      0.67         1
+            Verbs/Hear       0.33      0.50      0.40         2
+            Verbs/Help       0.75      0.50      0.60         6
+             Verbs/Hit       0.00      0.00      0.00         1
+             Verbs/How       1.00      1.00      1.00         1
+           Verbs/Knock       1.00      1.00      1.00         1
+           Verbs/Laugh       0.00      0.00      0.00         1
+            Verbs/Lead       0.00      0.00      0.00         1
+             Verbs/Let       0.00      0.00      0.00         1
+            Verbs/Like       1.00      1.00      1.00         1
+          Verbs/Listen       0.00      0.00      0.00         1
+            Verbs/Look       0.71      1.00      0.83         5
+            Verbs/Love       0.50      1.00      0.67         2
+            Verbs/Make       0.00      0.00      0.00         0
+            Verbs/Meet       1.00      0.86      0.92         7
+            Verbs/Open       0.00      0.00      0.00         1
+           Verbs/Order       1.00      0.50      0.67         2
+          Verbs/Peeing       0.00      0.00      0.00         1
+            Verbs/Play       0.83      1.00      0.91         5
+            Verbs/Pull       0.50      0.50      0.50         2
+             Verbs/Put       1.00      1.00      1.00         1
+             Verbs/Run       0.38      1.00      0.56         5
+         Verbs/Scratch       1.00      1.00      1.00         1
+             Verbs/See       1.00      1.00      1.00         6
+          Verbs/Select       0.00      0.00      0.00         1
+            Verbs/Sell       1.00      0.40      0.57         5
+            Verbs/Show       0.00      0.00      0.00         2
+           Verbs/Sleep       1.00      0.80      0.89         5
+           Verbs/Smile       0.50      1.00      0.67         1
+            Verbs/Stop       0.00      0.00      0.00         1
+           Verbs/Study       1.00      1.00      1.00         1
+            Verbs/Swim       0.00      0.00      0.00         1
+            Verbs/Take       1.00      1.00      1.00         1
+           Verbs/Teach       0.62      1.00      0.77         5
+            Verbs/Tear       0.00      0.00      0.00         0
+            Verbs/Tell       0.33      0.43      0.38         7
+            Verbs/Text       1.00      1.00      1.00         1
+           Verbs/Think       0.00      0.00      0.00         1
+      Verbs/Understand       1.00      1.00      1.00         1
+             Verbs/Use       0.00      0.00      0.00         1
+           Verbs/Visit       0.00      0.00      0.00         2
+            Verbs/Walk       0.83      1.00      0.91         5
+            Verbs/Want       0.00      0.00      0.00         4
+            Verbs/Wash       0.33      0.50      0.40         2
+           Verbs/Watch       0.50      0.50      0.50         2
+           Verbs/Write       0.71      0.71      0.71         7
+
+              accuracy                           0.64       842
+             macro avg       0.48      0.50      0.47       842
+          weighted avg       0.65      0.64      0.62       842
